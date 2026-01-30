@@ -62,7 +62,7 @@ export default function HeroSection() {
         <div
           style={{
             width: "100vw",
-            height: "100vh",
+            height: "115vh",
             backgroundImage: "url(/batman.png)",
             backgroundSize: "cover",
             backgroundPosition: "center center",
