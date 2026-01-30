@@ -1,6 +1,7 @@
 ﻿import { PROJECTS, TECH_STACK } from '@/lib/constants';
 import ProjectCard from '@/components/projects/ProjectCard';
 import { TechStack } from '@/types/project.types';
+import HeroSection from '@/components/HeroSection';
 
 export default function Home() {
   const featuredProjects = PROJECTS.filter((p) => p.featured);
@@ -8,20 +9,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20 max-w-6xl">
-        <div className="text-center">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-            Your Name
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-700 mb-4">
-            Python Developer & Full-Stack Engineer
-          </p>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Building high-performance APIs, progressive web apps, and scalable systems.
-            Transitioning Python expertise into modern web development.
-          </p>
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Featured Projects */}
       <section className="container mx-auto px-4 py-12 max-w-6xl">
@@ -70,4 +58,3 @@ export default function Home() {
     </main>
   );
 }
-
