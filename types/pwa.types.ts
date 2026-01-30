@@ -1,5 +1,5 @@
 // Custom Service Worker Registration extending global type
-export interface ExtendedServiceWorkerRegistration extends ServiceWorkerRegistration {
+export interface ExtendedServiceWorkerRegistration extends Omit<ServiceWorkerRegistration, 'active' | 'waiting'> {
   waiting?: ServiceWorker | null;
   active?: ServiceWorker | null;
 }
