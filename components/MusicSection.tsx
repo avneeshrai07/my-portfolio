@@ -25,7 +25,7 @@ export default function MusicSection() {
       artist: "Post Malone",
       albumCover: "/album-covers/sunflower.jpeg",
       duration: "2:38",
-      audioUrl: "/music/sunflower.mp3",
+      audioUrl: "/music/Sunflower.mp3",
       spotifyUrl: "https://open.spotify.com/track/3KkXRkHbMCARz0aVfEt68P?si=fdf6ac5c9e064419",
     },
     {
