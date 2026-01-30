@@ -1,26 +1,164 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  /* Base colors */
+  --background: #eeeadf;
   --foreground: #171717;
+
+  /* Hero palette */
+  --hero-bg: #eeeadf;
+  --suit-brown: #513720;
+  --shirt-tan: #dec09c;
+  --skin-tone: #c2916d;
+  --cape-black: #000508;
+  --armor-black: #222c2e;
+
+  /* Semantic colors */
+  --primary: #573b27;
+  --primary-light: #6b4830;
+  --primary-dark: #3d2a1c;
+  --secondary: #dec09c;
+  --secondary-light: #e8d0b0;
+  --secondary-dark: #c9a87d;
+  --accent: #e2ba9e;
+
+  /* Simple solid hero gradient color */
+  --hero-gradient: #EBE7D6;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-hero-bg: var(--hero-bg);
+  --color-hero-suit: var(--suit-brown);
+  --color-hero-shirt: var(--shirt-tan);
+  --color-hero-skin: var(--skin-tone);
+
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-dark: var(--secondary-dark);
+
+  --color-accent: var(--accent);
+
+  --color-dark-cape: var(--cape-black);
+  --color-dark-armor: var(--armor-black);
+}
+
+@layer utilities {
+  /* Solid hero gradient background */
+  .bg-hero-gradient {
+    position: relative;
+    background: #EBE7D6;
+  }
+
+  .bg-hero-gradient::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' /%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: multiply;
+  }
+
+  /* Soft version without grain */
+  .bg-hero-gradient-soft {
+    position: relative;
+    background: #EBE7D6;
+  }
+
+  .bg-hero-gradient-soft::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.8' numOctaves='4' seed='2' /%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+    mix-blend-mode: overlay;
+  }
+
+  /* Animated version */
+  .bg-hero-gradient-animated {
+    position: relative;
+    background: #EBE7D6;
+    overflow: hidden;
+  }
+
+  .bg-hero-gradient-animated::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' /%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.2;
+    pointer-events: none;
+    animation: grain-drift 20s ease-in-out infinite;
+    z-index: 0;
+    mix-blend-mode: multiply;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #222c2e;
+    --foreground: #eeeadf;
+    --primary: #dec09c;
+    --secondary: #573b27;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Very subtle grain drift */
+@keyframes grain-drift {
+  0%, 100% { 
+    transform: translate(0, 0) scale(1); 
+  }
+  25% { 
+    transform: translate(-1%, -1%) scale(1.01); 
+  }
+  50% { 
+    transform: translate(-2%, 0%) scale(1); 
+  }
+  75% { 
+    transform: translate(-1%, 1%) scale(1.01); 
+  }
+}
+
+/* Music section animations */
+@keyframes sound-wave {
+  0%,
+  100% {
+    height: 8px;
+  }
+  25% {
+    height: 20px;
+  }
+  50% {
+    height: 33px;
+  }
+  75% {
+    height: 20px;
+  }
+}
+
+.animate-sound-wave {
+  animation: sound-wave 1s ease-in-out infinite;
 }
