@@ -12,7 +12,7 @@ export default function HeroSection() {
   // Separate offsets for mobile and desktop
   const batmanOffset = {
     desktop: { x: -8, y: 0 },
-    mobile: { x: 0, y: 0 }  // Adjust these values for mobile
+    mobile: { x: 0, y: 0 }
   };
 
   // Detect mobile device on client-side only
@@ -60,14 +60,11 @@ export default function HeroSection() {
     updateCirclePosition(x, y);
   };
 
-  // Touch events for mobile - optimized
+  // Touch events for mobile - FIXED to allow scrolling
   const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
 
-    // Prevent default to avoid scroll jank only when actively revealing
-    if (isHovering) {
-      e.preventDefault();
-    }
+    // REMOVED e.preventDefault() to allow scrolling
 
     const touch = e.touches[0];
     const rect = containerRef.current.getBoundingClientRect();
@@ -101,7 +98,7 @@ export default function HeroSection() {
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       style={{
-        touchAction: "none",
+        touchAction: "pan-y", // CHANGED: Allow vertical scrolling
       }}
     >
       {/* Professional Photo - Full Background */}
