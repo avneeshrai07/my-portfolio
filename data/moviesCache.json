@@ -1,0 +1,56 @@
+{
+  "Interstellar": {
+    "Title": "Interstellar",
+    "Year": "2014",
+    "Genre": "Adventure, Drama, Sci-Fi",
+    "imdbRating": "8.7",
+    "Plot": "When Earth becomes uninhabitable in the future, a farmer and ex-NASA pilot, Joseph Cooper, is tasked to pilot a spacecraft, along with a team of researchers, to find a new planet for humans.",
+    "Poster": "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_SX300.jpg",
+    "Runtime": "169 min"
+  },
+  "The Dark Knight": {
+    "Title": "The Dark Knight",
+    "Year": "2008",
+    "Genre": "Action, Crime, Drama",
+    "imdbRating": "9.1",
+    "Plot": "When a menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman, James Gordon and Harvey Dent must work together to put an end to the madness.",
+    "Poster": "https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg",
+    "Runtime": "152 min"
+  },
+  "Inception": {
+    "Title": "Inception",
+    "Year": "2010",
+    "Genre": "Action, Adventure, Sci-Fi",
+    "imdbRating": "8.8",
+    "Plot": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO, but his tragic past may doom the project and his team to disaster.",
+    "Poster": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+    "Runtime": "148 min"
+  },
+  "Berserk": {
+    "Title": "Berserk",
+    "Year": "1997–1998",
+    "Genre": "Animation, Action, Adventure",
+    "imdbRating": "8.7",
+    "Plot": "Guts, a wandering mercenary, joins the Band of the Hawk after being defeated in a duel by Griffith, the group's leader and founder. Together, they dominate every battle, but something menacing lurks in the shadows.",
+    "Poster": "https://m.media-amazon.com/images/M/MV5BMzEzMzhkNDgtY2Q0YS00MDk0LTg0YzItODY5ZjNjMDc4ODI3XkEyXkFqcGc@._V1_SX300.jpg",
+    "Runtime": "2 min"
+  },
+  "Oppenheimer": {
+    "Title": "Oppenheimer",
+    "Year": "2023",
+    "Genre": "Biography, Drama, History",
+    "imdbRating": "8.3",
+    "Plot": "A dramatization of the life story of J. Robert Oppenheimer, the physicist who had a large hand in the development of the atomic bombs that brought an end to World War II.",
+    "Poster": "https://m.media-amazon.com/images/M/MV5BM2RmYmVmMzctMzc5Ny00MmNiLTgxMGUtYjk1ZDRhYjA2YTU0XkEyXkFqcGc@._V1_SX300.jpg",
+    "Runtime": "180 min"
+  },
+  "Dune": {
+    "Title": "Dune",
+    "Year": "1984",
+    "Genre": "Action, Adventure, Sci-Fi",
+    "imdbRating": "6.3",
+    "Plot": "A Duke's son leads desert warriors against the galactic emperor and his father's evil nemesis to free their desert world from the emperor's rule.",
+    "Poster": "https://m.media-amazon.com/images/M/MV5BMGJlMGM3NDAtOWNhMy00MWExLWI2MzEtMDQ0ZDIzZDY5ZmQ2XkEyXkFqcGc@._V1_SX300.jpg",
+    "Runtime": "137 min"
+  }
+}

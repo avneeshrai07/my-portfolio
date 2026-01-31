@@ -2,7 +2,8 @@
 import ProjectCard from "@/components/projects/ProjectCard";
 import { TechStack } from "@/types/project.types";
 import HeroSection from "@/components/HeroSection";
-import MusicSection from '@/components/MusicSection';
+import MusicSection from "@/components/MusicSection";
+import MovieSection from "@/components/MoviesSection";
 export default function Home() {
   const featuredProjects = PROJECTS.filter((p) => p.featured);
 
@@ -12,7 +13,10 @@ export default function Home() {
       <HeroSection />
       {/* Music Section */}
       <MusicSection />
+
+      <MovieSection />
       {/* Featured Projects */}
+
       <section className="container  mx-auto px-4 py-12 max-w-6xl">
         <h2 className="text-3xl font-bold mb-8">Featured Projects</h2>
         <div className="grid md:grid-cols-2 gap-8">
