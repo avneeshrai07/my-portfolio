@@ -290,7 +290,7 @@ export default function MovieSection() {
             <div className="lg:col-span-3 flex items-start">
               <div 
                 ref={posterRef}
-                className="relative w-full max-w-[50vh] mx-auto aspect-[1.8/3] rounded-xl overflow-hidden shadow-2xl border border-secondary/30"
+                className="relative w-full max-w-[50vh] mx-auto aspect-[1.5/3] rounded-xl overflow-hidden shadow-2xl border border-secondary/30"
                 style={{ opacity: 1 }}
               >
                 {selectedData && (selectedMovie.localPoster || selectedData.Poster) ? (
@@ -373,11 +373,11 @@ export default function MovieSection() {
 
             {/* Right - Movie Cards */}
             <div className="lg:col-span-3 flex items-start">
-              <div className="w-full max-w-[50vh] mx-auto aspect-[1.8/3] bg-hero-suit/10 backdrop-blur-md rounded-xl border border-hero-suit/20 p-3 flex flex-col">
+              <div className="w-full max-w-[50vh] mx-auto aspect-[1.5/3] bg-hero-suit/10 backdrop-blur-md rounded-xl border border-hero-suit/20 p-3 flex flex-col">
                 <h3 className="text-xs font-bold text-hero-suit/90 mb-3 uppercase tracking-wider">
                   More to Watch
                 </h3>
-                <div className="flex-1 space-y-2 overflow-hidden flex flex-col justify-around">
+                <div className="flex-1 space-y-1 overflow-hidden flex flex-col justify-around">
                   {visibleMovies.map(({ movie, originalIndex }) => {
                     const data = movieData[movie.title];
                     const poster = movie.localPoster || data?.Poster;
