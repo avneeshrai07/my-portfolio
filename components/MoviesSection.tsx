@@ -576,7 +576,7 @@ export default function MovieSection() {
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5v14l11-7z"/>
                         </svg>
-                        View Details
+                        Watch Now
                       </button>
                     </div>
                   ) : (
