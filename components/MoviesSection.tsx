@@ -41,7 +41,7 @@ const DETAILS_DELAY = 0.2;
 const CARD_TRANSITION_DURATION = 400;
 
 // ⭐ NEW: Mobile scroll configuration
-const MOBILE_SCROLL_DISTANCE_PER_MOVIE = 30; // 30vh per movie
+// const MOBILE_SCROLL_DISTANCE_PER_MOVIE = 30; // 30vh per movie
 
 export default function MovieSection() {
   const [movies] = useState<Movie[]>([
@@ -49,8 +49,8 @@ export default function MovieSection() {
     { title: "Jujutsu Kaisen", localPoster: null, link: "https://www.netflix.com/browse/genre/83?jbv=81278456" },
     { title: "Wednesday", localPoster: "/movies/wednesday.jpeg", link: "https://www.netflix.com/browse/my-list?jbv=81231974" },
     { title: "How to Sell Drugs Online (Fast)", localPoster: null, link: "https://www.netflix.com/browse/genre/83?jbv=80218448" },
-    { title: "Oppenheimer", localPoster: null, link: "https://your-link.com/oppenheimer" },
-    { title: "Dune", localPoster: null, link: "https://your-link.com/dune" },
+    { title: "Record of Ragnarok", localPoster: null, link: "https://aniwatchtv.by/?s=Record+of+Ragnarok" },
+    { title: "500 Days of Summer", localPoster: null, link: "https://www.hotstar.com/in/movies/500-days-of-summer/1770000925" },
   ]);
 
   const [movieData, setMovieData] = useState<Record<string, MovieData>>({});
