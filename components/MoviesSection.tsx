@@ -46,9 +46,9 @@ const CARD_TRANSITION_DURATION = 400;
 export default function MovieSection() {
   const [movies] = useState<Movie[]>([
     { title: "When Life Gives You Tangerines", localPoster: null, link: "https://www.netflix.com/title/81681535" },
-    { title: "Jujutsu Kaisen", localPoster: null, link: "https://www.netflix.com/browse/genre/83?jbv=81278456" },
-    { title: "Wednesday", localPoster: "/movies/wednesday.jpeg", link: "https://www.netflix.com/browse/my-list?jbv=81231974" },
-    { title: "How to Sell Drugs Online (Fast)", localPoster: null, link: "https://www.netflix.com/browse/genre/83?jbv=80218448" },
+    { title: "Jujutsu Kaisen", localPoster: null, link: "https://www.netflix.com/title/81278456" },
+    { title: "Wednesday", localPoster: "/movies/wednesday.jpeg", link: "https://www.netflix.com/title/81231974" },
+    { title: "How to Sell Drugs Online (Fast)", localPoster: null, link: "https://www.netflix.com/title/80218448"},
     { title: "Record of Ragnarok", localPoster: null, link: "https://aniwatchtv.by/?s=Record+of+Ragnarok" },
     { title: "500 Days of Summer", localPoster: null, link: "https://www.hotstar.com/in/movies/500-days-of-summer/1770000925" },
   ]);
