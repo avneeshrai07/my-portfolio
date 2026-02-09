@@ -51,31 +51,45 @@ export default function Projects() {
   useEffect(() => {
     if (typeof window === "undefined" || !containerRef.current) return;
 
-    const cards = cardsRef.current.filter(Boolean);
+    const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
+    
+    // Clear any existing ScrollTriggers
+    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
     cards.forEach((card, index) => {
-      if (!card) return;
-
-      ScrollTrigger.create({
-        trigger: card,
-        start: "top 5vh",
-        end: "bottom 5vh",
-        pin: index < cards.length - 1,
-        pinSpacing: false,
-        scrub: true,
-      });
-
+      // Pin each card except the last one
       if (index < cards.length - 1) {
-        gsap.to(card, {
-          opacity: 0.95,
-          scale: 0.95,
-          scrollTrigger: {
-            trigger: cards[index + 1],
-            start: "top bottom",
-            end: "top 5vh",
-            scrub: true,
-          },
+        ScrollTrigger.create({
+          trigger: card,
+          start: "top 5vh",
+          end: () => `+=${card.offsetHeight + 50}`,
+          pin: true,
+          pinSpacing: false,
+          markers: false, // Set to true for debugging
+          id: `pin-${index}`,
         });
+
+        // Scale down and fade previous cards as next card approaches
+        gsap.fromTo(
+          card,
+          {
+            scale: 1,
+            opacity: 1,
+          },
+          {
+            scale: 0.9,
+            opacity: 0.5,
+            ease: "none",
+            scrollTrigger: {
+              trigger: cards[index + 1],
+              start: "top bottom",
+              end: "top 5vh",
+              scrub: 0.5,
+              markers: false, // Set to true for debugging
+              id: `scale-${index}`,
+            },
+          }
+        );
       }
     });
 
@@ -87,7 +101,7 @@ export default function Projects() {
   return (
     <section className="relative py-[5vh] bg-gradient-to-b from-gray-50 to-white min-h-screen">
       <div className="container mx-auto px-4 max-w-7xl">
-        <div className="text-center mb-[4vh]">
+        <div className="text-center mb-[10vh]">
           <h2 className="text-[clamp(2rem,4vw,3rem)] font-bold text-gray-900 mb-[1vh]">
             Featured Projects
           </h2>
@@ -97,12 +111,17 @@ export default function Projects() {
           </p>
         </div>
 
-        <div ref={containerRef} className="relative space-y-[5vh]">
+        <div ref={containerRef} className="relative">
           {(projectsData as Project[]).map((project, index) => (
             <div
               key={project.id}
-              ref={(el:any) => { cardsRef.current[index] = el; }}
-              className="sticky top-[5vh] h-[90vh]"
+              ref={(el) => {
+                cardsRef.current[index] = el;
+              }}
+              className="mb-[5vh] last:mb-0"
+              style={{
+                willChange: "transform, opacity",
+              }}
             >
               <ProjectCard project={project} />
             </div>
@@ -115,7 +134,14 @@ export default function Projects() {
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden transition-all duration-300 h-full flex flex-col">
+    <div 
+      className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden transition-shadow duration-300 hover:shadow-3xl"
+      style={{ 
+        height: "90vh",
+        minHeight: "600px",
+      }}
+    >
+      {/* Rest of your ProjectCard code remains exactly the same */}
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-col h-full">
         {/* Hero Banner - 18% of card height */}
@@ -494,194 +520,192 @@ function ProjectCard({ project }: { project: Project }) {
       </div>
 
       {/* Mobile Layout */}
-      {/* Mobile Layout */}
-<div className="flex lg:hidden flex-col h-full overflow-y-auto hide-scrollbar">
-  {/* Hero Banner */}
-  <div className="relative h-56 flex-shrink-0">
-    <Image
-      src={project.heroImage}
-      alt={project.title}
-      fill
-      className="object-cover"
-      unoptimized
-    />
-    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-    <div className="absolute bottom-6 left-6 right-6">
-      <p className="text-white text-xs uppercase tracking-[0.2em] mb-2 drop-shadow-lg font-medium opacity-90">
-        {project.tagline}
-      </p>
-      <h3 className="text-white text-4xl font-bold drop-shadow-2xl leading-tight">
-        {project.title}
-      </h3>
-    </div>
-  </div>
-
-  {/* Content Area */}
-  <div
-    className="p-6 space-y-6"
-    style={{ backgroundColor: project.theme.secondary }}
-  >
-    {/* Tech Stack */}
-    <div>
-      <h4 className="text-sm font-bold mb-3 text-gray-900 uppercase tracking-wide">
-        Tech Stack
-      </h4>
-      <div className="flex flex-wrap gap-2">
-        {project.techStack.map((tech) => (
-          <span
-            key={tech.name}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-md flex items-center gap-1.5"
-            style={{ backgroundColor: tech.color }}
-          >
-            <span className="text-[10px]">⚡</span>
-            {tech.name}
-          </span>
-        ))}
-      </div>
-    </div>
-
-    {/* Description */}
-    <div>
-      <h4 className="text-sm font-bold mb-2 text-gray-900 uppercase tracking-wide">
-        About
-      </h4>
-      <p className="text-gray-800 text-sm leading-relaxed">
-        {project.description}
-      </p>
-    </div>
-
-    {/* Visual Preview */}
-    <div>
-      <h4 className="text-sm font-bold mb-3 text-gray-900 uppercase tracking-wide">
-        Preview
-      </h4>
-      <div className="flex gap-4 overflow-x-auto pb-3 hide-scrollbar snap-x snap-mandatory">
-        {/* Safari Desktop Mockup */}
-        <div className="flex-shrink-0 snap-center">
-          <Safari
-            url="project.demo"
-            imageSrc={project.images.desktop}
-            className="w-[280px]"
+      <div className="flex lg:hidden flex-col h-full overflow-y-auto hide-scrollbar">
+        {/* Hero Banner */}
+        <div className="relative h-56 flex-shrink-0">
+          <Image
+            src={project.heroImage}
+            alt={project.title}
+            fill
+            className="object-cover"
+            unoptimized
           />
-        </div>
-        {/* iPhone Mockup */}
-        <div className="flex-shrink-0 snap-center">
-          <Iphone
-            src={project.images.mobile}
-            className="w-[140px]"
-          />
-        </div>
-      </div>
-    </div>
-
-    {/* Key Features Accordion */}
-    <details className="group bg-white rounded-2xl shadow-md overflow-hidden">
-      <summary className="flex justify-between items-center p-4 cursor-pointer font-bold text-gray-900 select-none">
-        <span className="flex items-center gap-2">
-          <span className="text-lg">✨</span>
-          <span>Key Features</span>
-        </span>
-        <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">
-          ▼
-        </span>
-      </summary>
-      <div className="px-5 pb-5 border-t border-gray-100">
-        <ul className="space-y-3 mt-4">
-          {project.features.map((feature) => (
-            <li key={feature} className="text-sm text-gray-800 flex items-start gap-3">
-              <span className="text-base mt-0.5" style={{ color: project.theme.primary }}>
-                ●
-              </span>
-              <span className="flex-1">{feature}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </details>
-
-    {/* Project Metrics Card */}
-    <div
-      className="rounded-2xl p-5 shadow-lg"
-      style={{ backgroundColor: project.theme.primary }}
-    >
-      <h4 className="font-bold text-white mb-4 text-base flex items-center gap-2">
-        <span className="text-xl">📊</span>
-        <span>Project Metrics</span>
-      </h4>
-      <div className="space-y-3">
-        {project.metrics.map((metric) => (
-          <div
-            key={metric.label}
-            className="flex justify-between items-center text-white bg-white/10 rounded-xl p-3"
-          >
-            <span className="text-sm font-medium flex items-center gap-2">
-              <span className="text-xs opacity-75">•</span>
-              {metric.label}
-            </span>
-            <span className="font-bold text-xl">{metric.value}</span>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <p className="text-white text-xs uppercase tracking-[0.2em] mb-2 drop-shadow-lg font-medium opacity-90">
+              {project.tagline}
+            </p>
+            <h3 className="text-white text-4xl font-bold drop-shadow-2xl leading-tight">
+              {project.title}
+            </h3>
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
 
-    {/* Challenges Accordion */}
-    <details className="group bg-white rounded-2xl shadow-md overflow-hidden">
-      <summary className="flex justify-between items-center p-4 cursor-pointer font-bold text-gray-900 select-none">
-        <span className="flex items-center gap-2">
-          <span className="text-lg">🎯</span>
-          <span>Challenges & Solutions</span>
-        </span>
-        <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">
-          ▼
-        </span>
-      </summary>
-      <div className="px-5 pb-5 border-t border-gray-100">
-        <ul className="space-y-3 mt-4">
-          {project.challenges.map((challenge, idx) => (
-            <li key={idx} className="text-sm text-gray-800 flex items-start gap-3">
-              <span className="text-base mt-0.5" style={{ color: project.theme.accent }}>
-                ●
+        {/* Content Area */}
+        <div
+          className="p-6 space-y-6"
+          style={{ backgroundColor: project.theme.secondary }}
+        >
+          {/* Tech Stack */}
+          <div>
+            <h4 className="text-sm font-bold mb-3 text-gray-900 uppercase tracking-wide">
+              Tech Stack
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {project.techStack.map((tech) => (
+                <span
+                  key={tech.name}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold text-white shadow-md flex items-center gap-1.5"
+                  style={{ backgroundColor: tech.color }}
+                >
+                  <span className="text-[10px]">⚡</span>
+                  {tech.name}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Description */}
+          <div>
+            <h4 className="text-sm font-bold mb-2 text-gray-900 uppercase tracking-wide">
+              About
+            </h4>
+            <p className="text-gray-800 text-sm leading-relaxed">
+              {project.description}
+            </p>
+          </div>
+
+          {/* Visual Preview */}
+          <div>
+            <h4 className="text-sm font-bold mb-3 text-gray-900 uppercase tracking-wide">
+              Preview
+            </h4>
+            <div className="flex gap-4 overflow-x-auto pb-3 hide-scrollbar snap-x snap-mandatory">
+              {/* Safari Desktop Mockup */}
+              <div className="flex-shrink-0 snap-center">
+                <Safari
+                  url="project.demo"
+                  imageSrc={project.images.desktop}
+                  className="w-[280px]"
+                />
+              </div>
+              {/* iPhone Mockup */}
+              <div className="flex-shrink-0 snap-center">
+                <Iphone
+                  src={project.images.mobile}
+                  className="w-[140px]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Key Features Accordion */}
+          <details className="group bg-white rounded-2xl shadow-md overflow-hidden">
+            <summary className="flex justify-between items-center p-4 cursor-pointer font-bold text-gray-900 select-none">
+              <span className="flex items-center gap-2">
+                <span className="text-lg">✨</span>
+                <span>Key Features</span>
               </span>
-              <span className="flex-1">{challenge}</span>
-            </li>
-          ))}
-        </ul>
+              <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">
+                ▼
+              </span>
+            </summary>
+            <div className="px-5 pb-5 border-t border-gray-100">
+              <ul className="space-y-3 mt-4">
+                {project.features.map((feature) => (
+                  <li key={feature} className="text-sm text-gray-800 flex items-start gap-3">
+                    <span className="text-base mt-0.5" style={{ color: project.theme.primary }}>
+                      ●
+                    </span>
+                    <span className="flex-1">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+
+          {/* Project Metrics Card */}
+          <div
+            className="rounded-2xl p-5 shadow-lg"
+            style={{ backgroundColor: project.theme.primary }}
+          >
+            <h4 className="font-bold text-white mb-4 text-base flex items-center gap-2">
+              <span className="text-xl">📊</span>
+              <span>Project Metrics</span>
+            </h4>
+            <div className="space-y-3">
+              {project.metrics.map((metric) => (
+                <div
+                  key={metric.label}
+                  className="flex justify-between items-center text-white bg-white/10 rounded-xl p-3"
+                >
+                  <span className="text-sm font-medium flex items-center gap-2">
+                    <span className="text-xs opacity-75">•</span>
+                    {metric.label}
+                  </span>
+                  <span className="font-bold text-xl">{metric.value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Challenges Accordion */}
+          <details className="group bg-white rounded-2xl shadow-md overflow-hidden">
+            <summary className="flex justify-between items-center p-4 cursor-pointer font-bold text-gray-900 select-none">
+              <span className="flex items-center gap-2">
+                <span className="text-lg">🎯</span>
+                <span>Challenges & Solutions</span>
+              </span>
+              <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">
+                ▼
+              </span>
+            </summary>
+            <div className="px-5 pb-5 border-t border-gray-100">
+              <ul className="space-y-3 mt-4">
+                {project.challenges.map((challenge, idx) => (
+                  <li key={idx} className="text-sm text-gray-800 flex items-start gap-3">
+                    <span className="text-base mt-0.5" style={{ color: project.theme.accent }}>
+                      ●
+                    </span>
+                    <span className="flex-1">{challenge}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </details>
+
+          {/* CTA Buttons */}
+          <div className="space-y-3 pt-2">
+            {project.demoUrl && (
+              <a
+                href={project.demoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-4 px-6 rounded-2xl text-white font-bold text-center shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                style={{ backgroundColor: project.theme.primary }}
+              >
+                <span>View Live Demo</span>
+                <span className="text-xl">🚀</span>
+              </a>
+            )}
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full py-4 px-6 rounded-2xl font-bold text-center bg-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
+                style={{
+                  color: project.theme.accent,
+                  border: `2px solid ${project.theme.accent}`,
+                }}
+              >
+                <span>View Source Code</span>
+                <span className="text-xl">⚙️</span>
+              </a>
+            )}
+          </div>
+        </div>
       </div>
-    </details>
-
-    {/* CTA Buttons */}
-    <div className="space-y-3 pt-2">
-      {project.demoUrl && (
-        <a
-          href={project.demoUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full py-4 px-6 rounded-2xl text-white font-bold text-center shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
-          style={{ backgroundColor: project.theme.primary }}
-        >
-          <span>View Live Demo</span>
-          <span className="text-xl">🚀</span>
-        </a>
-      )}
-      {project.githubUrl && (
-        <a
-          href={project.githubUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full py-4 px-6 rounded-2xl font-bold text-center bg-white shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
-          style={{
-            color: project.theme.accent,
-            border: `2px solid ${project.theme.accent}`,
-          }}
-        >
-          <span>View Source Code</span>
-          <span className="text-xl">⚙️</span>
-        </a>
-      )}
-    </div>
-  </div>
-</div>
-
     </div>
   );
 }
