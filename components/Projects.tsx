@@ -57,41 +57,40 @@ export default function Projects() {
     ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
     cards.forEach((card, index) => {
-      // Pin each card except the last one
-      if (index < cards.length - 1) {
-        ScrollTrigger.create({
-          trigger: card,
-          start: "top 5vh",
-          end: () => `+=${card.offsetHeight + 50}`,
-          pin: true,
-          pinSpacing: false,
-          markers: false, // Set to true for debugging
-          id: `pin-${index}`,
-        });
-
-        // Scale down and fade previous cards as next card approaches
-        gsap.fromTo(
-          card,
-          {
-            scale: 1,
-            opacity: 1,
-          },
-          {
-            scale: 0.9,
-            opacity: 0.5,
-            ease: "none",
-            scrollTrigger: {
-              trigger: cards[index + 1],
-              start: "top bottom",
-              end: "top 5vh",
-              scrub: 0.5,
-              markers: false, // Set to true for debugging
-              id: `scale-${index}`,
-            },
-          }
-        );
-      }
+  if (index < cards.length - 1) {
+    ScrollTrigger.create({
+      trigger: card,
+      start: "top 5vh",
+      end: () => `+=${window.innerHeight * 0.25}`, // Only 50vh of scroll needed
+      pin: true,
+      pinSpacing: false,
+      snap: {
+        snapTo: 1,
+        duration: { min: 0.2, max: 0.6 },
+        delay: 0.1, // Slight delay before snap
+        ease: "power1.inOut",
+      },
     });
+
+    gsap.fromTo(
+      card,
+      { scale: 1, opacity: 1, y: 0 },
+      {
+        scale: 0.92,
+        opacity: 0.4,
+        y: -20, // Slight upward movement
+        ease: "power2.inOut",
+        scrollTrigger: {
+          trigger: cards[index + 1],
+          start: "top bottom",
+          end: "top 5vh",
+          scrub: 2, // More smoothing for momentum feel
+        },
+      }
+    );
+  }
+});
+
 
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
