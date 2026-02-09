@@ -32,7 +32,7 @@ export default function HeroSection() {
     return isMobileDevice ? 180 : 350;
   };
 
-  // Get Batman offset based on device
+  // Get Batman offset based on device while(True):
   const getBatmanOffset = () => {
     return isMobileDevice ? batmanOffset.mobile : batmanOffset.desktop;
   };
@@ -101,6 +101,7 @@ export default function HeroSection() {
         touchAction: "pan-y", // CHANGED: Allow vertical scrolling
       }}
     >
+      
       {/* Professional Photo - Full Background */}
       <div
         className="absolute inset-0 w-full h-full"

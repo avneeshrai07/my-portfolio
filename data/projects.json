@@ -1,0 +1,128 @@
+[
+  {
+    "id": "sunakku",
+    "title": "Sunakku Restaurant Website",
+    "tagline": "asian street food",
+    "heroImage": "https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=1920&q=80",
+    "description": "A full-stack e-commerce platform for a Studio Ghibli-inspired Asian street food restaurant. Features seamless online ordering, dynamic menu management, and a visually immersive experience.",
+    "techStack": [
+      { "name": "React", "color": "#61DAFB" },
+      { "name": "Next.js", "color": "#000000" },
+      { "name": "TypeScript", "color": "#3178C6" },
+      { "name": "Tailwind CSS", "color": "#06B6D4" },
+      { "name": "GSAP", "color": "#88CE02" },
+      { "name": "Node.js", "color": "#339933" },
+      { "name": "PostgreSQL", "color": "#4169E1" }
+    ],
+    "features": [
+      "Responsive Ghibli Theme",
+      "Interactive Online Ordering",
+      "User Accounts & Order History",
+      "Admin Dashboard",
+      "Payment Integration"
+    ],
+    "images": {
+      "desktop": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80",
+      "mobile": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80"
+    },
+    "metrics": [
+      { "label": "Lighthouse Score", "value": "95+" },
+      { "label": "Load Time", "value": "<1s" },
+      { "label": "Online Orders", "value": "20% ↑" }
+    ],
+    "challenges": [
+      "Implementing complex GSAP animations with optimal performance, optimized database queries for menu items."
+    ],
+    "demoUrl": "https://sunakku-demo.com",
+    "githubUrl": "https://github.com/username/sunakku",
+    "theme": {
+      "primary": "#F4A5B9",
+      "secondary": "#FFE5EC",
+      "accent": "#D8536D"
+    }
+  },
+  {
+    "id": "taskflow",
+    "title": "TaskFlow Project Manager",
+    "tagline": "productivity reimagined",
+    "heroImage": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=80",
+    "description": "A modern project management SaaS platform with real-time collaboration, AI-powered task suggestions, and advanced analytics. Built for remote teams to streamline workflows and boost productivity.",
+    "techStack": [
+      { "name": "Next.js 14", "color": "#000000" },
+      { "name": "TypeScript", "color": "#3178C6" },
+      { "name": "Prisma ORM", "color": "#2D3748" },
+      { "name": "Tailwind CSS", "color": "#06B6D4" },
+      { "name": "tRPC", "color": "#398CCB" },
+      { "name": "PostgreSQL", "color": "#4169E1" },
+      { "name": "Redis", "color": "#DC382D" }
+    ],
+    "features": [
+      "Real-time Collaboration with WebSockets",
+      "Kanban, List & Calendar Views",
+      "AI-Powered Task Prioritization",
+      "Time Tracking & Analytics",
+      "Team Chat & File Sharing"
+    ],
+    "images": {
+      "desktop": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
+      "mobile": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80"
+    },
+    "metrics": [
+      { "label": "Active Users", "value": "2.5K+" },
+      { "label": "Uptime", "value": "99.9%" },
+      { "label": "Task Completion", "value": "35% ↑" }
+    ],
+    "challenges": [
+      "Built real-time sync with WebSockets and optimistic updates, implemented efficient caching with Redis for sub-50ms response times."
+    ],
+    "demoUrl": "https://taskflow-demo.com",
+    "githubUrl": "https://github.com/username/taskflow",
+    "theme": {
+      "primary": "#6366F1",
+      "secondary": "#E0E7FF",
+      "accent": "#4F46E5"
+    }
+  },
+  {
+    "id": "ecotrack",
+    "title": "EcoTrack Carbon Footprint",
+    "tagline": "sustainability tracking",
+    "heroImage": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1920&q=80",
+    "description": "A mobile-first web application for tracking personal carbon footprint. Integrates with smart home devices, provides actionable insights, and gamifies eco-friendly behavior with rewards.",
+    "techStack": [
+      { "name": "React Native", "color": "#61DAFB" },
+      { "name": "Expo", "color": "#000020" },
+      { "name": "TypeScript", "color": "#3178C6" },
+      { "name": "Styled Components", "color": "#DB7093" },
+      { "name": "GraphQL", "color": "#E10098" },
+      { "name": "MongoDB", "color": "#47A248" },
+      { "name": "Firebase", "color": "#FFCA28" }
+    ],
+    "features": [
+      "Smart Home Device Integration",
+      "Daily Carbon Tracking & Reports",
+      "Community Challenges & Leaderboards",
+      "Eco-Friendly Product Recommendations",
+      "Push Notifications & Reminders"
+    ],
+    "images": {
+      "desktop": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
+      "mobile": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&q=80"
+    },
+    "metrics": [
+      { "label": "Downloads", "value": "12K+" },
+      { "label": "Avg Session", "value": "8min" },
+      { "label": "CO2 Reduced", "value": "45T" }
+    ],
+    "challenges": [
+      "Integrated IoT devices with RESTful APIs, optimized mobile performance with lazy loading and implemented offline-first architecture."
+    ],
+    "demoUrl": "https://ecotrack-demo.com",
+    "githubUrl": "https://github.com/username/ecotrack",
+    "theme": {
+      "primary": "#10B981",
+      "secondary": "#D1FAE5",
+      "accent": "#059669"
+    }
+  }
+]
