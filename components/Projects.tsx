@@ -52,53 +52,45 @@ export default function Projects() {
     if (typeof window === "undefined" || !containerRef.current) return;
 
     const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
-    
-    // Clear any existing ScrollTriggers
-    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
 
-    cards.forEach((card, index) => {
-  if (index < cards.length - 1) {
-    ScrollTrigger.create({
-      trigger: card,
-      start: "top 5vh",
-      end: () => `+=${window.innerHeight * 0.25}`, // Only 50vh of scroll needed
-      pin: true,
-      pinSpacing: false,
-      snap: {
-        snapTo: 1,
-        duration: { min: 0.2, max: 0.6 },
-        delay: 0.1, // Slight delay before snap
-        ease: "power1.inOut",
-      },
-    });
+    const ctx = gsap.context(() => {
+      cards.forEach((card, index) => {
+        if (index === cards.length - 1) return; // last card never shrinks
 
-    gsap.fromTo(
-      card,
-      { scale: 1, opacity: 1, y: 0 },
-      {
-        scale: 0.92,
-        opacity: 0.4,
-        y: -20, // Slight upward movement
-        ease: "power2.inOut",
-        scrollTrigger: {
-          trigger: cards[index + 1],
-          start: "top bottom",
-          end: "top 5vh",
-          scrub: 2, // More smoothing for momentum feel
-        },
-      }
-    );
-  }
-});
+        const nextCard = cards[index + 1];
 
+        // As the NEXT card slides up, shrink the CURRENT one
+        gsap.fromTo(
+          card,
+          {
+            scale: 1,
+            opacity: 1,
+            y: 0,
+            filter: "blur(0px)",
+          },
+          {
+            scale: 0.88 - index * 0.015, // each deeper card shrinks a bit more
+            opacity: 0.3,
+            y: -20,
+            filter: "blur(2px)",
+            ease: "none", // MUST be none for scrub
+            scrollTrigger: {
+              trigger: nextCard,
+              start: "top 90%",   // next card enters from bottom
+              end: "top 8%",      // next card nearly at top
+              scrub: 1.4,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      });
+    }, containerRef);
 
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section className="relative py-[5vh] bg-gradient-to-b from-gray-50 to-white min-h-screen">
+    <section className="relative py-[5vh] bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4 max-w-7xl">
         <div className="text-center mb-[10vh]">
           <h2 className="text-[clamp(2rem,4vw,3rem)] font-bold text-gray-900 mb-[1vh]">
@@ -110,16 +102,37 @@ export default function Projects() {
           </p>
         </div>
 
-        <div ref={containerRef} className="relative">
+        {/*
+          KEY FIX: perspective gives 3D depth to scale animations.
+          No overflow:hidden here — sticky needs a scrollable ancestor.
+        */}
+        <div
+          ref={containerRef}
+          className="relative"
+          style={{ perspective: "1400px" }}
+        >
           {(projectsData as Project[]).map((project, index) => (
             <div
               key={project.id}
               ref={(el) => {
                 cardsRef.current[index] = el;
               }}
-              className="mb-[5vh] last:mb-0"
               style={{
-                willChange: "transform, opacity",
+                /*
+                  KEY FIX: position sticky replaces ScrollTrigger pinning.
+                  - No gaps: cards are flush, no margin between them
+                  - No teleport: browser handles stacking natively
+                  - top: 0 means each card sticks to viewport top when reached
+                  - zIndex ensures later cards render on top
+                */
+                position: "sticky",
+                top: 0,
+                zIndex: index + 1,
+                // Small top offset per card so you can see them "stacking"
+                // Remove these two lines if you want a clean flush stack
+                paddingTop: index > 0 ? `${index * 8}px` : "0px",
+                willChange: "transform, opacity, filter",
+                transformOrigin: "top center",
               }}
             >
               <ProjectCard project={project} />
@@ -133,17 +146,16 @@ export default function Projects() {
 
 function ProjectCard({ project }: { project: Project }) {
   return (
-    <div 
-      className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden transition-shadow duration-300 hover:shadow-3xl"
-      style={{ 
+    <div
+      className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+      style={{
         height: "90vh",
         minHeight: "600px",
       }}
     >
-      {/* Rest of your ProjectCard code remains exactly the same */}
-      {/* Desktop Layout */}
+      {/* ─────────────────── Desktop Layout ─────────────────── */}
       <div className="hidden lg:flex flex-col h-full">
-        {/* Hero Banner - 18% of card height */}
+        {/* Hero Banner — 18% */}
         <div className="relative h-[18%] flex-shrink-0 overflow-hidden rounded-t-[2.5rem]">
           <Image
             src={project.heroImage}
@@ -170,29 +182,24 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
 
-        {/* Content Grid - 82% of card height */}
+        {/* Content Grid — 82% */}
         <div
           className="grid grid-cols-2 gap-0 flex-1 min-h-0 overflow-hidden"
           style={{
-            background: `linear-gradient(180deg, ${project.theme.secondary} 0%, ${project.theme.secondary} 100%)`,
+            background: `linear-gradient(180deg, ${project.theme.secondary}, ${project.theme.secondary})`,
             height: "82%",
           }}
         >
-          {/* Left Column - WITH GUARANTEED BUTTON SPACE */}
+          {/* Left Column */}
           <div
             className="flex flex-col h-full overflow-hidden"
             style={{ padding: "clamp(1.5rem, 2.5vh, 2.5rem)" }}
           >
-            {/* Scrollable Content Area - CALCULATED HEIGHT */}
             <div
               className="flex-1 overflow-y-auto overflow-x-hidden pr-3 pb-2 hide-scrollbar"
-              style={{
-                height: "calc(100% - 80px)",
-                minHeight: 0,
-              }}
+              style={{ height: "calc(100% - 80px)", minHeight: 0 }}
             >
               <div className="space-y-[2vh]">
-                {/* Title */}
                 <h4
                   className="font-bold leading-tight"
                   style={{
@@ -344,7 +351,7 @@ function ProjectCard({ project }: { project: Project }) {
               </div>
             </div>
 
-            {/* CTA Buttons - FIXED HEIGHT, ALWAYS VISIBLE */}
+            {/* CTA Buttons */}
             <div
               className="flex gap-3 pt-3 flex-shrink-0 border-t border-gray-300/30"
               style={{ height: "80px", alignItems: "center" }}
@@ -385,7 +392,7 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
           </div>
 
-          {/* Right Column - SAFARI CONTAINED */}
+          {/* Right Column */}
           <div
             className="flex flex-col h-full overflow-hidden"
             style={{
@@ -393,7 +400,7 @@ function ProjectCard({ project }: { project: Project }) {
               gap: "clamp(0.8rem, 1.5vh, 1.2rem)",
             }}
           >
-            {/* Safari Mockup - 60% with BIGGER size */}
+            {/* Safari Mockup — 60% */}
             <div className="relative flex-shrink-0" style={{ height: "60%" }}>
               <div
                 className="w-full h-full rounded-3xl flex items-center justify-center overflow-hidden"
@@ -417,7 +424,7 @@ function ProjectCard({ project }: { project: Project }) {
               </div>
             </div>
 
-            {/* Metrics and Challenges Side by Side - 45% */}
+            {/* Metrics + Challenges */}
             <div className="flex gap-[1.5vh] flex-1 min-h-0 overflow-hidden">
               <div
                 className="rounded-3xl shadow-lg flex-1 overflow-hidden flex flex-col"
@@ -469,7 +476,6 @@ function ProjectCard({ project }: { project: Project }) {
                 </ul>
               </div>
 
-              {/* Challenges Card - Right */}
               <div
                 className="rounded-3xl bg-white shadow-lg flex-1 overflow-hidden flex flex-col"
                 style={{ padding: "clamp(1rem, 2vh, 1.5rem)" }}
@@ -518,9 +524,8 @@ function ProjectCard({ project }: { project: Project }) {
         </div>
       </div>
 
-      {/* Mobile Layout */}
+      {/* ─────────────────── Mobile Layout ─────────────────── */}
       <div className="flex lg:hidden flex-col h-full overflow-y-auto hide-scrollbar">
-        {/* Hero Banner */}
         <div className="relative h-56 flex-shrink-0">
           <Image
             src={project.heroImage}
@@ -540,12 +545,10 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
 
-        {/* Content Area */}
         <div
           className="p-6 space-y-6"
           style={{ backgroundColor: project.theme.secondary }}
         >
-          {/* Tech Stack */}
           <div>
             <h4 className="text-sm font-bold mb-3 text-gray-900 uppercase tracking-wide">
               Tech Stack
@@ -564,7 +567,6 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
           </div>
 
-          {/* Description */}
           <div>
             <h4 className="text-sm font-bold mb-2 text-gray-900 uppercase tracking-wide">
               About
@@ -574,13 +576,11 @@ function ProjectCard({ project }: { project: Project }) {
             </p>
           </div>
 
-          {/* Visual Preview */}
           <div>
             <h4 className="text-sm font-bold mb-3 text-gray-900 uppercase tracking-wide">
               Preview
             </h4>
             <div className="flex gap-4 overflow-x-auto pb-3 hide-scrollbar snap-x snap-mandatory">
-              {/* Safari Desktop Mockup */}
               <div className="flex-shrink-0 snap-center">
                 <Safari
                   url="project.demo"
@@ -588,34 +588,25 @@ function ProjectCard({ project }: { project: Project }) {
                   className="w-[280px]"
                 />
               </div>
-              {/* iPhone Mockup */}
               <div className="flex-shrink-0 snap-center">
-                <Iphone
-                  src={project.images.mobile}
-                  className="w-[140px]"
-                />
+                <Iphone src={project.images.mobile} className="w-[140px]" />
               </div>
             </div>
           </div>
 
-          {/* Key Features Accordion */}
           <details className="group bg-white rounded-2xl shadow-md overflow-hidden">
             <summary className="flex justify-between items-center p-4 cursor-pointer font-bold text-gray-900 select-none">
               <span className="flex items-center gap-2">
                 <span className="text-lg">✨</span>
                 <span>Key Features</span>
               </span>
-              <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">
-                ▼
-              </span>
+              <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">▼</span>
             </summary>
             <div className="px-5 pb-5 border-t border-gray-100">
               <ul className="space-y-3 mt-4">
                 {project.features.map((feature) => (
                   <li key={feature} className="text-sm text-gray-800 flex items-start gap-3">
-                    <span className="text-base mt-0.5" style={{ color: project.theme.primary }}>
-                      ●
-                    </span>
+                    <span className="text-base mt-0.5" style={{ color: project.theme.primary }}>●</span>
                     <span className="flex-1">{feature}</span>
                   </li>
                 ))}
@@ -623,7 +614,6 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
           </details>
 
-          {/* Project Metrics Card */}
           <div
             className="rounded-2xl p-5 shadow-lg"
             style={{ backgroundColor: project.theme.primary }}
@@ -648,24 +638,19 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
           </div>
 
-          {/* Challenges Accordion */}
           <details className="group bg-white rounded-2xl shadow-md overflow-hidden">
             <summary className="flex justify-between items-center p-4 cursor-pointer font-bold text-gray-900 select-none">
               <span className="flex items-center gap-2">
                 <span className="text-lg">🎯</span>
                 <span>Challenges & Solutions</span>
               </span>
-              <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">
-                ▼
-              </span>
+              <span className="transform transition-transform duration-300 group-open:rotate-180 text-gray-400">▼</span>
             </summary>
             <div className="px-5 pb-5 border-t border-gray-100">
               <ul className="space-y-3 mt-4">
                 {project.challenges.map((challenge, idx) => (
                   <li key={idx} className="text-sm text-gray-800 flex items-start gap-3">
-                    <span className="text-base mt-0.5" style={{ color: project.theme.accent }}>
-                      ●
-                    </span>
+                    <span className="text-base mt-0.5" style={{ color: project.theme.accent }}>●</span>
                     <span className="flex-1">{challenge}</span>
                   </li>
                 ))}
@@ -673,7 +658,6 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
           </details>
 
-          {/* CTA Buttons */}
           <div className="space-y-3 pt-2">
             {project.demoUrl && (
               <a
