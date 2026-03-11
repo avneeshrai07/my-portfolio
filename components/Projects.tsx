@@ -47,47 +47,39 @@ interface Project {
 export default function Projects() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+useEffect(() => {
+  if (typeof window === "undefined" || !containerRef.current) return;
 
-  useEffect(() => {
-    if (typeof window === "undefined" || !containerRef.current) return;
+  const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
 
-    const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
+  const ctx = gsap.context(() => {
+    cards.forEach((card, index) => {
+      if (index === cards.length - 1) return;
 
-    const ctx = gsap.context(() => {
-      cards.forEach((card, index) => {
-        if (index === cards.length - 1) return; // last card never shrinks
+      const nextCard = cards[index + 1];
 
-        const nextCard = cards[index + 1];
-
-        // As the NEXT card slides up, shrink the CURRENT one
-        gsap.fromTo(
-          card,
-          {
-            scale: 1,
-            opacity: 1,
-            y: 0,
-            filter: "blur(0px)",
-          },
-          {
-            scale: 0.88 - index * 0.015, // each deeper card shrinks a bit more
-            opacity: 0.3,
-            y: -20,
-            filter: "blur(2px)",
-            ease: "none", // MUST be none for scrub
-            scrollTrigger: {
-              trigger: nextCard,
-              start: "top 90%",   // next card enters from bottom
-              end: "top 8%",      // next card nearly at top
-              scrub: 1.4,
-              invalidateOnRefresh: true,
-            },
-          }
-        );
+      // ✅ gsap.to — card starts from its natural CSS state (no blur, full opacity)
+      // GSAP only animates TOWARD the blurred state when triggered
+      gsap.to(card, {
+        scale: 0.88 - index * 0.015,
+        opacity: 1,
+        y: -20,
+        filter: "blur(2px)",
+        ease: "none",
+        scrollTrigger: {
+          trigger: nextCard,
+          start: "top 12%",  // ✅ only when next card is 12% from top = almost covering
+          end: "top -2%",    // ✅ finishes as next card fully reaches top
+          scrub: 0.8,        // ✅ less lag = blur follows scroll more tightly
+          invalidateOnRefresh: true,
+        },
       });
-    }, containerRef);
+    });
+  }, containerRef);
 
-    return () => ctx.revert();
-  }, []);
+  return () => ctx.revert();
+}, []);
+
 
   return (
     <section className="relative py-[5vh] bg-gradient-to-b from-gray-50 to-white">
