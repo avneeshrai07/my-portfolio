@@ -58,7 +58,7 @@ export default function MovieSection() {
   const [isMounted, setIsMounted] = useState(false);
 
   const sectionRef = useRef<HTMLElement>(null);
-  const triggerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement>(null);
 
   // ⭐ DESKTOP Refs for GSAP animations
   const posterRef = useRef<HTMLDivElement>(null);
@@ -246,7 +246,7 @@ export default function MovieSection() {
     const totalMovies = movies.length;
 
     const scrollTrigger = ScrollTrigger.create({
-      trigger: triggerRef.current,
+      trigger: section,
       start: "top top",
       end: `+=${(totalMovies - 1) * SCROLL_DISTANCE_PER_MOVIE}vh`,
       pin: section,
@@ -334,9 +334,20 @@ export default function MovieSection() {
 
   return (
     <>
-      <div ref={triggerRef} className="h-1px bg-hero-gradient"/>
-
-      <section ref={sectionRef} className="bg-hero-gradient py-4 lg:py-8 overflow-hidden flex items-center">
+      {/*
+       * FIX: The original standalone triggerRef div caused GSAP's pinSpacing
+       * spacer to be injected BETWEEN the trigger and the section, creating a
+       * gap equal to selectedIndex * 100vh that was visible on mobile.
+       * Solution: use the section itself as both the trigger and the pin target.
+       * pinSpacing spacer now appears AFTER the section where it belongs.
+       */}
+      <section
+        ref={(el) => {
+          sectionRef.current = el;
+          triggerRef.current = el;
+        }}
+        className="bg-hero-gradient py-4 lg:py-0 overflow-hidden flex items-center lg:min-h-screen"
+      >
         <div className="container mx-auto px-4 md:px-6 w-full">
           <h1 className="text-hero-suit/60 text-2xl md:text-2.5xl lg:text-3xl font-semibold text-left lg:ml-6 mb-6 lg:mb-6">
             Currently watching
