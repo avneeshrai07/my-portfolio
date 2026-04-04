@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import projectsData from "@/data/projects.json";
-import { Safari } from "@/components/ui/safari.tsx";
+import { Safari } from "@/components/ui/safari";
 
 gsap.registerPlugin(ScrollTrigger);
 
