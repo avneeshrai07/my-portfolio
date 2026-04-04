@@ -18,23 +18,18 @@ type SafariMode = "default" | "simple";
 
 export interface SafariProps extends HTMLAttributes<HTMLDivElement> {
   url?: string;
-  imageSrc?: string;
-  videoSrc?: string;
+  src?: string;
   mode?: SafariMode;
 }
 
 export function Safari({
-  imageSrc,
-  videoSrc,
+  src,
   url = "magicui.design",
   mode = "default",
   className,
   style,
   ...props
 }: SafariProps) {
-  const hasVideo = !!videoSrc;
-  const hasMedia = hasVideo || !!imageSrc;
-
   return (
     <div
       className={`relative inline-block w-full align-middle leading-none ${className ?? ""}`}
@@ -44,29 +39,7 @@ export function Safari({
       }}
       {...props}
     >
-      {hasVideo && (
-        <div
-          className="pointer-events-none absolute z-0 overflow-hidden"
-          style={{
-            left: `${LEFT_PCT}%`,
-            top: `${TOP_PCT}%`,
-            width: `${WIDTH_PCT}%`,
-            height: `${HEIGHT_PCT}%`,
-          }}
-        >
-          <video
-            className="block size-full object-cover"
-            src={videoSrc}
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="metadata"
-          />
-        </div>
-      )}
-
-      {!hasVideo && imageSrc && (
+      {src && (
         <div
           className="pointer-events-none absolute z-0 overflow-hidden"
           style={{
@@ -78,7 +51,7 @@ export function Safari({
           }}
         >
           <img
-            src={imageSrc}
+            src={src}
             alt=""
             className="block size-full object-cover object-top"
           />
@@ -119,10 +92,7 @@ export function Safari({
           </clipPath>
         </defs>
 
-        <g
-          clipPath="url(#path0)"
-          mask={hasMedia ? "url(#safariPunch)" : undefined}
-        >
+        <g clipPath="url(#path0)" mask={src ? "url(#safariPunch)" : undefined}>
           <path
             d="M0 52H1202V741C1202 747.627 1196.63 753 1190 753H12C5.37258 753 0 747.627 0 741V52Z"
             className="fill-[#E5E5E5] dark:fill-[#404040]"

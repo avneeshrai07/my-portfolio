@@ -1,4 +1,3 @@
-
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
@@ -34,13 +33,7 @@ interface Project {
 
 // ─────────────────── Phone Frame ───────────────────
 // Realistic iPhone-style frame for mobile screenshots
-function PhoneFrame({
-  src,
-  className,
-}: {
-  src: string;
-  className?: string;
-}) {
+function PhoneFrame({ src, className }: { src: string; className?: string }) {
   return (
     <div
       className={`relative flex-shrink-0 ${className ?? ""}`}
@@ -85,24 +78,33 @@ function PhoneFrame({
         {/* Side buttons */}
         <rect x="0" y="52" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
         <rect x="0" y="80" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
-        <rect x="87.5" y="66" width="2.5" height="32" rx="1.25" fill="#2a2a2a" />
+        <rect
+          x="87.5"
+          y="66"
+          width="2.5"
+          height="32"
+          rx="1.25"
+          fill="#2a2a2a"
+        />
         {/* Dynamic island */}
         <rect x="32" y="6" width="26" height="7" rx="3.5" fill="#1a1a1a" />
         {/* Home indicator */}
-        <rect x="33" y="184" width="24" height="3" rx="1.5" fill="#1a1a1a" opacity="0.4" />
+        <rect
+          x="33"
+          y="184"
+          width="24"
+          height="3"
+          rx="1.5"
+          fill="#1a1a1a"
+          opacity="0.4"
+        />
       </svg>
     </div>
   );
 }
 
 // ─────────────────── Tablet Frame ───────────────────
-function TabletFrame({
-  src,
-  className,
-}: {
-  src: string;
-  className?: string;
-}) {
+function TabletFrame({ src, className }: { src: string; className?: string }) {
   return (
     <div
       className={`relative flex-shrink-0 ${className ?? ""}`}
@@ -150,7 +152,9 @@ function MobileDescription({
         Project Description:
       </p>
       <p className="text-sm text-gray-700 leading-relaxed">
-        {expanded || !isLong ? description : `${description.slice(0, LIMIT)}...`}
+        {expanded || !isLong
+          ? description
+          : `${description.slice(0, LIMIT)}...`}
       </p>
       {isLong && (
         <button
@@ -272,8 +276,15 @@ function ProjectCard({ project }: { project: Project }) {
         style={{ height: "90vh", minHeight: "600px" }}
       >
         {/* Hero Banner — 18% */}
-        <div className="relative flex-shrink-0 overflow-hidden rounded-t-[2.5rem]" style={{ height: "18%" }}>
-          <img src={project.heroImage} alt={project.title} className="w-full h-full object-cover" />
+        <div
+          className="relative flex-shrink-0 overflow-hidden rounded-t-[2.5rem]"
+          style={{ height: "18%" }}
+        >
+          <img
+            src={project.heroImage}
+            alt={project.title}
+            className="w-full h-full object-cover"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/20" />
           <div className="absolute top-[1vh] right-[2vw] text-right">
             <p
@@ -311,7 +322,10 @@ function ProjectCard({ project }: { project: Project }) {
               <div className="space-y-[2vh]">
                 <h4
                   className="font-bold leading-tight"
-                  style={{ color: project.theme.accent, fontSize: "clamp(1.5rem,3vh,2.5rem)" }}
+                  style={{
+                    color: project.theme.accent,
+                    fontSize: "clamp(1.5rem,3vh,2.5rem)",
+                  }}
                 >
                   {project.title}
                 </h4>
@@ -324,7 +338,8 @@ function ProjectCard({ project }: { project: Project }) {
                         style={{
                           backgroundColor: tech.color,
                           color: "white",
-                          padding: "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
+                          padding:
+                            "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
                           fontSize: "clamp(0.7rem,1.2vh,0.9rem)",
                           gap: "clamp(0.3rem,0.5vh,0.5rem)",
                         }}
@@ -350,7 +365,8 @@ function ProjectCard({ project }: { project: Project }) {
                         style={{
                           backgroundColor: project.techStack[4].color,
                           color: "white",
-                          padding: "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
+                          padding:
+                            "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
                           fontSize: "clamp(0.7rem,1.2vh,0.9rem)",
                           gap: "clamp(0.3rem,0.5vh,0.5rem)",
                         }}
@@ -377,7 +393,8 @@ function ProjectCard({ project }: { project: Project }) {
                         style={{
                           backgroundColor: tech.color,
                           color: "white",
-                          padding: "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
+                          padding:
+                            "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
                           fontSize: "clamp(0.7rem,1.2vh,0.9rem)",
                           gap: "clamp(0.3rem,0.5vh,0.5rem)",
                         }}
@@ -397,7 +414,10 @@ function ProjectCard({ project }: { project: Project }) {
                     ))}
                   </div>
                 </div>
-                <p className="text-gray-800 leading-relaxed" style={{ fontSize: "clamp(0.85rem,1.4vh,1.1rem)" }}>
+                <p
+                  className="text-gray-800 leading-relaxed"
+                  style={{ fontSize: "clamp(0.85rem,1.4vh,1.1rem)" }}
+                >
                   {project.description}
                 </p>
                 <div>
@@ -410,11 +430,34 @@ function ProjectCard({ project }: { project: Project }) {
                   >
                     Key Features:
                   </h5>
-                  <ul style={{ display: "flex", flexDirection: "column", gap: "clamp(0.3rem,0.8vh,0.6rem)" }}>
+                  <ul
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "clamp(0.3rem,0.8vh,0.6rem)",
+                    }}
+                  >
                     {project.features.map((feature) => (
-                      <li key={feature} className="flex items-start text-gray-800">
-                        <span style={{ marginRight: "clamp(0.5rem,1vh,0.8rem)", fontSize: "clamp(1rem,1.5vh,1.2rem)" }}>•</span>
-                        <span style={{ fontSize: "clamp(0.85rem,1.4vh,1rem)", lineHeight: "1.5" }}>{feature}</span>
+                      <li
+                        key={feature}
+                        className="flex items-start text-gray-800"
+                      >
+                        <span
+                          style={{
+                            marginRight: "clamp(0.5rem,1vh,0.8rem)",
+                            fontSize: "clamp(1rem,1.5vh,1.2rem)",
+                          }}
+                        >
+                          •
+                        </span>
+                        <span
+                          style={{
+                            fontSize: "clamp(0.85rem,1.4vh,1rem)",
+                            lineHeight: "1.5",
+                          }}
+                        >
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -464,10 +507,16 @@ function ProjectCard({ project }: { project: Project }) {
           {/* Right */}
           <div
             className="flex flex-col h-full overflow-hidden"
-            style={{ padding: "clamp(1rem,2vh,2rem)", gap: "clamp(0.8rem,1.5vh,1.2rem)" }}
+            style={{
+              padding: "clamp(1rem,2vh,2rem)",
+              gap: "clamp(0.8rem,1.5vh,1.2rem)",
+            }}
           >
             {/* Desktop browser frame — top 60% */}
-            <div className="relative flex-shrink-0 overflow-hidden" style={{ height: "60%" }}>
+            <div
+              className="relative flex-shrink-0 overflow-hidden"
+              style={{ height: "60%" }}
+            >
               <div
                 className="w-full h-full rounded-3xl overflow-hidden flex items-center justify-center"
                 style={{
@@ -481,18 +530,17 @@ function ProjectCard({ project }: { project: Project }) {
                   the frame with max-w/max-h + auto dimensions so it
                   scales down to fit without overflowing.
                 */}
+
                 <Safari
                   url={project.demoUrl ?? "project.demo"}
-                  imageSrc={project.images.desktop}
-                  className="w-auto h-auto max-w-half max-h-full"
+                  src={project.images.desktop}
+                  className="w-auto h-auto max-w-[70%] max-h-full"
                 />
               </div>
             </div>
 
             {/* Bottom two panels */}
-            <div
-              className="flex gap-[1.5vh] flex-1 min-h-0 overflow-hidden"
-            >
+            <div className="flex gap-[1.5vh] flex-1 min-h-0 overflow-hidden">
               <div
                 className="rounded-3xl shadow-lg flex-1 overflow-hidden flex flex-col"
                 style={{
@@ -511,18 +559,31 @@ function ProjectCard({ project }: { project: Project }) {
                 </h5>
                 <ul
                   className="flex-1 overflow-y-auto scrollbar-hide"
-                  style={{ display: "flex", flexDirection: "column", gap: "clamp(0.5rem,1vh,0.8rem)" }}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "clamp(0.5rem,1vh,0.8rem)",
+                  }}
                 >
                   {project.metrics.map((metric) => (
-                    <li key={metric.label} className="flex items-center justify-between text-white">
+                    <li
+                      key={metric.label}
+                      className="flex items-center justify-between text-white"
+                    >
                       <span
                         className="flex items-center"
-                        style={{ gap: "clamp(0.3rem,0.6vh,0.5rem)", fontSize: "clamp(0.75rem,1.3vh,0.95rem)" }}
+                        style={{
+                          gap: "clamp(0.3rem,0.6vh,0.5rem)",
+                          fontSize: "clamp(0.75rem,1.3vh,0.95rem)",
+                        }}
                       >
                         <span>•</span>
                         <span>{metric.label}</span>
                       </span>
-                      <span className="font-bold" style={{ fontSize: "clamp(1.1rem,2vh,1.5rem)" }}>
+                      <span
+                        className="font-bold"
+                        style={{ fontSize: "clamp(1.1rem,2vh,1.5rem)" }}
+                      >
                         {metric.value}
                       </span>
                     </li>
@@ -544,7 +605,11 @@ function ProjectCard({ project }: { project: Project }) {
                 </h5>
                 <ul
                   className="flex-1 overflow-y-auto scrollbar-hide"
-                  style={{ display: "flex", flexDirection: "column", gap: "clamp(0.4rem,0.8vh,0.6rem)" }}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "clamp(0.4rem,0.8vh,0.6rem)",
+                  }}
                 >
                   {project.challenges.map((challenge, idx) => (
                     <li key={idx} className="flex items-start text-gray-800">
@@ -556,7 +621,12 @@ function ProjectCard({ project }: { project: Project }) {
                       >
                         •
                       </span>
-                      <span style={{ fontSize: "clamp(0.7rem,1.2vh,0.85rem)", lineHeight: "1.5" }}>
+                      <span
+                        style={{
+                          fontSize: "clamp(0.7rem,1.2vh,0.85rem)",
+                          lineHeight: "1.5",
+                        }}
+                      >
                         {challenge}
                       </span>
                     </li>
@@ -590,9 +660,7 @@ function ProjectCard({ project }: { project: Project }) {
           />
           {/* Gradient overlay for readability */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-          <p
-            className="absolute bottom-3 left-4 text-white text-xs font-semibold uppercase tracking-widest drop-shadow"
-          >
+          <p className="absolute bottom-3 left-4 text-white text-xs font-semibold uppercase tracking-widest drop-shadow">
             {project.tagline}
           </p>
         </div>
@@ -637,10 +705,15 @@ function ProjectCard({ project }: { project: Project }) {
 
           {/* Visual Preview — phone + desktop side by side */}
           <div>
-            <p className="text-sm font-bold text-gray-900 mb-2">Visual Preview:</p>
+            <p className="text-sm font-bold text-gray-900 mb-2">
+              Visual Preview:
+            </p>
             <div
               className="overflow-hidden rounded-2xl"
-              style={{ backgroundColor: project.theme.secondary, padding: "12px" }}
+              style={{
+                backgroundColor: project.theme.secondary,
+                padding: "12px",
+              }}
             >
               {/*
                 FIX: Phone frame for `images.mobile`, TabletFrame for `images.desktop`.
@@ -666,7 +739,10 @@ function ProjectCard({ project }: { project: Project }) {
                   />
                 </div>
               </div>
-              <p className="text-center text-[10px] mt-1.5 font-medium opacity-50" style={{ color: project.theme.accent }}>
+              <p
+                className="text-center text-[10px] mt-1.5 font-medium opacity-50"
+                style={{ color: project.theme.accent }}
+              >
                 ← swipe to explore →
               </p>
             </div>
@@ -674,7 +750,9 @@ function ProjectCard({ project }: { project: Project }) {
 
           {/* Key Features */}
           <div>
-            <p className="text-sm font-bold text-gray-900 mb-2">Key Features:</p>
+            <p className="text-sm font-bold text-gray-900 mb-2">
+              Key Features:
+            </p>
             <div className="space-y-1.5">
               {project.features.map((feature) => (
                 <details
@@ -682,7 +760,9 @@ function ProjectCard({ project }: { project: Project }) {
                   className="group bg-white rounded-xl overflow-hidden shadow-sm"
                 >
                   <summary className="flex justify-between items-center px-3 py-2.5 cursor-pointer select-none list-none">
-                    <span className="text-xs font-bold text-gray-900">{feature}</span>
+                    <span className="text-xs font-bold text-gray-900">
+                      {feature}
+                    </span>
                     <span className="text-gray-400 text-[10px] transform transition-transform duration-200 group-open:rotate-180 flex-shrink-0 ml-2">
                       ▼
                     </span>
@@ -697,10 +777,15 @@ function ProjectCard({ project }: { project: Project }) {
 
           {/* Metrics — 2×2 grid */}
           <div>
-            <p className="text-sm font-bold text-gray-900 mb-2">Project Metrics:</p>
+            <p className="text-sm font-bold text-gray-900 mb-2">
+              Project Metrics:
+            </p>
             <div className="grid grid-cols-2 gap-2">
               {project.metrics.map((metric) => (
-                <div key={metric.label} className="bg-white rounded-xl px-3 py-2.5 shadow-sm">
+                <div
+                  key={metric.label}
+                  className="bg-white rounded-xl px-3 py-2.5 shadow-sm"
+                >
                   <p className="text-xs text-gray-500 mb-0.5">{metric.label}</p>
                   <p
                     className="text-lg font-bold"
@@ -720,7 +805,9 @@ function ProjectCard({ project }: { project: Project }) {
           {/* Challenges & Solutions */}
           <details className="group bg-white rounded-xl shadow-sm overflow-hidden">
             <summary className="flex justify-between items-center px-3 py-2.5 cursor-pointer select-none list-none">
-              <span className="text-sm font-bold text-gray-900">Challenges & Solutions:</span>
+              <span className="text-sm font-bold text-gray-900">
+                Challenges & Solutions:
+              </span>
               <span className="text-gray-400 text-[10px] transform transition-transform duration-200 group-open:rotate-180">
                 ▼
               </span>
@@ -728,8 +815,14 @@ function ProjectCard({ project }: { project: Project }) {
             <div className="px-4 pb-4 pt-2 border-t border-gray-100">
               <ul className="space-y-2">
                 {project.challenges.map((challenge, idx) => (
-                  <li key={idx} className="text-sm text-gray-800 flex items-start gap-2">
-                    <span className="mt-0.5 flex-shrink-0" style={{ color: project.theme.primary }}>
+                  <li
+                    key={idx}
+                    className="text-sm text-gray-800 flex items-start gap-2"
+                  >
+                    <span
+                      className="mt-0.5 flex-shrink-0"
+                      style={{ color: project.theme.primary }}
+                    >
                       •
                     </span>
                     <span className="flex-1 leading-relaxed">{challenge}</span>
