@@ -18,31 +18,35 @@ export default function ProjectCard({ project, variant = 'default', onSelect }: 
     >
       {/* Project Image */}
       {project.images[0] && (
-        <div className="relative aspect-video w-full overflow-hidden">
+        // FIX: Use a positioned wrapper so Next Image can fill it correctly.
+        // aspect-video gives 16:9; `relative` + `fill` is the correct Next.js pattern.
+        <div className="relative w-full aspect-video overflow-hidden">
           <Image
             src={project.images[0].src}
             alt={project.images[0].alt}
-            width={project.images[0].width}
-            height={project.images[0].height}
-            className="object-cover transition-transform hover:scale-105"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 hover:scale-105"
             priority={project.featured}
           />
-          
+
           {project.featured && (
+            // FIX: Replaced corrupted "â­" with the correct ⭐ character
             <div className="absolute top-4 right-4 bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-bold">
-              â­ Featured
+              ⭐ Featured
             </div>
           )}
         </div>
       )}
 
       {/* Content */}
-      <div className="p-6">
-        <h3 className="text-2xl font-bold mb-2 text-gray-900">
+      <div className="p-4 sm:p-6">
+        {/* FIX: Responsive font size — smaller on mobile, larger on md+ */}
+        <h3 className="text-lg sm:text-2xl font-bold mb-2 text-gray-900">
           {project.title}
         </h3>
-        
-        <p className="text-gray-600 mb-4 line-clamp-2">
+
+        <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-2">
           {project.description}
         </p>
 
@@ -51,7 +55,7 @@ export default function ProjectCard({ project, variant = 'default', onSelect }: 
           {project.technologies.map((tech) => (
             <span
               key={tech.name}
-              className="px-3 py-1 rounded-full text-sm font-medium"
+              className="px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium"
               style={{
                 backgroundColor: `${tech.color}15`,
                 color: tech.color,
@@ -63,41 +67,45 @@ export default function ProjectCard({ project, variant = 'default', onSelect }: 
         </div>
 
         {/* Metadata */}
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500 mb-4">
           <span className="flex items-center gap-1">
-            <Calendar size={16} />
-            {project.createdAt.toLocaleDateString('en-US', { 
-              month: 'short', 
-              year: 'numeric' 
+            <Calendar size={14} className="sm:hidden" />
+            <Calendar size={16} className="hidden sm:block" />
+            {project.createdAt.toLocaleDateString('en-US', {
+              month: 'short',
+              year: 'numeric',
             })}
           </span>
-          <span className="px-2 py-0.5 bg-gray-100 rounded text-xs uppercase">
+          <span className="px-2 py-0.5 bg-gray-100 rounded text-xs uppercase tracking-wide">
             {project.category}
           </span>
         </div>
 
         {/* Links */}
-        <div className="flex gap-3">
+        {/* FIX: Stack buttons on very small screens, row on sm+ */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           {project.githubUrl && (
             <Link
               href={project.githubUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm"
             >
-              <Github size={18} />
+              <Github size={16} className="sm:hidden" />
+              <Github size={18} className="hidden sm:block" />
               Code
             </Link>
           )}
-          
+
           {project.liveUrl && (
             <Link
               href={project.liveUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+              className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm"
             >
-              <ExternalLink size={18} />
+              <ExternalLink size={16} className="sm:hidden" />
+              <ExternalLink size={18} className="hidden sm:block" />
               Live Demo
             </Link>
           )}
@@ -106,4 +114,3 @@ export default function ProjectCard({ project, variant = 'default', onSelect }: 
     </article>
   );
 }
-
