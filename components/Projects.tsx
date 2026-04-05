@@ -5,7 +5,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import projectsData from "@/data/projects.json";
 import { Safari } from "@/components/ui/safari";
 
+
 gsap.registerPlugin(ScrollTrigger);
+
 
 interface TechStack {
   name: string;
@@ -31,6 +33,8 @@ interface Project {
   theme: { primary: string; secondary: string; accent: string };
 }
 
+
+
 // ─────────────────── Read More Toggle ───────────────────
 function MobileDescription({
   description,
@@ -41,6 +45,7 @@ function MobileDescription({
   const [expanded, setExpanded] = useState(false);
   const LIMIT = 130;
   const isLong = description.length > LIMIT;
+
 
   return (
     <div>
@@ -60,6 +65,8 @@ function MobileDescription({
   );
 }
 
+
+// ─────────────────── Mobile Magazine Swiper ───────────────────
 // ─────────────────── Mobile Magazine Swiper ───────────────────
 function MobileProjectSwiper({ projects }: { projects: Project[] }) {
   const [current, setCurrent] = useState(0);
@@ -77,7 +84,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
     active: "a",
   });
 
-  // Track rendered project per slot separately from slotRef
   const [slotProjects, setSlotProjects] = useState<{ a: number; b: number }>({
     a: 0,
     b: 1 % projects.length,
@@ -94,7 +100,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
     const standbyRef = isActiveA ? cardBRef : cardARef;
     const currentEl = isActiveA ? cardARef.current : cardBRef.current;
 
-    // 1. Update the standby slot's project in state
     setSlotProjects((prev) => ({
       ...prev,
       [isActiveA ? "b" : "a"]: next,
@@ -105,7 +110,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
 
     setAnimating(true);
 
-    // 2. Wait for React to paint the new content into the standby slot
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const nextEl = standbyRef.current;
@@ -114,12 +118,11 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
         const fromX = dir === "left" ? "100%" : "-100%";
         const exitX = dir === "left" ? "-30%" : "30%";
 
-        // 3. Position & hide standby off-screen BEFORE making it visible
         gsap.set(nextEl, {
           x: fromX,
           scale: 0.96,
           opacity: 0,
-          visibility: "visible", // ← reveal only now, already off-screen
+          visibility: "visible",
           zIndex: 2,
         });
         gsap.set(currentEl, { zIndex: 1 });
@@ -128,7 +131,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
           defaults: { ease: "expo.out", duration: 0.55 },
           onComplete: () => {
             slot.active = isActiveA ? "b" : "a";
-            // Hide the now-inactive slot again immediately
             gsap.set(currentEl, { visibility: "hidden", clearProps: "x,scale,opacity,zIndex" });
             gsap.set(nextEl, { clearProps: "x,scale,opacity,zIndex,visibility" });
             setCurrent(next);
@@ -146,13 +148,7 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
 
         tl.to(
           nextEl,
-          {
-            x: "0%",
-            scale: 1,
-            opacity: 1,
-            duration: 0.55,
-            ease: "expo.out",
-          },
+          { x: "0%", scale: 1, opacity: 1, duration: 0.55, ease: "expo.out" },
           "-=0.28"
         );
       });
@@ -193,7 +189,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
             position: slot.active === "a" ? "relative" : "absolute",
             top: 0, left: 0, right: 0,
             zIndex: slot.active === "a" ? 1 : 0,
-            // ✅ Standby slot is invisible by default — no flash ever
             visibility: slot.active === "a" ? "visible" : "hidden",
             willChange: "transform, opacity",
           }}
@@ -208,7 +203,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
             position: slot.active === "b" ? "relative" : "absolute",
             top: 0, left: 0, right: 0,
             zIndex: slot.active === "b" ? 1 : 0,
-            // ✅ Standby slot is invisible by default — no flash ever
             visibility: slot.active === "b" ? "visible" : "hidden",
             willChange: "transform, opacity",
           }}
@@ -257,6 +251,7 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
   );
 }
 // ─────────────────── Mobile Project Card ───────────────────
+// Extracted from ProjectCard — mobile-only, no Visual Preview / Features / Metrics / Challenges
 function MobileProjectCard({ project }: { project: Project }) {
   return (
     <div
@@ -279,8 +274,10 @@ function MobileProjectCard({ project }: { project: Project }) {
         </p>
       </div>
 
+
       {/* Content */}
       <div className="px-4 pt-4 pb-8 space-y-4">
+        {/* Title */}
         <h3
           className="text-xl font-bold leading-tight"
           style={{ color: project.theme.primary }}
@@ -288,6 +285,8 @@ function MobileProjectCard({ project }: { project: Project }) {
           {project.title}
         </h3>
 
+
+        {/* Tech Stack */}
         <div>
           <p className="text-sm font-bold text-gray-900 mb-2">Tech Stack:</p>
           <div className="flex flex-wrap gap-1.5">
@@ -309,11 +308,15 @@ function MobileProjectCard({ project }: { project: Project }) {
           </div>
         </div>
 
+
+        {/* Description */}
         <MobileDescription
           description={project.description}
           primary={project.theme.primary}
         />
 
+
+        {/* CTA Buttons */}
         <div className="flex gap-2 pt-1 flex-wrap">
           {project.demoUrl && (
             <a
@@ -346,17 +349,21 @@ function MobileProjectCard({ project }: { project: Project }) {
   );
 }
 
+
 // ─────────────────── Main Export ───────────────────
 export default function Projects() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
   const projects = projectsData as Project[];
 
+
   useEffect(() => {
     if (!containerRef.current) return;
     if (window.innerWidth < 1024) return;
 
+
     const cards = cardsRef.current.filter(Boolean) as HTMLDivElement[];
+
 
     const ctx = gsap.context(() => {
       cards.forEach((card, index) => {
@@ -379,8 +386,10 @@ export default function Projects() {
       });
     }, containerRef);
 
+
     return () => ctx.revert();
   }, []);
+
 
   return (
     <section className="relative py-[5vh] bg-hero-gradient">
@@ -394,6 +403,7 @@ export default function Projects() {
             development practices and creative solutions
           </p>
         </div>
+
 
         {/* ── DESKTOP: sticky-stack scroll ── */}
         <div
@@ -423,6 +433,7 @@ export default function Projects() {
           })}
         </div>
 
+
         {/* ── MOBILE: magazine swipe ── */}
         <div className="block lg:hidden">
           <MobileProjectSwiper projects={projects} />
@@ -432,10 +443,12 @@ export default function Projects() {
   );
 }
 
+
 // ─────────────────── Project Card (Desktop only) ───────────────────
 function ProjectCard({ project }: { project: Project }) {
   return (
     <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
+      {/* ══════════════ DESKTOP LAYOUT ══════════════ */}
       <div
         className="flex flex-col"
         style={{ height: "90vh", minHeight: "600px" }}
@@ -466,6 +479,7 @@ function ProjectCard({ project }: { project: Project }) {
             </h3>
           </div>
         </div>
+
 
         {/* Content Grid — 82% */}
         <div
@@ -540,6 +554,7 @@ function ProjectCard({ project }: { project: Project }) {
               </div>
             </div>
 
+
             {/* CTA buttons */}
             <div
               className="flex flex-shrink-0 mt-auto pt-[1.5vh]"
@@ -579,11 +594,13 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
           </div>
 
+
           {/* Right */}
           <div
             className="flex flex-col h-full overflow-hidden"
             style={{ padding: "clamp(1.5rem,2.5vh,2.5rem)", paddingLeft: "clamp(0.75rem,1.5vh,1.25rem)" }}
           >
+            {/* Safari browser mockup */}
             <div className="flex-1 min-h-0 overflow-hidden rounded-2xl shadow-xl mb-[1.5vh]">
               <Safari
                 url={project.demoUrl ?? "project.demo"}
@@ -592,6 +609,8 @@ function ProjectCard({ project }: { project: Project }) {
               />
             </div>
 
+
+            {/* Metrics */}
             <div
               className="flex-shrink-0 rounded-3xl overflow-hidden"
               style={{
@@ -636,6 +655,8 @@ function ProjectCard({ project }: { project: Project }) {
               </ul>
             </div>
 
+
+            {/* Challenges & Solutions */}
             <div
               className="rounded-3xl bg-white shadow-lg flex-1 overflow-hidden flex flex-col"
               style={{ padding: "clamp(1rem,2vh,1.5rem)" }}
