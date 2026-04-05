@@ -77,6 +77,12 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
     active: "a",
   });
 
+  // Track rendered project per slot separately from slotRef
+  const [slotProjects, setSlotProjects] = useState<{ a: number; b: number }>({
+    a: 0,
+    b: 1 % projects.length,
+  });
+
   const goTo = (targetIndex: number, dir: "left" | "right") => {
     if (animating) return;
 
@@ -85,33 +91,35 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
 
     const slot = slotRef.current;
     const isActiveA = slot.active === "a";
+    const standbyRef = isActiveA ? cardBRef : cardARef;
+    const currentEl = isActiveA ? cardARef.current : cardBRef.current;
 
-    if (isActiveA) {
-      slot.b = next;
-    } else {
-      slot.a = next;
-    }
+    // 1. Update the standby slot's project in state
+    setSlotProjects((prev) => ({
+      ...prev,
+      [isActiveA ? "b" : "a"]: next,
+    }));
+
+    if (isActiveA) slot.b = next;
+    else slot.a = next;
 
     setAnimating(true);
 
+    // 2. Wait for React to paint the new content into the standby slot
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        const currentEl = isActiveA ? cardARef.current : cardBRef.current;
-        const nextEl = isActiveA ? cardBRef.current : cardARef.current;
-
-        if (!currentEl || !nextEl) {
-          setAnimating(false);
-          return;
-        }
+        const nextEl = standbyRef.current;
+        if (!currentEl || !nextEl) { setAnimating(false); return; }
 
         const fromX = dir === "left" ? "100%" : "-100%";
         const exitX = dir === "left" ? "-30%" : "30%";
 
-        // Incoming card starts off-screen, slightly scaled down
+        // 3. Position & hide standby off-screen BEFORE making it visible
         gsap.set(nextEl, {
           x: fromX,
           scale: 0.96,
           opacity: 0,
+          visibility: "visible", // ← reveal only now, already off-screen
           zIndex: 2,
         });
         gsap.set(currentEl, { zIndex: 1 });
@@ -120,13 +128,14 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
           defaults: { ease: "expo.out", duration: 0.55 },
           onComplete: () => {
             slot.active = isActiveA ? "b" : "a";
-            gsap.set([cardARef.current, cardBRef.current], { clearProps: "all" });
+            // Hide the now-inactive slot again immediately
+            gsap.set(currentEl, { visibility: "hidden", clearProps: "x,scale,opacity,zIndex" });
+            gsap.set(nextEl, { clearProps: "x,scale,opacity,zIndex,visibility" });
             setCurrent(next);
             setAnimating(false);
           },
         });
 
-        // Current card: slides out with slight shrink + fade
         tl.to(currentEl, {
           x: exitX,
           scale: 0.94,
@@ -135,7 +144,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
           ease: "expo.in",
         });
 
-        // Incoming card: slides in, scales up to full, fades in — overlapping current exit
         tl.to(
           nextEl,
           {
@@ -145,7 +153,7 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
             duration: 0.55,
             ease: "expo.out",
           },
-          "-=0.28" // generous overlap so there's no "gap" between cards
+          "-=0.28"
         );
       });
     });
@@ -159,19 +167,12 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
   const handleTouchEnd = (e: React.TouchEvent) => {
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     const dy = e.changedTouches[0].clientY - touchStartY.current;
-
     if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
-
-    if (dx < 0) {
-      goTo(current + 1, "left");
-    } else {
-      goTo(current - 1, "right");
-    }
+    if (dx < 0) goTo(current + 1, "left");
+    else goTo(current - 1, "right");
   };
 
   const slot = slotRef.current;
-  const projectA = projects[slot.a];
-  const projectB = projects[slot.b];
   const activeProject = projects[current];
 
   return (
@@ -181,7 +182,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Card stack */}
       <div
         className="relative overflow-hidden rounded-[2.5rem]"
         style={{ transformStyle: "preserve-3d" }}
@@ -193,11 +193,12 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
             position: slot.active === "a" ? "relative" : "absolute",
             top: 0, left: 0, right: 0,
             zIndex: slot.active === "a" ? 1 : 0,
-            transformStyle: "preserve-3d",
+            // ✅ Standby slot is invisible by default — no flash ever
+            visibility: slot.active === "a" ? "visible" : "hidden",
             willChange: "transform, opacity",
           }}
         >
-          <MobileProjectCard project={projectA} />
+          <MobileProjectCard project={projects[slotProjects.a]} />
         </div>
 
         {/* Slot B */}
@@ -207,11 +208,12 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
             position: slot.active === "b" ? "relative" : "absolute",
             top: 0, left: 0, right: 0,
             zIndex: slot.active === "b" ? 1 : 0,
-            transformStyle: "preserve-3d",
+            // ✅ Standby slot is invisible by default — no flash ever
+            visibility: slot.active === "b" ? "visible" : "hidden",
             willChange: "transform, opacity",
           }}
         >
-          <MobileProjectCard project={projectB} />
+          <MobileProjectCard project={projects[slotProjects.b]} />
         </div>
       </div>
 
