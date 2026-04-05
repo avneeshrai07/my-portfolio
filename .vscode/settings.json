@@ -2,7 +2,7 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.associations": {
-    "*.tsx": "typescriptreact",
+    "*.tsx": "javascriptreact",
     "*.ts": "typescript"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
