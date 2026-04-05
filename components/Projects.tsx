@@ -32,14 +32,12 @@ interface Project {
 }
 
 // ─────────────────── Phone Frame ───────────────────
-// Realistic iPhone-style frame for mobile screenshots
 function PhoneFrame({ src, className }: { src: string; className?: string }) {
   return (
     <div
       className={`relative flex-shrink-0 ${className ?? ""}`}
       style={{ aspectRatio: "9 / 19.5" }}
     >
-      {/* Screen content */}
       <div
         className="absolute overflow-hidden"
         style={{
@@ -57,7 +55,6 @@ function PhoneFrame({ src, className }: { src: string; className?: string }) {
           className="w-full h-full object-cover object-top"
         />
       </div>
-      {/* Phone bezel */}
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none select-none"
         viewBox="0 0 90 195"
@@ -65,39 +62,12 @@ function PhoneFrame({ src, className }: { src: string; className?: string }) {
         xmlns="http://www.w3.org/2000/svg"
         style={{ zIndex: 1 }}
       >
-        <rect
-          x="1.5"
-          y="1.5"
-          width="87"
-          height="192"
-          rx="14.5"
-          fill="none"
-          stroke="#1a1a1a"
-          strokeWidth="3"
-        />
-        {/* Side buttons */}
+        <rect x="1.5" y="1.5" width="87" height="192" rx="14.5" fill="none" stroke="#1a1a1a" strokeWidth="3" />
         <rect x="0" y="52" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
         <rect x="0" y="80" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
-        <rect
-          x="87.5"
-          y="66"
-          width="2.5"
-          height="32"
-          rx="1.25"
-          fill="#2a2a2a"
-        />
-        {/* Dynamic island */}
+        <rect x="87.5" y="66" width="2.5" height="32" rx="1.25" fill="#2a2a2a" />
         <rect x="32" y="6" width="26" height="7" rx="3.5" fill="#1a1a1a" />
-        {/* Home indicator */}
-        <rect
-          x="33"
-          y="184"
-          width="24"
-          height="3"
-          rx="1.5"
-          fill="#1a1a1a"
-          opacity="0.4"
-        />
+        <rect x="33" y="184" width="24" height="3" rx="1.5" fill="#1a1a1a" opacity="0.4" />
       </svg>
     </div>
   );
@@ -148,13 +118,9 @@ function MobileDescription({
 
   return (
     <div>
-      <p className="text-sm font-bold text-gray-900 mb-1">
-        Project Description:
-      </p>
+      <p className="text-sm font-bold text-gray-900 mb-1">Project Description:</p>
       <p className="text-sm text-gray-700 leading-relaxed">
-        {expanded || !isLong
-          ? description
-          : `${description.slice(0, LIMIT)}...`}
+        {expanded || !isLong ? description : `${description.slice(0, LIMIT)}...`}
       </p>
       {isLong && (
         <button
@@ -168,14 +134,274 @@ function MobileDescription({
   );
 }
 
+// ─────────────────── Mobile Magazine Swiper ───────────────────
+function MobileProjectSwiper({ projects }: { projects: Project[] }) {
+  const [current, setCurrent] = useState(0);
+  const [animating, setAnimating] = useState(false);
+  const [direction, setDirection] = useState<"left" | "right" | null>(null);
+
+  // Touch tracking
+  const touchStartX = useRef<number>(0);
+  const touchStartY = useRef<number>(0);
+
+  // Card refs for GSAP magazine flip
+  const currentCardRef = useRef<HTMLDivElement>(null);
+  const nextCardRef = useRef<HTMLDivElement>(null);
+
+  const goTo = (targetIndex: number, dir: "left" | "right") => {
+    if (animating) return;
+    if (targetIndex < 0 || targetIndex >= projects.length) return;
+
+    setAnimating(true);
+    setDirection(dir);
+
+    const currentEl = currentCardRef.current;
+    const nextEl = nextCardRef.current;
+    if (!currentEl || !nextEl) return;
+
+    // Pre-position the incoming card
+    const fromX = dir === "left" ? "100%" : "-100%";
+    const toX = dir === "left" ? "-100%" : "100%";
+
+    gsap.set(nextEl, {
+      x: fromX,
+      rotateY: dir === "left" ? 15 : -15,
+      opacity: 0.6,
+      scale: 0.92,
+      zIndex: 2,
+    });
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        setCurrent(targetIndex);
+        setAnimating(false);
+        setDirection(null);
+        // Reset both cards so state is clean for next gesture
+        gsap.set([currentEl, nextEl], { clearProps: "all" });
+      },
+    });
+
+    // Current card exits
+    tl.to(currentEl, {
+      x: toX,
+      rotateY: dir === "left" ? -15 : 15,
+      opacity: 0,
+      scale: 0.92,
+      duration: 0.42,
+      ease: "power3.in",
+    });
+
+    // Next card enters (overlapping)
+    tl.to(
+      nextEl,
+      {
+        x: "0%",
+        rotateY: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 0.42,
+        ease: "power3.out",
+      },
+      "-=0.22"
+    );
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+
+    // Only trigger if horizontal swipe dominates
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+
+    if (dx < 0 && current < projects.length - 1) {
+      goTo(current + 1, "left");
+    } else if (dx > 0 && current > 0) {
+      goTo(current - 1, "right");
+    }
+  };
+
+  // The "next" project index to render offscreen
+  const pendingIndex =
+    direction === "left"
+      ? Math.min(current + 1, projects.length - 1)
+      : direction === "right"
+      ? Math.max(current - 1, 0)
+      : current;
+
+  const project = projects[current];
+  const pendingProject = projects[pendingIndex];
+
+  return (
+    <div
+      className="relative w-full overflow-hidden"
+      style={{ perspective: "1200px" }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* ── Progress dots ── */}
+      <div className="flex justify-center gap-1.5 mb-3">
+        {projects.map((_, i) => (
+          <span
+            key={i}
+            className="block rounded-full transition-all duration-300"
+            style={{
+              width: i === current ? 20 : 6,
+              height: 6,
+              backgroundColor:
+                i === current ? project.theme.primary : "#d1d5db",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* ── Card stack ── */}
+      <div className="relative" style={{ transformStyle: "preserve-3d" }}>
+        {/* Current card */}
+        <div
+          ref={currentCardRef}
+          style={{ position: "relative", zIndex: 1, transformStyle: "preserve-3d" }}
+        >
+          <MobileProjectCard project={project} />
+        </div>
+
+        {/* Pending/next card — rendered off-screen, GSAP moves it in */}
+        {animating && pendingIndex !== current && (
+          <div
+            ref={nextCardRef}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              zIndex: 2,
+              transformStyle: "preserve-3d",
+            }}
+          >
+            <MobileProjectCard project={pendingProject} />
+          </div>
+        )}
+      </div>
+
+      {/* ── Swipe hint (only on first card, first load) ── */}
+      {current === 0 && projects.length > 1 && (
+        <p
+          className="text-center text-[11px] mt-3 font-medium select-none"
+          style={{ color: project.theme.accent, opacity: 0.55 }}
+        >
+          swipe left to next project →
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────── Mobile Project Card ───────────────────
+// Extracted from ProjectCard — mobile-only, no Visual Preview / Features / Metrics / Challenges
+function MobileProjectCard({ project }: { project: Project }) {
+  return (
+    <div
+      className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+      style={{ backgroundColor: "#f5f1ea" }}
+    >
+      {/* Hero Image */}
+      <div
+        className="relative w-full flex-shrink-0 overflow-hidden rounded-t-[2.5rem]"
+        style={{ height: "200px" }}
+      >
+        <img
+          src={project.heroImage}
+          alt={project.title}
+          className="w-full h-full object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        <p className="absolute bottom-3 left-4 text-white text-xs font-semibold uppercase tracking-widest drop-shadow">
+          {project.tagline}
+        </p>
+      </div>
+
+      {/* Content */}
+      <div className="px-4 pt-4 pb-8 space-y-4">
+        {/* Title */}
+        <h3
+          className="text-xl font-bold leading-tight"
+          style={{ color: project.theme.primary }}
+        >
+          {project.title}
+        </h3>
+
+        {/* Tech Stack */}
+        <div>
+          <p className="text-sm font-bold text-gray-900 mb-2">Tech Stack:</p>
+          <div className="flex flex-wrap gap-1.5">
+            {project.techStack.map((tech) => (
+              <span
+                key={tech.name}
+                className="px-2.5 py-1 rounded-full text-xs font-semibold text-white flex items-center gap-1 shadow-sm"
+                style={{ backgroundColor: tech.color }}
+              >
+                <span
+                  className="bg-white/25 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ width: 14, height: 14, fontSize: 8 }}
+                >
+                  ⚛
+                </span>
+                {tech.name}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Description */}
+        <MobileDescription
+          description={project.description}
+          primary={project.theme.primary}
+        />
+
+        {/* CTA Buttons */}
+        <div className="flex gap-2 pt-1 flex-wrap">
+          {project.demoUrl && (
+            <a
+              href={project.demoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 min-w-[120px] text-center py-2.5 rounded-xl text-sm font-semibold text-white shadow-md transition-transform active:scale-95"
+              style={{ backgroundColor: project.theme.primary }}
+            >
+              Live Demo
+            </a>
+          )}
+          {project.githubUrl && (
+            <a
+              href={project.githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 min-w-[120px] text-center py-2.5 rounded-xl text-sm font-semibold border transition-transform active:scale-95"
+              style={{
+                borderColor: project.theme.primary,
+                color: project.theme.primary,
+              }}
+            >
+              GitHub
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─────────────────── Main Export ───────────────────
 export default function Projects() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+  const projects = projectsData as Project[];
 
   useEffect(() => {
-    // GSAP stack animation is designed for the fixed 90vh desktop card.
-    // On mobile cards are height:auto so we skip it entirely.
     if (!containerRef.current) return;
     if (window.innerWidth < 1024) return;
 
@@ -218,34 +444,18 @@ export default function Projects() {
           </p>
         </div>
 
+        {/* ── DESKTOP: sticky-stack scroll ── */}
         <div
           ref={containerRef}
-          className="relative"
+          className="relative hidden lg:block"
           style={{ perspective: "1400px" }}
         >
-          {(projectsData as Project[]).map((project, index) => {
-            const isLast = index === (projectsData as Project[]).length - 1;
+          {projects.map((project, index) => {
+            const isLast = index === projects.length - 1;
             return (
-              /*
-               * MOBILE FIX — sticky scroll distance
-               *
-               * Desktop: card = 90vh, so sticky scroll distance is implicit.
-               * Mobile: card = height:auto (tall). Without an explicit scroll
-               * distance the next sticky card overlaps immediately.
-               *
-               * Fix: wrap each non-last card in a div whose padding-bottom on
-               * mobile equals 100vh. The inner sticky div pins to top:0 while
-               * the outer wrapper gives the scroll room to breathe.
-               * On lg+ we set padding-bottom:0 so desktop is unaffected.
-               */
-              <div
-                key={project.id}
-                className={isLast ? "" : "pb-[0vh] lg:pb-0"}
-              >
+              <div key={project.id} className={isLast ? "" : "pb-[0vh] lg:pb-0"}>
                 <div
-                  ref={(el) => {
-                    cardsRef.current[index] = el;
-                  }}
+                  ref={(el) => { cardsRef.current[index] = el; }}
                   style={{
                     position: "sticky",
                     top: 0,
@@ -261,18 +471,23 @@ export default function Projects() {
             );
           })}
         </div>
+
+        {/* ── MOBILE: magazine swipe ── */}
+        <div className="block lg:hidden">
+          <MobileProjectSwiper projects={projects} />
+        </div>
       </div>
     </section>
   );
 }
 
-// ─────────────────── Project Card ───────────────────
+// ─────────────────── Project Card (Desktop only) ───────────────────
 function ProjectCard({ project }: { project: Project }) {
   return (
     <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
       {/* ══════════════ DESKTOP LAYOUT ══════════════ */}
       <div
-        className="hidden lg:flex flex-col"
+        className="flex flex-col"
         style={{ height: "90vh", minHeight: "600px" }}
       >
         {/* Hero Banner — 18% */}
@@ -323,100 +538,29 @@ function ProjectCard({ project }: { project: Project }) {
                 <h4
                   className="font-bold leading-tight"
                   style={{
-                    color: project.theme.accent,
                     fontSize: "clamp(1.5rem,3vh,2.5rem)",
+                    color: project.theme.primary,
                   }}
                 >
                   {project.title}
                 </h4>
-                <div className="space-y-[0.8vh]">
-                  <div className="flex flex-wrap gap-[0.5vh]">
-                    {project.techStack.slice(0, 4).map((tech) => (
-                      <span
-                        key={tech.name}
-                        className="rounded-full font-semibold flex items-center shadow-sm"
-                        style={{
-                          backgroundColor: tech.color,
-                          color: "white",
-                          padding:
-                            "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
-                          fontSize: "clamp(0.7rem,1.2vh,0.9rem)",
-                          gap: "clamp(0.3rem,0.5vh,0.5rem)",
-                        }}
-                      >
-                        <span
-                          className="bg-white/25 rounded-full flex items-center justify-center"
-                          style={{
-                            width: "clamp(1rem,1.8vh,1.5rem)",
-                            height: "clamp(1rem,1.8vh,1.5rem)",
-                            fontSize: "clamp(0.5rem,0.8vh,0.7rem)",
-                          }}
-                        >
-                          ⚛
-                        </span>
-                        {tech.name}
-                      </span>
-                    ))}
-                  </div>
-                  {project.techStack[4] && (
-                    <div className="flex flex-wrap gap-[0.5vh]">
-                      <span
-                        className="rounded-full font-semibold flex items-center shadow-sm"
-                        style={{
-                          backgroundColor: project.techStack[4].color,
-                          color: "white",
-                          padding:
-                            "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
-                          fontSize: "clamp(0.7rem,1.2vh,0.9rem)",
-                          gap: "clamp(0.3rem,0.5vh,0.5rem)",
-                        }}
-                      >
-                        <span
-                          className="bg-white/25 rounded-full flex items-center justify-center"
-                          style={{
-                            width: "clamp(1rem,1.8vh,1.5rem)",
-                            height: "clamp(1rem,1.8vh,1.5rem)",
-                            fontSize: "clamp(0.5rem,0.8vh,0.7rem)",
-                          }}
-                        >
-                          🎨
-                        </span>
-                        {project.techStack[4].name}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex flex-wrap gap-[0.5vh]">
-                    {project.techStack.slice(5).map((tech) => (
-                      <span
-                        key={tech.name}
-                        className="rounded-full font-semibold flex items-center shadow-sm"
-                        style={{
-                          backgroundColor: tech.color,
-                          color: "white",
-                          padding:
-                            "clamp(0.3rem,0.8vh,0.6rem) clamp(0.6rem,1.2vh,1rem)",
-                          fontSize: "clamp(0.7rem,1.2vh,0.9rem)",
-                          gap: "clamp(0.3rem,0.5vh,0.5rem)",
-                        }}
-                      >
-                        <span
-                          className="bg-white/25 rounded-full flex items-center justify-center"
-                          style={{
-                            width: "clamp(1rem,1.8vh,1.5rem)",
-                            height: "clamp(1rem,1.8vh,1.5rem)",
-                            fontSize: "clamp(0.5rem,0.8vh,0.7rem)",
-                          }}
-                        >
-                          🗄
-                        </span>
-                        {tech.name}
-                      </span>
-                    ))}
-                  </div>
+                <div className="flex flex-wrap" style={{ gap: "clamp(0.3rem,0.6vh,0.5rem)" }}>
+                  {project.techStack.map((tech) => (
+                    <span
+                      key={tech.name}
+                      className="px-2 py-0.5 rounded-full font-semibold text-white"
+                      style={{
+                        backgroundColor: tech.color,
+                        fontSize: "clamp(0.65rem,1.1vh,0.85rem)",
+                      }}
+                    >
+                      {tech.name}
+                    </span>
+                  ))}
                 </div>
                 <p
-                  className="text-gray-800 leading-relaxed"
-                  style={{ fontSize: "clamp(0.85rem,1.4vh,1.1rem)" }}
+                  className="text-gray-700 leading-relaxed"
+                  style={{ fontSize: "clamp(0.8rem,1.4vh,1rem)" }}
                 >
                   {project.description}
                 </p>
@@ -424,64 +568,46 @@ function ProjectCard({ project }: { project: Project }) {
                   <h5
                     className="font-bold text-gray-900"
                     style={{
-                      fontSize: "clamp(1rem,1.8vh,1.3rem)",
-                      marginBottom: "clamp(0.5rem,1vh,0.8rem)",
+                      fontSize: "clamp(0.9rem,1.6vh,1.2rem)",
+                      marginBottom: "clamp(0.4rem,0.8vh,0.6rem)",
                     }}
                   >
                     Key Features:
                   </h5>
-                  <ul
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "clamp(0.3rem,0.8vh,0.6rem)",
-                    }}
-                  >
+                  <ul className="space-y-[0.8vh]">
                     {project.features.map((feature) => (
                       <li
                         key={feature}
-                        className="flex items-start text-gray-800"
+                        className="flex items-center text-gray-800"
+                        style={{ gap: "clamp(0.3rem,0.6vh,0.5rem)" }}
                       >
-                        <span
-                          style={{
-                            marginRight: "clamp(0.5rem,1vh,0.8rem)",
-                            fontSize: "clamp(1rem,1.5vh,1.2rem)",
-                          }}
-                        >
-                          •
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "clamp(0.85rem,1.4vh,1rem)",
-                            lineHeight: "1.5",
-                          }}
-                        >
-                          {feature}
-                        </span>
+                        <span style={{ color: project.theme.primary, fontSize: "clamp(0.75rem,1.3vh,0.95rem)" }}>✦</span>
+                        <span style={{ fontSize: "clamp(0.75rem,1.3vh,0.95rem)" }}>{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
             </div>
+
+            {/* CTA buttons */}
             <div
-              className="flex gap-3 pt-3 flex-shrink-0 border-t border-gray-300/30"
-              style={{ height: "80px", alignItems: "center" }}
+              className="flex flex-shrink-0 mt-auto pt-[1.5vh]"
+              style={{ gap: "clamp(0.5rem,1vh,0.75rem)" }}
             >
               {project.demoUrl && (
                 <a
                   href={project.demoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-3 px-4 rounded-full text-white font-bold text-center transition-all hover:scale-105 hover:shadow-xl flex items-center justify-center"
+                  className="flex-1 text-center rounded-xl font-semibold text-white transition-transform hover:scale-105 active:scale-95"
                   style={{
                     backgroundColor: project.theme.primary,
-                    fontSize: "clamp(0.85rem,1.4vh,1rem)",
-                    gap: "0.5rem",
+                    padding: "clamp(0.5rem,1vh,0.75rem) clamp(0.75rem,1.5vh,1.25rem)",
+                    fontSize: "clamp(0.75rem,1.3vh,0.95rem)",
                   }}
                 >
-                  <span>Live Demo</span>
-                  <span>🖥️</span>
+                  Live Demo
                 </a>
               )}
               {project.githubUrl && (
@@ -489,16 +615,15 @@ function ProjectCard({ project }: { project: Project }) {
                   href={project.githubUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 py-3 px-4 rounded-full font-bold text-center transition-all hover:scale-105 hover:shadow-xl flex items-center justify-center bg-white"
+                  className="flex-1 text-center rounded-xl font-semibold border transition-transform hover:scale-105 active:scale-95"
                   style={{
-                    color: project.theme.accent,
-                    border: `2px solid ${project.theme.accent}`,
-                    fontSize: "clamp(0.85rem,1.4vh,1rem)",
-                    gap: "0.5rem",
+                    borderColor: project.theme.primary,
+                    color: project.theme.primary,
+                    padding: "clamp(0.5rem,1vh,0.75rem) clamp(0.75rem,1.5vh,1.25rem)",
+                    fontSize: "clamp(0.75rem,1.3vh,0.95rem)",
                   }}
                 >
-                  <span>GitHub</span>
-                  <span>⚙️</span>
+                  GitHub
                 </a>
               )}
             </div>
@@ -507,358 +632,90 @@ function ProjectCard({ project }: { project: Project }) {
           {/* Right */}
           <div
             className="flex flex-col h-full overflow-hidden"
-            style={{
-              padding: "clamp(1rem,2vh,2rem)",
-              gap: "clamp(0.8rem,1.5vh,1.2rem)",
-            }}
+            style={{ padding: "clamp(1.5rem,2.5vh,2.5rem)", paddingLeft: "clamp(0.75rem,1.5vh,1.25rem)" }}
           >
-            {/* Desktop browser frame — top 60% */}
+            {/* Safari browser mockup */}
+            <div className="flex-1 min-h-0 overflow-hidden rounded-2xl shadow-xl mb-[1.5vh]">
+              <Safari
+                url={project.demoUrl ?? "project.demo"}
+                className="w-full h-full"
+                src={project.images.desktop}
+              />
+            </div>
+
+            {/* Metrics */}
             <div
-              className="relative flex-shrink-0 overflow-hidden"
-              style={{ height: "60%" }}
-            >
-              <div
-                className="w-full h-full rounded-3xl overflow-hidden flex items-center justify-center"
-                style={{
-                  backgroundColor: project.theme.secondary,
-                  padding: "clamp(0.8rem,1.5vh,1.2rem)",
-                }}
-              >
-                {/* 
-                  FIX: Safari must be constrained to its parent.
-                  Remove objectFit (only valid on <img>) and instead cap
-                  the frame with max-w/max-h + auto dimensions so it
-                  scales down to fit without overflowing.
-                */}
-
-                <Safari
-                  url={project.demoUrl ?? "project.demo"}
-                  src={project.images.desktop}
-                  className="w-auto h-auto max-w-[70%] max-h-full"
-                />
-              </div>
-            </div>
-
-            {/* Bottom two panels */}
-            <div className="flex gap-[1.5vh] flex-1 min-h-0 overflow-hidden">
-              <div
-                className="rounded-3xl shadow-lg flex-1 overflow-hidden flex flex-col"
-                style={{
-                  backgroundColor: project.theme.primary,
-                  padding: "clamp(1rem,2vh,1.5rem)",
-                }}
-              >
-                <h5
-                  className="font-bold text-white flex-shrink-0"
-                  style={{
-                    fontSize: "clamp(0.9rem,1.6vh,1.2rem)",
-                    marginBottom: "clamp(0.6rem,1.2vh,1rem)",
-                  }}
-                >
-                  Project Metrics:
-                </h5>
-                <ul
-                  className="flex-1 overflow-y-auto scrollbar-hide"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "clamp(0.5rem,1vh,0.8rem)",
-                  }}
-                >
-                  {project.metrics.map((metric) => (
-                    <li
-                      key={metric.label}
-                      className="flex items-center justify-between text-white"
-                    >
-                      <span
-                        className="flex items-center"
-                        style={{
-                          gap: "clamp(0.3rem,0.6vh,0.5rem)",
-                          fontSize: "clamp(0.75rem,1.3vh,0.95rem)",
-                        }}
-                      >
-                        <span>•</span>
-                        <span>{metric.label}</span>
-                      </span>
-                      <span
-                        className="font-bold"
-                        style={{ fontSize: "clamp(1.1rem,2vh,1.5rem)" }}
-                      >
-                        {metric.value}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div
-                className="rounded-3xl bg-white shadow-lg flex-1 overflow-hidden flex flex-col"
-                style={{ padding: "clamp(1rem,2vh,1.5rem)" }}
-              >
-                <h5
-                  className="font-bold text-gray-900 flex-shrink-0"
-                  style={{
-                    fontSize: "clamp(0.9rem,1.6vh,1.2rem)",
-                    marginBottom: "clamp(0.6rem,1.2vh,1rem)",
-                  }}
-                >
-                  Challenges & Solutions:
-                </h5>
-                <ul
-                  className="flex-1 overflow-y-auto scrollbar-hide"
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "clamp(0.4rem,0.8vh,0.6rem)",
-                  }}
-                >
-                  {project.challenges.map((challenge, idx) => (
-                    <li key={idx} className="flex items-start text-gray-800">
-                      <span
-                        style={{
-                          marginRight: "clamp(0.3rem,0.6vh,0.5rem)",
-                          fontSize: "clamp(0.75rem,1.3vh,0.95rem)",
-                        }}
-                      >
-                        •
-                      </span>
-                      <span
-                        style={{
-                          fontSize: "clamp(0.7rem,1.2vh,0.85rem)",
-                          lineHeight: "1.5",
-                        }}
-                      >
-                        {challenge}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ══════════════ MOBILE LAYOUT ══════════════ */}
-      {/* 
-        FIX: Removed fixed height="90vh" — mobile card is now height:auto so
-        all content is fully visible without clipping. The sticky scroll effect
-        on mobile is driven by the parent wrapper, not this inner card.
-      */}
-      <div
-        className="flex lg:hidden flex-col"
-        style={{ backgroundColor: "#f5f1ea" }}
-      >
-        {/* Hero Image */}
-        <div
-          className="relative w-full flex-shrink-0 overflow-hidden rounded-t-[2.5rem]"
-          style={{ height: "200px" }}
-        >
-          <img
-            src={project.heroImage}
-            alt={project.title}
-            className="w-full h-full object-cover object-center"
-          />
-          {/* Gradient overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-          <p className="absolute bottom-3 left-4 text-white text-xs font-semibold uppercase tracking-widest drop-shadow">
-            {project.tagline}
-          </p>
-        </div>
-
-        {/* Content */}
-        <div className="px-4 pt-4 pb-8 space-y-4">
-          {/* Title */}
-          <h3
-            className="text-xl font-bold leading-tight"
-            style={{ color: project.theme.primary }}
-          >
-            {project.title}
-          </h3>
-
-          {/* Tech Stack */}
-          <div>
-            <p className="text-sm font-bold text-gray-900 mb-2">Tech Stack:</p>
-            <div className="flex flex-wrap gap-1.5">
-              {project.techStack.map((tech) => (
-                <span
-                  key={tech.name}
-                  className="px-2.5 py-1 rounded-full text-xs font-semibold text-white flex items-center gap-1 shadow-sm"
-                  style={{ backgroundColor: tech.color }}
-                >
-                  <span
-                    className="bg-white/25 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ width: 14, height: 14, fontSize: 8 }}
-                  >
-                    ⚛
-                  </span>
-                  {tech.name}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Description */}
-          <MobileDescription
-            description={project.description}
-            primary={project.theme.primary}
-          />
-
-          {/* Visual Preview — phone + desktop side by side */}
-          <div>
-            <p className="text-sm font-bold text-gray-900 mb-2">
-              Visual Preview:
-            </p>
-            <div
-              className="overflow-hidden rounded-2xl"
+              className="flex-shrink-0 rounded-3xl overflow-hidden"
               style={{
-                backgroundColor: project.theme.secondary,
-                padding: "12px",
+                backgroundColor: project.theme.primary,
+                padding: "clamp(0.75rem,1.5vh,1.25rem) clamp(1rem,2vh,1.5rem)",
+                marginBottom: "clamp(0.5rem,1vh,0.75rem)",
               }}
             >
-              {/*
-                FIX: Phone frame for `images.mobile`, TabletFrame for `images.desktop`.
-                Both align to bottom so they feel grounded together.
-                Outer container has explicit height; items snap for swipe UX.
-              */}
-              <div
-                className="flex items-end gap-3 overflow-x-auto pb-1 scrollbar-hide snap-x snap-mandatory"
-                style={{ height: "200px" }}
+              <h5
+                className="font-bold text-white"
+                style={{
+                  fontSize: "clamp(0.8rem,1.4vh,1.1rem)",
+                  marginBottom: "clamp(0.4rem,0.8vh,0.6rem)",
+                }}
               >
-                {/* Phone frame — mobile screenshot */}
-                <div className="flex-shrink-0 snap-center flex items-end h-full">
-                  <PhoneFrame
-                    src={project.images.mobile}
-                    className="h-full w-auto"
-                  />
-                </div>
-                {/* Tablet / desktop frame */}
-                <div className="flex-shrink-0 snap-center flex items-end h-full">
-                  <TabletFrame
-                    src={project.images.desktop}
-                    className="h-[85%] w-auto"
-                  />
-                </div>
-              </div>
-              <p
-                className="text-center text-[10px] mt-1.5 font-medium opacity-50"
-                style={{ color: project.theme.accent }}
-              >
-                ← swipe to explore →
-              </p>
-            </div>
-          </div>
-
-          {/* Key Features */}
-          <div>
-            <p className="text-sm font-bold text-gray-900 mb-2">
-              Key Features:
-            </p>
-            <div className="space-y-1.5">
-              {project.features.map((feature) => (
-                <details
-                  key={feature}
-                  className="group bg-white rounded-xl overflow-hidden shadow-sm"
-                >
-                  <summary className="flex justify-between items-center px-3 py-2.5 cursor-pointer select-none list-none">
-                    <span className="text-xs font-bold text-gray-900">
-                      {feature}
-                    </span>
-                    <span className="text-gray-400 text-[10px] transform transition-transform duration-200 group-open:rotate-180 flex-shrink-0 ml-2">
-                      ▼
-                    </span>
-                  </summary>
-                  <div className="px-3 pb-2.5 pt-1.5 text-xs text-gray-600 border-t border-gray-100 leading-relaxed">
-                    Implementation details for {feature}.
-                  </div>
-                </details>
-              ))}
-            </div>
-          </div>
-
-          {/* Metrics — 2×2 grid */}
-          <div>
-            <p className="text-sm font-bold text-gray-900 mb-2">
-              Project Metrics:
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {project.metrics.map((metric) => (
-                <div
-                  key={metric.label}
-                  className="bg-white rounded-xl px-3 py-2.5 shadow-sm"
-                >
-                  <p className="text-xs text-gray-500 mb-0.5">{metric.label}</p>
-                  <p
-                    className="text-lg font-bold"
-                    style={{
-                      color: metric.value.toLowerCase().includes("live")
-                        ? "#22c55e"
-                        : "#111827",
-                    }}
-                  >
-                    {metric.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Challenges & Solutions */}
-          <details className="group bg-white rounded-xl shadow-sm overflow-hidden">
-            <summary className="flex justify-between items-center px-3 py-2.5 cursor-pointer select-none list-none">
-              <span className="text-sm font-bold text-gray-900">
-                Challenges & Solutions:
-              </span>
-              <span className="text-gray-400 text-[10px] transform transition-transform duration-200 group-open:rotate-180">
-                ▼
-              </span>
-            </summary>
-            <div className="px-4 pb-4 pt-2 border-t border-gray-100">
-              <ul className="space-y-2">
-                {project.challenges.map((challenge, idx) => (
+                Project Metrics:
+              </h5>
+              <ul style={{ display: "flex", flexDirection: "column", gap: "clamp(0.25rem,0.5vh,0.4rem)" }}>
+                {project.metrics.map((metric) => (
                   <li
-                    key={idx}
-                    className="text-sm text-gray-800 flex items-start gap-2"
+                    key={metric.label}
+                    className="flex items-center justify-between text-white"
                   >
                     <span
-                      className="mt-0.5 flex-shrink-0"
-                      style={{ color: project.theme.primary }}
+                      className="flex items-center"
+                      style={{
+                        gap: "clamp(0.3rem,0.6vh,0.5rem)",
+                        fontSize: "clamp(0.75rem,1.3vh,0.95rem)",
+                      }}
                     >
-                      •
+                      <span>•</span>
+                      <span>{metric.label}</span>
                     </span>
-                    <span className="flex-1 leading-relaxed">{challenge}</span>
+                    <span
+                      className="font-bold"
+                      style={{ fontSize: "clamp(1.1rem,2vh,1.5rem)" }}
+                    >
+                      {metric.value}
+                    </span>
                   </li>
                 ))}
               </ul>
             </div>
-          </details>
 
-          {/* CTA Buttons */}
-          <div className="space-y-2.5 pt-1">
-            {project.demoUrl && (
-              <a
-                href={project.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3.5 rounded-full text-white font-bold text-center text-sm shadow-lg transition-all active:scale-95"
-                style={{ backgroundColor: project.theme.primary }}
-              >
-                Live Demo
-              </a>
-            )}
-            {project.githubUrl && (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3.5 rounded-full font-bold text-center text-sm bg-white shadow-sm transition-all active:scale-95"
+            {/* Challenges & Solutions */}
+            <div
+              className="rounded-3xl bg-white shadow-lg flex-1 overflow-hidden flex flex-col"
+              style={{ padding: "clamp(1rem,2vh,1.5rem)" }}
+            >
+              <h5
+                className="font-bold text-gray-900 flex-shrink-0"
                 style={{
-                  color: project.theme.primary,
-                  border: `2px solid ${project.theme.primary}`,
+                  fontSize: "clamp(0.9rem,1.6vh,1.2rem)",
+                  marginBottom: "clamp(0.6rem,1.2vh,1rem)",
                 }}
               >
-                GitHub
-              </a>
-            )}
+                Challenges & Solutions:
+              </h5>
+              <ul
+                className="flex-1 overflow-y-auto scrollbar-hide"
+                style={{ display: "flex", flexDirection: "column", gap: "clamp(0.4rem,0.8vh,0.6rem)" }}
+              >
+                {project.challenges.map((challenge, idx) => (
+                  <li key={idx} className="flex items-start text-gray-800">
+                    <span style={{ marginRight: "clamp(0.3rem,0.6vh,0.5rem)", fontSize: "clamp(0.75rem,1.3vh,0.95rem)" }}>•</span>
+                    <span style={{ fontSize: "clamp(0.7rem,1.2vh,0.85rem)", lineHeight: "1.5" }}>
+                      {challenge}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
