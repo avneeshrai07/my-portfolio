@@ -46,19 +46,19 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
       ref={dotRef}
       style={{
         width: 18, height: 18, borderRadius: "50%",
-        border: `2px solid ${visible ? "var(--tj-accent)" : "var(--tj-ring)"}`,
-        background: "var(--tj-dot-bg)",
+        border: `2px solid ${visible ? "var(--suit-brown)" : "var(--shirt-tan)"}`,
+        background: "var(--hero-gradient)",
         display: "grid", placeItems: "center",
         flexShrink: 0, position: "relative", zIndex: 2,
         transition: `border-color 0.3s ${delay + 80}ms, box-shadow 0.3s ${delay + 80}ms`,
         boxShadow: visible
-          ? "0 0 0 4px color-mix(in oklch, var(--tj-accent) 18%, transparent)"
+          ? "0 0 0 4px color-mix(in oklch, var(--suit-brown) 15%, transparent)"
           : "none",
       }}
     >
       <div style={{
         width: 7, height: 7, borderRadius: "50%",
-        background: "var(--tj-accent)",
+        background: "var(--suit-brown)",
         opacity: visible ? 1 : 0,
         transform: visible ? "scale(1)" : "scale(0)",
         transition: `opacity 0.3s ${delay + 200}ms, transform 0.35s ${delay + 200}ms cubic-bezier(0.34,1.56,0.64,1)`,
@@ -73,9 +73,10 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
       transform: visible ? "translateY(0)" : "translateY(10px)",
       transition: `opacity 0.4s ${delay}ms, transform 0.4s ${delay}ms cubic-bezier(0.16,1,0.3,1)`,
     }}>
+      {/* year — suit-brown, strong */}
       <div style={{
         fontSize: "clamp(0.72rem, 1.1vw, 0.85rem)", fontWeight: 700,
-        color: "var(--tj-muted)", letterSpacing: "0.04em",
+        color: "var(--suit-brown)", letterSpacing: "0.04em",
         lineHeight: 1, whiteSpace: "nowrap",
       }}>
         {item.year}
@@ -83,7 +84,7 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
       {item.period && (
         <div style={{
           fontSize: "clamp(0.62rem, 0.9vw, 0.72rem)",
-          color: "var(--tj-faint)", marginTop: "0.2rem",
+          color: "var(--skin-tone)", marginTop: "0.2rem",
           lineHeight: 1.3, whiteSpace: "nowrap",
         }}>
           {item.period}
@@ -105,22 +106,24 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
           display: "inline-block",
           fontSize: "clamp(0.58rem, 0.85vw, 0.65rem)", fontWeight: 700,
           letterSpacing: "0.1em", textTransform: "uppercase" as const,
-          color: "var(--tj-accent)", background: "var(--tj-accent-bg)",
+          color: "var(--suit-brown)", background: "var(--shirt-tan)",
           borderRadius: 9999, padding: "0.2em 0.75em", marginBottom: "0.5rem",
+          opacity: 0.9,
         }}>
           {item.tag}
         </span>
       )}
+      {/* title — suit-brown, most prominent */}
       <h2 style={{
         fontSize: "clamp(1rem, 2.2vw, 1.55rem)", fontWeight: 700,
-        color: "var(--tj-text)", lineHeight: 1.2, marginBottom: "0.3rem",
+        color: "var(--suit-brown)", lineHeight: 1.2, marginBottom: "0.3rem",
       }}>
         {item.title}
       </h2>
       {item.subtitle && (
         <p style={{
           fontSize: "clamp(0.75rem, 1.1vw, 0.875rem)", fontWeight: 600,
-          color: "var(--tj-accent)", lineHeight: 1.4, marginBottom: "0.45rem",
+          color: "var(--skin-tone)", lineHeight: 1.4, marginBottom: "0.45rem",
         }}>
           {item.subtitle}
         </p>
@@ -128,8 +131,9 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
       {item.body && (
         <p style={{
           fontSize: "clamp(0.78rem, 1.15vw, 0.9rem)",
-          color: "var(--tj-muted)", lineHeight: 1.8, maxWidth: "36ch",
+          color: "var(--skin-tone)", lineHeight: 1.8, maxWidth: "36ch",
           marginLeft: align === "right" ? "auto" : undefined,
+          opacity: 0.85,
         }}>
           {item.body}
         </p>
@@ -146,11 +150,11 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
               flexDirection: align === "right" ? "row-reverse" : "row",
               alignItems: "flex-start", gap: "0.4rem",
               fontSize: "clamp(0.72rem, 1.05vw, 0.83rem)",
-              color: "var(--tj-muted)", lineHeight: 1.6,
+              color: "var(--skin-tone)", lineHeight: 1.6, opacity: 0.85,
             }}>
               <span style={{
                 flexShrink: 0, width: 5, height: 5, borderRadius: "50%",
-                background: "var(--tj-accent)", opacity: 0.6,
+                background: "var(--suit-brown)", opacity: 0.5,
                 marginTop: "0.48em", display: "inline-block",
               }} />
               {h}
@@ -198,14 +202,14 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
               ref={mobileDotRef}
               style={{
                 width: 18, height: 18, borderRadius: "50%", flexShrink: 0,
-                border: `2px solid ${visible ? "var(--tj-accent)" : "var(--tj-ring)"}`,
-                background: "var(--tj-dot-bg)", display: "grid", placeItems: "center",
+                border: `2px solid ${visible ? "var(--suit-brown)" : "var(--shirt-tan)"}`,
+                background: "var(--hero-gradient)", display: "grid", placeItems: "center",
                 transition: `border-color 0.3s ${delay + 80}ms`,
                 position: "relative", zIndex: 2,
               }}
             >
               <div style={{
-                width: 7, height: 7, borderRadius: "50%", background: "var(--tj-accent)",
+                width: 7, height: 7, borderRadius: "50%", background: "var(--suit-brown)",
                 opacity: visible ? 1 : 0, transform: visible ? "scale(1)" : "scale(0)",
                 transition: `opacity 0.3s ${delay + 200}ms, transform 0.35s ${delay + 200}ms cubic-bezier(0.34,1.56,0.64,1)`,
               }} />
@@ -214,11 +218,12 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
 
           <div style={{ flex: 1, minWidth: 0, paddingBottom: "0.65rem" }}>
             <div style={{ marginBottom: "0.45rem" }}>
-              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--tj-muted)", letterSpacing: "0.04em", lineHeight: 1 }}>
+              {/* year — suit-brown */}
+              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--suit-brown)", letterSpacing: "0.04em", lineHeight: 1 }}>
                 {item.year}
               </div>
               {item.period && (
-                <div style={{ fontSize: "0.68rem", color: "var(--tj-faint)", marginTop: "0.15rem" }}>
+                <div style={{ fontSize: "0.68rem", color: "var(--skin-tone)", marginTop: "0.15rem", opacity: 0.85 }}>
                   {item.period}
                 </div>
               )}
@@ -227,33 +232,35 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
               <span style={{
                 display: "inline-block", fontSize: "0.62rem", fontWeight: 700,
                 letterSpacing: "0.1em", textTransform: "uppercase" as const,
-                color: "var(--tj-accent)", background: "var(--tj-accent-bg)",
+                color: "var(--suit-brown)", background: "var(--shirt-tan)",
                 borderRadius: 9999, padding: "0.2em 0.75em", marginBottom: "0.5rem",
+                opacity: 0.9,
               }}>
                 {item.tag}
               </span>
             )}
+            {/* title — suit-brown */}
             <h2 style={{
               fontSize: "clamp(1rem, 4.5vw, 1.25rem)", fontWeight: 700,
-              color: "var(--tj-text)", lineHeight: 1.2, marginBottom: "0.3rem",
+              color: "var(--suit-brown)", lineHeight: 1.2, marginBottom: "0.3rem",
             }}>
               {item.title}
             </h2>
             {item.subtitle && (
-              <p style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--tj-accent)", lineHeight: 1.4, marginBottom: "0.4rem" }}>
+              <p style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--skin-tone)", lineHeight: 1.4, marginBottom: "0.4rem" }}>
                 {item.subtitle}
               </p>
             )}
             {item.body && (
-              <p style={{ fontSize: "0.82rem", color: "var(--tj-muted)", lineHeight: 1.8, maxWidth: "44ch" }}>
+              <p style={{ fontSize: "0.82rem", color: "var(--skin-tone)", lineHeight: 1.8, maxWidth: "44ch", opacity: 0.85 }}>
                 {item.body}
               </p>
             )}
             {!!item.highlights?.length && (
               <ul style={{ listStyle: "none", margin: "0.65rem 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                 {item.highlights.map((h, hi) => (
-                  <li key={hi} style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", fontSize: "0.78rem", color: "var(--tj-muted)", lineHeight: 1.6 }}>
-                    <span style={{ flexShrink: 0, width: 5, height: 5, borderRadius: "50%", background: "var(--tj-accent)", opacity: 0.6, marginTop: "0.48em", display: "inline-block" }} />
+                  <li key={hi} style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", fontSize: "0.78rem", color: "var(--skin-tone)", lineHeight: 1.6, opacity: 0.85 }}>
+                    <span style={{ flexShrink: 0, width: 5, height: 5, borderRadius: "50%", background: "var(--suit-brown)", opacity: 0.5, marginTop: "0.48em", display: "inline-block" }} />
                     {h}
                   </li>
                 ))}
@@ -347,59 +354,57 @@ export default function MyJourney() {
       }
 
       // ── MOBILE ───────────────────────────────────────────────
-const mSvg   = mSvgRef.current;
-const mTrack = mTrackRef.current;
-const mFill  = mFillRef.current;
-const mPulse = mPulseRef.current;
-const mDots  = mobileDotRefs.current.filter((d): d is HTMLDivElement => d !== null);
+      const mSvg   = mSvgRef.current;
+      const mTrack = mTrackRef.current;
+      const mFill  = mFillRef.current;
+      const mPulse = mPulseRef.current;
+      const mDots  = mobileDotRefs.current.filter((d): d is HTMLDivElement => d !== null);
 
-if (mSvg && mTrack && mFill && mDots.length >= 2) {
-  // Only run mobile logic when the mobile layout is actually visible
-  if (mDots[0].offsetParent === null) return;
+      if (mSvg && mTrack && mFill && mDots.length >= 2) {
+        if (mDots[0].offsetParent === null) return;
 
-  const W = wrap.offsetWidth;
-  const H = wrap.offsetHeight;
-  const first = mDots[0].getBoundingClientRect();
-  const last  = mDots[mDots.length - 1].getBoundingClientRect();
+        const W = wrap.offsetWidth;
+        const H = wrap.offsetHeight;
+        const first = mDots[0].getBoundingClientRect();
+        const last  = mDots[mDots.length - 1].getBoundingClientRect();
 
-  // Guard: if dots have no size, layout hasn't painted yet — skip
-  if (first.width === 0) return;
+        if (first.width === 0) return;
 
-  const cx = first.left + first.width  / 2 - wRect.left;
-  const y1 = first.top  + first.height / 2 - wRect.top;
-  const y2 = last.top   + last.height  / 2 - wRect.top;
+        const cx = first.left + first.width  / 2 - wRect.left;
+        const y1 = first.top  + first.height / 2 - wRect.top;
+        const y2 = last.top   + last.height  / 2 - wRect.top;
 
-  mSvg.setAttribute("width",   String(W));
-  mSvg.setAttribute("height",  String(H));
-  mSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+        mSvg.setAttribute("width",   String(W));
+        mSvg.setAttribute("height",  String(H));
+        mSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
 
-  mTrack.setAttribute("x1", String(cx)); mTrack.setAttribute("y1", String(y1));
-  mTrack.setAttribute("x2", String(cx)); mTrack.setAttribute("y2", String(y2));
+        mTrack.setAttribute("x1", String(cx)); mTrack.setAttribute("y1", String(y1));
+        mTrack.setAttribute("x2", String(cx)); mTrack.setAttribute("y2", String(y2));
 
-  const len = y2 - y1;
-  if (len > 0) {
-    const p = scrollProgress(len, y1);
+        const len = y2 - y1;
+        if (len > 0) {
+          const p = scrollProgress(len, y1);
 
-    mFill.setAttribute("x1", String(cx)); mFill.setAttribute("y1", String(y1));
-    mFill.setAttribute("x2", String(cx)); mFill.setAttribute("y2", String(y2));
-    mFill.style.strokeDasharray  = String(len);
-    mFill.style.strokeDashoffset = String(len * (1 - p));
+          mFill.setAttribute("x1", String(cx)); mFill.setAttribute("y1", String(y1));
+          mFill.setAttribute("x2", String(cx)); mFill.setAttribute("y2", String(y2));
+          mFill.style.strokeDasharray  = String(len);
+          mFill.style.strokeDashoffset = String(len * (1 - p));
 
-    if (mPulse) {
-      const py = y1 + len * p;
-      mPulse.setAttribute("cx", String(cx));
-      mPulse.setAttribute("cy", String(py));
-      mPulse.style.opacity = p > 0 && p < 1 ? "1" : "0";
+          if (mPulse) {
+            const py = y1 + len * p;
+            mPulse.setAttribute("cx", String(cx));
+            mPulse.setAttribute("cy", String(py));
+            mPulse.style.opacity = p > 0 && p < 1 ? "1" : "0";
 
-      const mRing = document.getElementById("tj-pulse-ring-mobile");
-      if (mRing) {
-        mRing.setAttribute("cx", String(cx));
-        mRing.setAttribute("cy", String(py));
-        mRing.style.opacity = p > 0 && p < 1 ? "1" : "0";
+            const mRing = document.getElementById("tj-pulse-ring-mobile");
+            if (mRing) {
+              mRing.setAttribute("cx", String(cx));
+              mRing.setAttribute("cy", String(py));
+              mRing.style.opacity = p > 0 && p < 1 ? "1" : "0";
+            }
+          }
+        }
       }
-    }
-  }
-}
     }
 
     let r1: number, r2: number;
@@ -417,24 +422,6 @@ if (mSvg && mTrack && mFill && mDots.length >= 2) {
   return (
     <>
       <style>{`
-        :root {
-          --tj-accent:    #01696f;
-          --tj-accent-bg: #d2e8e6;
-          --tj-ring:      #d4d1ca;
-          --tj-dot-bg:    #f7f6f2;
-          --tj-text:      #28251d;
-          --tj-muted:     #6e6c67;
-          --tj-faint:     #b0afa9;
-        }
-        [data-theme="dark"] {
-          --tj-accent:    #4f98a3;
-          --tj-accent-bg: #1a3537;
-          --tj-ring:      #2e2c2a;
-          --tj-dot-bg:    #0d0d0c;
-          --tj-text:      #e6e4e1;
-          --tj-muted:     #7a7876;
-          --tj-faint:     #48453f;
-        }
         .tj-wrap {
           max-width: 960px;
           margin: 0 auto;
@@ -443,7 +430,7 @@ if (mSvg && mTrack && mFill && mDots.length >= 2) {
           -webkit-font-smoothing: antialiased;
         }
         @keyframes tj-ripple {
-          0%   { transform: scale(1);   opacity: 0.8; }
+          0%   { transform: scale(1);   opacity: 0.7; }
           100% { transform: scale(3.2); opacity: 0;   }
         }
         .tj-pulse-ring {
@@ -461,154 +448,156 @@ if (mSvg && mTrack && mFill && mDots.length >= 2) {
         }
       `}</style>
 
-      {/* Header */}
-      <div className="tj-wrap" style={{
-        paddingTop: "clamp(3rem, 8vw, 5.5rem)",
-        paddingBottom: "clamp(1.5rem, 4vw, 2.5rem)",
-      }}>
-        <p style={{
-          fontSize: "clamp(0.6rem, 0.9vw, 0.7rem)", fontWeight: 700,
-          letterSpacing: "0.12em", textTransform: "uppercase",
-          color: "var(--tj-accent)", marginBottom: "0.6rem",
+      {/* ── outer wrapper gets the hero grain background ── */}
+      <div className="bg-hero-gradient">
+
+        {/* Header */}
+        <div className="tj-wrap" style={{
+          paddingTop: "clamp(3rem, 8vw, 5.5rem)",
+          paddingBottom: "clamp(1.5rem, 4vw, 2.5rem)",
+          position: "relative", zIndex: 1,
         }}>
-          My Journey
-        </p>
-      </div>
-
-      {/* Timeline */}
-      <div className="tj-wrap" style={{ paddingBottom: "clamp(4rem, 8vw, 7rem)" }}>
-        <div ref={wrapRef} style={{ position: "relative" }}>
-
-          {/* ── DESKTOP SVG ─────────────────────────────────── */}
-          <svg
-            ref={svgRef}
-            aria-hidden="true"
-            width="0" height="0"
-            className="tj-desktop"
-            style={{
-              position: "absolute", top: 0, left: 0,
-              pointerEvents: "none", zIndex: 0, overflow: "visible",
-              display: "block",
-            }}
-          >
-            <defs>
-              {/* Completed portion: vivid teal → cyan */}
-              <linearGradient id="tj-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#00897b" />
-                <stop offset="40%"  stopColor="#0097a7" />
-                <stop offset="100%" stopColor="#26c6da" />
-              </linearGradient>
-            </defs>
-
-            {/* Track (unfilled) */}
-            <line
-              ref={trackRef}
-              strokeWidth="3"
-              stroke="#d4d1ca"
-              opacity="0.5"
-            />
-
-            {/* Colored fill — grows with scroll */}
-            <line
-              ref={fillRef}
-              strokeWidth="3.5"
-              stroke="url(#tj-grad)"
-              strokeLinecap="round"
-              style={{
-                transition: "stroke-dashoffset 0.08s linear",
-              }}
-            />
-
-            {/* Solid dot at the leading tip */}
-            <circle
-              ref={pulseRef}
-              r="5"
-              fill="#26c6da"
-              opacity="0"
-              style={{ transition: "opacity 0.2s" }}
-            />
-
-            {/* Ripple ring around the tip — scale() animation, no r mutation */}
-            <circle
-              id="tj-pulse-ring-desktop"
-              className="tj-pulse-ring"
-              r="5"
-              fill="none"
-              stroke="#26c6da"
-              strokeWidth="1.5"
-              opacity="0"
-            />
-          </svg>
-
-          {/* ── MOBILE SVG ──────────────────────────────────── */}
-          <svg
-            ref={mSvgRef}
-            aria-hidden="true"
-            width="0" height="0"
-            className="tj-mobile"
-            style={{
-              position: "absolute", top: 0, left: 0,
-              pointerEvents: "none", zIndex: 0, overflow: "visible",
-              display: "none",
-            }}
-          >
-            <defs>
-              <linearGradient id="tj-grad-m" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#00897b" />
-                <stop offset="40%"  stopColor="#0097a7" />
-                <stop offset="100%" stopColor="#26c6da" />
-              </linearGradient>
-            </defs>
-
-            <line
-              ref={mTrackRef}
-              strokeWidth="3"
-              stroke="#d4d1ca"
-              opacity="0.5"
-            />
-
-            <line
-              ref={mFillRef}
-              strokeWidth="3.5"
-              stroke="url(#tj-grad-m)"
-              strokeLinecap="round"
-              style={{
-                transition: "stroke-dashoffset 0.08s linear",
-              }}
-            />
-
-            <circle
-              ref={mPulseRef}
-              r="5"
-              fill="#26c6da"
-              opacity="0"
-              style={{ transition: "opacity 0.2s" }}
-            />
-
-            <circle
-              id="tj-pulse-ring-mobile"
-              className="tj-pulse-ring"
-              r="5"
-              fill="none"
-              stroke="#26c6da"
-              strokeWidth="1.5"
-              opacity="0"
-            />
-          </svg>
-
-          {ITEMS.map((item, i) => (
-            <Row
-              key={i}
-              item={item}
-              index={i}
-              isLeft={i % 2 === 0}
-              dotRef={(el) => { dotRefs.current[i] = el; }}
-              mobileDotRef={(el) => { mobileDotRefs.current[i] = el; }}
-            />
-          ))}
-
+          <p style={{
+            fontSize: "clamp(0.6rem, 0.9vw, 0.7rem)", fontWeight: 700,
+            letterSpacing: "0.12em", textTransform: "uppercase",
+            color: "var(--suit-brown)", marginBottom: "0.6rem",
+          }}>
+            My Journey
+          </p>
         </div>
-      </div>
+
+        {/* Timeline */}
+        <div className="tj-wrap" style={{  position: "relative", zIndex: 1 }}>
+          <div ref={wrapRef} style={{ position: "relative" }}>
+
+            {/* ── DESKTOP SVG ─────────────────────────────────── */}
+            <svg
+              ref={svgRef}
+              aria-hidden="true"
+              width="0" height="0"
+              className="tj-desktop"
+              style={{
+                position: "absolute", top: 0, left: 0,
+                pointerEvents: "none", zIndex: 0, overflow: "visible",
+                display: "block",
+              }}
+            >
+              <defs>
+                {/* track uses shirt-tan, fill uses suit-brown → skin-tone gradient */}
+                <linearGradient id="tj-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor="var(--suit-brown)" />
+                  <stop offset="60%"  stopColor="var(--skin-tone)" />
+                  <stop offset="100%" stopColor="var(--shirt-tan)" />
+                </linearGradient>
+              </defs>
+
+              {/* Track — unfilled, shirt-tan */}
+              <line
+                ref={trackRef}
+                strokeWidth="3"
+                stroke="var(--shirt-tan)"
+                opacity="0.5"
+              />
+
+              {/* Colored fill — suit-brown → skin-tone → shirt-tan */}
+              <line
+                ref={fillRef}
+                strokeWidth="3.5"
+                stroke="url(#tj-grad)"
+                strokeLinecap="round"
+                style={{ transition: "stroke-dashoffset 0.08s linear" }}
+              />
+
+              {/* Solid dot at the leading tip */}
+              <circle
+                ref={pulseRef}
+                r="5"
+                fill="var(--skin-tone)"
+                opacity="0"
+                style={{ transition: "opacity 0.2s" }}
+              />
+
+              {/* Ripple ring */}
+              <circle
+                id="tj-pulse-ring-desktop"
+                className="tj-pulse-ring"
+                r="5"
+                fill="none"
+                stroke="var(--skin-tone)"
+                strokeWidth="1.5"
+                opacity="0"
+              />
+            </svg>
+
+            {/* ── MOBILE SVG ──────────────────────────────────── */}
+            <svg
+              ref={mSvgRef}
+              aria-hidden="true"
+              width="0" height="0"
+              className="tj-mobile"
+              style={{
+                position: "absolute", top: 0, left: 0,
+                pointerEvents: "none", zIndex: 0, overflow: "visible",
+                display: "none",
+              }}
+            >
+              <defs>
+                <linearGradient id="tj-grad-m" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor="var(--suit-brown)" />
+                  <stop offset="60%"  stopColor="var(--skin-tone)" />
+                  <stop offset="100%" stopColor="var(--shirt-tan)" />
+                </linearGradient>
+              </defs>
+
+              <line
+                ref={mTrackRef}
+                strokeWidth="3"
+                stroke="var(--shirt-tan)"
+                opacity="0.5"
+              />
+
+              <line
+                ref={mFillRef}
+                strokeWidth="3.5"
+                stroke="url(#tj-grad-m)"
+                strokeLinecap="round"
+                style={{ transition: "stroke-dashoffset 0.08s linear" }}
+              />
+
+              <circle
+                ref={mPulseRef}
+                r="5"
+                fill="var(--skin-tone)"
+                opacity="0"
+                style={{ transition: "opacity 0.2s" }}
+              />
+
+              <circle
+                id="tj-pulse-ring-mobile"
+                className="tj-pulse-ring"
+                r="5"
+                fill="none"
+                stroke="var(--skin-tone)"
+                strokeWidth="1.5"
+                opacity="0"
+              />
+            </svg>
+
+            {ITEMS.map((item, i) => (
+              <Row
+                key={i}
+                item={item}
+                index={i}
+                isLeft={i % 2 === 0}
+                dotRef={(el) => { dotRefs.current[i] = el; }}
+                mobileDotRef={(el) => { mobileDotRefs.current[i] = el; }}
+              />
+            ))}
+
+          </div>
+        </div>
+
+      </div>{/* end bg-hero-gradient */}
     </>
   );
 }

@@ -2,32 +2,32 @@
   "journey": [
     
     {
-      "year": "20XX – XX",
+      "year": "2018 – 2020",
       "period": "Higher Secondary",
-      "tag": "Education",
-      "title": "School / Junior College Name",
-      "subtitle": "Science / Commerce / Arts"
+      "tag": "School",
+      "title": "Central Hindu School",
+      "subtitle": "Science"
     },
     {
-      "year": "20XX – XX",
+      "year": "2021 – 2025",
       "period": "Undergrad",
       "tag": "College",
-      "title": "University / College Name",
-      "subtitle": "B.Tech / B.Sc / B.E — Major"
+      "title": "Indian Institute Of information Technology, Lucknow",
+      "subtitle": "B.Tech"
     },
     {
-      "year": "20XX",
+      "year": "Mar-2025",
       "period": "First Role",
-      "tag": "Career",
-      "title": "Company / Startup Name",
-      "subtitle": "Job Title"
+      "tag": "Intern",
+      "title": "Epack Prefab",
+      "subtitle": "Python Developer"
     },
     {
       "year": "Present",
       "period": "Current",
-      "tag": "Now",
-      "title": "What you are working on today",
-      "subtitle": "Role / Venture"
+      "tag": "Full Time",
+      "title": "OrbitAim",
+      "subtitle": "Backend Team Lead"
     }
   ]
 }
