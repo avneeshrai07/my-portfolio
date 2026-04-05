@@ -19,11 +19,12 @@ interface RowProps {
   item: JourneyItem;
   index: number;
   isLeft: boolean;
+  isLast: boolean;
   dotRef: (el: HTMLDivElement | null) => void;
   mobileDotRef: (el: HTMLDivElement | null) => void;
 }
 
-function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
+function Row({ item, index, isLeft, isLast, dotRef, mobileDotRef }: RowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const delay = index * 80;
@@ -44,49 +45,48 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
   const dot = (
     <div
       ref={dotRef}
-      style={{
-        width: 18, height: 18, borderRadius: "50%",
-        border: `2px solid ${visible ? "var(--suit-brown)" : "var(--shirt-tan)"}`,
-        background: "var(--hero-gradient)",
-        display: "grid", placeItems: "center",
-        flexShrink: 0, position: "relative", zIndex: 2,
-        transition: `border-color 0.3s ${delay + 80}ms, box-shadow 0.3s ${delay + 80}ms`,
-        boxShadow: visible
-          ? "0 0 0 4px color-mix(in oklch, var(--suit-brown) 15%, transparent)"
-          : "none",
-      }}
+      className={`
+        bg-[var(--hero-gradient)] grid place-items-center
+        rounded-full shrink-0 relative z-[2]
+        w-[18px] h-[18px]
+        border-2 transition-all
+        ${visible
+          ? "border-[var(--suit-brown)] shadow-[0_0_0_4px_color-mix(in_oklch,var(--suit-brown)_15%,transparent)]"
+          : "border-[var(--shirt-tan)] shadow-none"
+        }
+      `}
+      style={{ transitionDelay: `${delay + 80}ms` }}
     >
-      <div style={{
-        width: 7, height: 7, borderRadius: "50%",
-        background: "var(--suit-brown)",
-        opacity: visible ? 1 : 0,
-        transform: visible ? "scale(1)" : "scale(0)",
-        transition: `opacity 0.3s ${delay + 200}ms, transform 0.35s ${delay + 200}ms cubic-bezier(0.34,1.56,0.64,1)`,
-      }} />
+      <div
+        className="w-[7px] h-[7px] rounded-full bg-[var(--suit-brown)] transition-all"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "scale(1)" : "scale(0)",
+          transitionDuration: "300ms, 350ms",
+          transitionProperty: "opacity, transform",
+          transitionDelay: `${delay + 200}ms`,
+          transitionTimingFunction: "ease, cubic-bezier(0.34,1.56,0.64,1)",
+        }}
+      />
     </div>
   );
 
   const dateBlock = (align: "left" | "right") => (
-    <div style={{
-      textAlign: align, flexShrink: 0,
-      opacity: visible ? 1 : 0,
-      transform: visible ? "translateY(0)" : "translateY(10px)",
-      transition: `opacity 0.4s ${delay}ms, transform 0.4s ${delay}ms cubic-bezier(0.16,1,0.3,1)`,
-    }}>
-      {/* year — suit-brown, strong */}
-      <div style={{
-        fontSize: "clamp(0.72rem, 1.1vw, 0.85rem)", fontWeight: 700,
-        color: "var(--suit-brown)", letterSpacing: "0.04em",
-        lineHeight: 1, whiteSpace: "nowrap",
-      }}>
+    <div
+      className={`shrink-0 ${align === "right" ? "text-right" : "text-left"} transition-all`}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(10px)",
+        transitionDuration: "400ms",
+        transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
+        transitionDelay: `${delay}ms`,
+      }}
+    >
+      <div className="text-[clamp(0.72rem,1.1vw,0.85rem)] font-bold text-[var(--suit-brown)] tracking-[0.04em] leading-none whitespace-nowrap">
         {item.year}
       </div>
       {item.period && (
-        <div style={{
-          fontSize: "clamp(0.62rem, 0.9vw, 0.72rem)",
-          color: "var(--skin-tone)", marginTop: "0.2rem",
-          lineHeight: 1.3, whiteSpace: "nowrap",
-        }}>
+        <div className="text-[clamp(0.62rem,0.9vw,0.72rem)] text-[var(--skin-tone)] mt-[0.2rem] leading-snug whitespace-nowrap">
           {item.period}
         </div>
       )}
@@ -95,68 +95,45 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
 
   const slideX = isLeft ? "-12px" : "12px";
   const contentBlock = (align: "left" | "right") => (
-    <div style={{
-      flex: 1, minWidth: 0, textAlign: align,
-      opacity: visible ? 1 : 0,
-      transform: visible ? "translateX(0)" : `translateX(${slideX})`,
-      transition: `opacity 0.45s ${delay + 60}ms, transform 0.45s ${delay + 60}ms cubic-bezier(0.16,1,0.3,1)`,
-    }}>
+    <div
+      className={`flex-1 min-w-0 ${align === "right" ? "text-right" : "text-left"} transition-all`}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateX(0)" : `translateX(${slideX})`,
+        transitionDuration: "450ms",
+        transitionTimingFunction: "cubic-bezier(0.16,1,0.3,1)",
+        transitionDelay: `${delay + 60}ms`,
+      }}
+    >
       {item.tag && (
-        <span style={{
-          display: "inline-block",
-          fontSize: "clamp(0.58rem, 0.85vw, 0.65rem)", fontWeight: 700,
-          letterSpacing: "0.1em", textTransform: "uppercase" as const,
-          color: "var(--suit-brown)", background: "var(--shirt-tan)",
-          borderRadius: 9999, padding: "0.2em 0.75em", marginBottom: "0.5rem",
-          opacity: 0.9,
-        }}>
+        <span className="inline-block text-[clamp(0.58rem,0.85vw,0.65rem)] font-bold tracking-[0.1em] uppercase text-[var(--suit-brown)] bg-[var(--shirt-tan)] rounded-full px-[0.75em] py-[0.2em] mb-2 opacity-90">
           {item.tag}
         </span>
       )}
-      {/* title — suit-brown, most prominent */}
-      <h2 style={{
-        fontSize: "clamp(1rem, 2.2vw, 1.55rem)", fontWeight: 700,
-        color: "var(--suit-brown)", lineHeight: 1.2, marginBottom: "0.3rem",
-      }}>
+      <h2 className="text-[clamp(1rem,2.2vw,1.55rem)] font-bold text-[var(--suit-brown)] leading-tight mb-1">
         {item.title}
       </h2>
       {item.subtitle && (
-        <p style={{
-          fontSize: "clamp(0.75rem, 1.1vw, 0.875rem)", fontWeight: 600,
-          color: "var(--skin-tone)", lineHeight: 1.4, marginBottom: "0.45rem",
-        }}>
+        <p className="text-[clamp(0.75rem,1.1vw,0.875rem)] font-semibold text-[var(--skin-tone)] leading-snug mb-[0.45rem]">
           {item.subtitle}
         </p>
       )}
       {item.body && (
-        <p style={{
-          fontSize: "clamp(0.78rem, 1.15vw, 0.9rem)",
-          color: "var(--skin-tone)", lineHeight: 1.8, maxWidth: "36ch",
-          marginLeft: align === "right" ? "auto" : undefined,
-          opacity: 0.85,
-        }}>
+        <p
+          className="text-[clamp(0.78rem,1.15vw,0.9rem)] text-[var(--skin-tone)] leading-relaxed opacity-85 max-w-[36ch]"
+          style={{ marginLeft: align === "right" ? "auto" : undefined }}
+        >
           {item.body}
         </p>
       )}
       {!!item.highlights?.length && (
-        <ul style={{
-          listStyle: "none", margin: "0.7rem 0 0", padding: 0,
-          display: "flex", flexDirection: "column", gap: "0.32rem",
-          alignItems: align === "right" ? "flex-end" : "flex-start",
-        }}>
+        <ul className={`list-none mt-[0.7rem] p-0 flex flex-col gap-[0.32rem] ${align === "right" ? "items-end" : "items-start"}`}>
           {item.highlights.map((h, hi) => (
-            <li key={hi} style={{
-              display: "flex",
-              flexDirection: align === "right" ? "row-reverse" : "row",
-              alignItems: "flex-start", gap: "0.4rem",
-              fontSize: "clamp(0.72rem, 1.05vw, 0.83rem)",
-              color: "var(--skin-tone)", lineHeight: 1.6, opacity: 0.85,
-            }}>
-              <span style={{
-                flexShrink: 0, width: 5, height: 5, borderRadius: "50%",
-                background: "var(--suit-brown)", opacity: 0.5,
-                marginTop: "0.48em", display: "inline-block",
-              }} />
+            <li
+              key={hi}
+              className={`flex gap-[0.4rem] text-[clamp(0.72rem,1.05vw,0.83rem)] text-[var(--skin-tone)] leading-relaxed opacity-85 items-start ${align === "right" ? "flex-row-reverse" : "flex-row"}`}
+            >
+              <span className="shrink-0 w-[5px] h-[5px] rounded-full bg-[var(--suit-brown)] opacity-50 mt-[0.48em] inline-block" />
               {h}
             </li>
           ))}
@@ -166,101 +143,97 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
   );
 
   return (
-    <div ref={rowRef} style={{ marginBottom: "clamp(2.5rem, 5vw, 4rem)" }}>
+    <div
+      ref={rowRef}
+      className={isLast ? "mb-0" : "mb-[clamp(2.5rem,5vw,4rem)]"}
+    >
 
       {/* ── DESKTOP ───────────────────────────────────────────── */}
-      <div className="tj-desktop" style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 18px 1fr",
-        columnGap: "clamp(0.75rem, 2vw, 1.5rem)",
-        alignItems: "flex-start",
-      }}>
-        <div style={{
-          display: "flex", justifyContent: "flex-end",
-          alignItems: "flex-start",
-          minWidth: 0, overflow: "hidden", paddingTop: "0.1rem",
-        }}>
+      <div
+        className="tj-desktop grid items-start"
+        style={{
+          gridTemplateColumns: "1fr 18px 1fr",
+          columnGap: "clamp(0.75rem, 2vw, 1.5rem)",
+        }}
+      >
+        <div className="flex justify-end items-start min-w-0 overflow-hidden pt-[0.1rem]">
           {isLeft ? contentBlock("right") : dateBlock("right")}
         </div>
-        <div style={{ lineHeight: 0, paddingTop: "0.1rem" }}>
+        <div className="leading-none pt-[0.1rem]">
           {dot}
         </div>
-        <div style={{
-          display: "flex", justifyContent: "flex-start",
-          alignItems: "flex-start",
-          minWidth: 0, overflow: "hidden", paddingTop: "0.1rem",
-        }}>
+        <div className="flex justify-start items-start min-w-0 overflow-hidden pt-[0.1rem]">
           {isLeft ? dateBlock("left") : contentBlock("left")}
         </div>
       </div>
 
       {/* ── MOBILE ────────────────────────────────────────────── */}
-      <div className="tj-mobile" style={{ display: "none" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+      <div className="tj-mobile hidden">
+        <div className="flex items-start gap-[0.6rem]">
+          <div className="flex flex-col items-center shrink-0">
             <div
               ref={mobileDotRef}
-              style={{
-                width: 18, height: 18, borderRadius: "50%", flexShrink: 0,
-                border: `2px solid ${visible ? "var(--suit-brown)" : "var(--shirt-tan)"}`,
-                background: "var(--hero-gradient)", display: "grid", placeItems: "center",
-                transition: `border-color 0.3s ${delay + 80}ms`,
-                position: "relative", zIndex: 2,
-              }}
+              className={`
+                w-[18px] h-[18px] rounded-full shrink-0
+                bg-[var(--hero-gradient)] grid place-items-center
+                relative z-[2] border-2 transition-colors
+                ${visible ? "border-[var(--suit-brown)]" : "border-[var(--shirt-tan)]"}
+              `}
+              style={{ transitionDelay: `${delay + 80}ms` }}
             >
-              <div style={{
-                width: 7, height: 7, borderRadius: "50%", background: "var(--suit-brown)",
-                opacity: visible ? 1 : 0, transform: visible ? "scale(1)" : "scale(0)",
-                transition: `opacity 0.3s ${delay + 200}ms, transform 0.35s ${delay + 200}ms cubic-bezier(0.34,1.56,0.64,1)`,
-              }} />
+              <div
+                className="w-[7px] h-[7px] rounded-full bg-[var(--suit-brown)] transition-all"
+                style={{
+                  opacity: visible ? 1 : 0,
+                  transform: visible ? "scale(1)" : "scale(0)",
+                  transitionDuration: "300ms, 350ms",
+                  transitionProperty: "opacity, transform",
+                  transitionDelay: `${delay + 200}ms`,
+                  transitionTimingFunction: "ease, cubic-bezier(0.34,1.56,0.64,1)",
+                }}
+              />
             </div>
           </div>
 
-          <div style={{ flex: 1, minWidth: 0, paddingBottom: "0.65rem" }}>
-            <div style={{ marginBottom: "0.45rem" }}>
-              {/* year — suit-brown */}
-              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--suit-brown)", letterSpacing: "0.04em", lineHeight: 1 }}>
+          <div className="flex-1 min-w-0 pb-[0.65rem]">
+            <div className="mb-[0.45rem]">
+              <div className="text-[0.8rem] font-bold text-[var(--suit-brown)] tracking-[0.04em] leading-none">
                 {item.year}
               </div>
               {item.period && (
-                <div style={{ fontSize: "0.68rem", color: "var(--skin-tone)", marginTop: "0.15rem", opacity: 0.85 }}>
+                <div className="text-[0.68rem] text-[var(--skin-tone)] mt-[0.15rem] opacity-85">
                   {item.period}
                 </div>
               )}
             </div>
+
             {item.tag && (
-              <span style={{
-                display: "inline-block", fontSize: "0.62rem", fontWeight: 700,
-                letterSpacing: "0.1em", textTransform: "uppercase" as const,
-                color: "var(--suit-brown)", background: "var(--shirt-tan)",
-                borderRadius: 9999, padding: "0.2em 0.75em", marginBottom: "0.5rem",
-                opacity: 0.9,
-              }}>
+              <span className="inline-block text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--suit-brown)] bg-[var(--shirt-tan)] rounded-full px-[0.75em] py-[0.2em] mb-2 opacity-90">
                 {item.tag}
               </span>
             )}
-            {/* title — suit-brown */}
-            <h2 style={{
-              fontSize: "clamp(1rem, 4.5vw, 1.25rem)", fontWeight: 700,
-              color: "var(--suit-brown)", lineHeight: 1.2, marginBottom: "0.3rem",
-            }}>
+
+            <h2 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold text-[var(--suit-brown)] leading-tight mb-1">
               {item.title}
             </h2>
+
             {item.subtitle && (
-              <p style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--skin-tone)", lineHeight: 1.4, marginBottom: "0.4rem" }}>
+              <p className="text-[0.82rem] font-semibold text-[var(--skin-tone)] leading-snug mb-[0.4rem]">
                 {item.subtitle}
               </p>
             )}
+
             {item.body && (
-              <p style={{ fontSize: "0.82rem", color: "var(--skin-tone)", lineHeight: 1.8, maxWidth: "44ch", opacity: 0.85 }}>
+              <p className="text-[0.82rem] text-[var(--skin-tone)] leading-relaxed max-w-[44ch] opacity-85">
                 {item.body}
               </p>
             )}
+
             {!!item.highlights?.length && (
-              <ul style={{ listStyle: "none", margin: "0.65rem 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+              <ul className="list-none mt-[0.65rem] p-0 flex flex-col gap-[0.3rem]">
                 {item.highlights.map((h, hi) => (
-                  <li key={hi} style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", fontSize: "0.78rem", color: "var(--skin-tone)", lineHeight: 1.6, opacity: 0.85 }}>
-                    <span style={{ flexShrink: 0, width: 5, height: 5, borderRadius: "50%", background: "var(--suit-brown)", opacity: 0.5, marginTop: "0.48em", display: "inline-block" }} />
+                  <li key={hi} className="flex items-start gap-[0.4rem] text-[0.78rem] text-[var(--skin-tone)] leading-relaxed opacity-85">
+                    <span className="shrink-0 w-[5px] h-[5px] rounded-full bg-[var(--suit-brown)] opacity-50 mt-[0.48em] inline-block" />
                     {h}
                   </li>
                 ))}
@@ -448,58 +421,34 @@ export default function MyJourney() {
         }
       `}</style>
 
-      {/* ── outer wrapper gets the hero grain background ── */}
-      <div className="bg-hero-gradient">
+      <div className="bg-hero-gradient pb-8">
 
         {/* Header */}
-        <div className="tj-wrap" style={{
-          paddingTop: "clamp(3rem, 8vw, 5.5rem)",
-          paddingBottom: "clamp(1.5rem, 4vw, 2.5rem)",
-          position: "relative", zIndex: 1,
-        }}>
-          <p style={{
-            fontSize: "clamp(0.6rem, 0.9vw, 0.7rem)", fontWeight: 700,
-            letterSpacing: "0.12em", textTransform: "uppercase",
-            color: "var(--suit-brown)", marginBottom: "0.6rem",
-          }}>
+        <div className="tj-wrap pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(1.5rem,4vw,2.5rem)] relative z-[1]">
+          <p className="text-[clamp(0.6rem,0.9vw,0.7rem)] font-bold tracking-[0.12em] uppercase text-[var(--suit-brown)] mb-[0.6rem]">
             My Journey
           </p>
         </div>
 
         {/* Timeline */}
-        <div className="tj-wrap" style={{  position: "relative", zIndex: 1 }}>
-          <div ref={wrapRef} style={{ position: "relative" }}>
+        <div className="tj-wrap pb-4 relative z-[1]">
+          <div ref={wrapRef} className="relative">
 
             {/* ── DESKTOP SVG ─────────────────────────────────── */}
             <svg
               ref={svgRef}
               aria-hidden="true"
               width="0" height="0"
-              className="tj-desktop"
-              style={{
-                position: "absolute", top: 0, left: 0,
-                pointerEvents: "none", zIndex: 0, overflow: "visible",
-                display: "block",
-              }}
+              className="tj-desktop absolute top-0 left-0 pointer-events-none z-0 overflow-visible block"
             >
               <defs>
-                {/* track uses shirt-tan, fill uses suit-brown → skin-tone gradient */}
                 <linearGradient id="tj-grad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%"   stopColor="var(--suit-brown)" />
                   <stop offset="60%"  stopColor="var(--skin-tone)" />
                   <stop offset="100%" stopColor="var(--shirt-tan)" />
                 </linearGradient>
               </defs>
-
-              {/* Track — unfilled, shirt-tan */}
-              <line
-                ref={trackRef}
-                strokeWidth="3"
-                stroke="var(--shirt-tan)"
-                opacity="0.5"
-              />
-
-              {/* Colored fill — suit-brown → skin-tone → shirt-tan */}
+              <line ref={trackRef} strokeWidth="3" stroke="var(--shirt-tan)" opacity="0.5" />
               <line
                 ref={fillRef}
                 strokeWidth="3.5"
@@ -507,8 +456,6 @@ export default function MyJourney() {
                 strokeLinecap="round"
                 style={{ transition: "stroke-dashoffset 0.08s linear" }}
               />
-
-              {/* Solid dot at the leading tip */}
               <circle
                 ref={pulseRef}
                 r="5"
@@ -516,8 +463,6 @@ export default function MyJourney() {
                 opacity="0"
                 style={{ transition: "opacity 0.2s" }}
               />
-
-              {/* Ripple ring */}
               <circle
                 id="tj-pulse-ring-desktop"
                 className="tj-pulse-ring"
@@ -534,12 +479,8 @@ export default function MyJourney() {
               ref={mSvgRef}
               aria-hidden="true"
               width="0" height="0"
-              className="tj-mobile"
-              style={{
-                position: "absolute", top: 0, left: 0,
-                pointerEvents: "none", zIndex: 0, overflow: "visible",
-                display: "none",
-              }}
+              className="tj-mobile absolute top-0 left-0 pointer-events-none z-0 overflow-visible"
+              style={{ display: "none" }}
             >
               <defs>
                 <linearGradient id="tj-grad-m" x1="0" y1="0" x2="0" y2="1">
@@ -548,14 +489,7 @@ export default function MyJourney() {
                   <stop offset="100%" stopColor="var(--shirt-tan)" />
                 </linearGradient>
               </defs>
-
-              <line
-                ref={mTrackRef}
-                strokeWidth="3"
-                stroke="var(--shirt-tan)"
-                opacity="0.5"
-              />
-
+              <line ref={mTrackRef} strokeWidth="3" stroke="var(--shirt-tan)" opacity="0.5" />
               <line
                 ref={mFillRef}
                 strokeWidth="3.5"
@@ -563,7 +497,6 @@ export default function MyJourney() {
                 strokeLinecap="round"
                 style={{ transition: "stroke-dashoffset 0.08s linear" }}
               />
-
               <circle
                 ref={mPulseRef}
                 r="5"
@@ -571,7 +504,6 @@ export default function MyJourney() {
                 opacity="0"
                 style={{ transition: "opacity 0.2s" }}
               />
-
               <circle
                 id="tj-pulse-ring-mobile"
                 className="tj-pulse-ring"
@@ -589,6 +521,7 @@ export default function MyJourney() {
                 item={item}
                 index={i}
                 isLeft={i % 2 === 0}
+                isLast={i === ITEMS.length - 1}
                 dotRef={(el) => { dotRefs.current[i] = el; }}
                 mobileDotRef={(el) => { mobileDotRefs.current[i] = el; }}
               />
@@ -597,7 +530,7 @@ export default function MyJourney() {
           </div>
         </div>
 
-      </div>{/* end bg-hero-gradient */}
+      </div>
     </>
   );
 }
