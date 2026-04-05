@@ -31,80 +31,6 @@ interface Project {
   theme: { primary: string; secondary: string; accent: string };
 }
 
-// // ─────────────────── Phone Frame ───────────────────
-// function PhoneFrame({ src, className }: { src: string; className?: string }) {
-//   return (
-//     <div
-//       className={`relative flex-shrink-0 ${className ?? ""}`}
-//       style={{ aspectRatio: "9 / 19.5" }}
-//     >
-//       <div
-//         className="absolute overflow-hidden"
-//         style={{
-//           top: "3.5%",
-//           left: "5%",
-//           right: "5%",
-//           bottom: "3.5%",
-//           borderRadius: "12px",
-//           zIndex: 0,
-//         }}
-//       >
-//         <img
-//           src={src}
-//           alt="Mobile preview"
-//           className="w-full h-full object-cover object-top"
-//         />
-//       </div>
-//       <svg
-//         className="absolute inset-0 w-full h-full pointer-events-none select-none"
-//         viewBox="0 0 90 195"
-//         fill="none"
-//         xmlns="http://www.w3.org/2000/svg"
-//         style={{ zIndex: 1 }}
-//       >
-//         <rect x="1.5" y="1.5" width="87" height="192" rx="14.5" fill="none" stroke="#1a1a1a" strokeWidth="3" />
-//         <rect x="0" y="52" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
-//         <rect x="0" y="80" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
-//         <rect x="87.5" y="66" width="2.5" height="32" rx="1.25" fill="#2a2a2a" />
-//         <rect x="32" y="6" width="26" height="7" rx="3.5" fill="#1a1a1a" />
-//         <rect x="33" y="184" width="24" height="3" rx="1.5" fill="#1a1a1a" opacity="0.4" />
-//       </svg>
-//     </div>
-//   );
-// }
-
-// // ─────────────────── Tablet Frame ───────────────────
-// function TabletFrame({ src, className }: { src: string; className?: string }) {
-//   return (
-//     <div
-//       className={`relative flex-shrink-0 ${className ?? ""}`}
-//       style={{ aspectRatio: "3 / 4" }}
-//     >
-//       <div
-//         className="absolute overflow-hidden"
-//         style={{
-//           top: "9.5%",
-//           left: "7.8%",
-//           right: "7.8%",
-//           bottom: "9.5%",
-//           borderRadius: "2px",
-//           zIndex: 0,
-//         }}
-//       >
-//         <img
-//           src={src}
-//           alt="Desktop preview"
-//           className="w-full h-full object-cover object-top"
-//         />
-//       </div>
-//       <div
-//         className="absolute inset-0 pointer-events-none select-none"
-//         style={{ zIndex: 1, borderRadius: "12px", border: "6px solid #1f2937" }}
-//       />
-//     </div>
-//   );
-// }
-
 // ─────────────────── Read More Toggle ───────────────────
 function MobileDescription({
   description,
@@ -138,72 +64,93 @@ function MobileDescription({
 function MobileProjectSwiper({ projects }: { projects: Project[] }) {
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
-  const [direction, setDirection] = useState<"left" | "right" | null>(null);
 
-  // Touch tracking
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
 
-  // Card refs for GSAP magazine flip
-  const currentCardRef = useRef<HTMLDivElement>(null);
-  const nextCardRef = useRef<HTMLDivElement>(null);
+  const cardARef = useRef<HTMLDivElement>(null);
+  const cardBRef = useRef<HTMLDivElement>(null);
+
+  const slotRef = useRef<{ a: number; b: number; active: "a" | "b" }>({
+    a: 0,
+    b: 1 % projects.length,
+    active: "a",
+  });
 
   const goTo = (targetIndex: number, dir: "left" | "right") => {
     if (animating) return;
-    if (targetIndex < 0 || targetIndex >= projects.length) return;
+
+    // Circular wrap
+    const next = ((targetIndex % projects.length) + projects.length) % projects.length;
+    if (next === current) return;
+
+    const slot = slotRef.current;
+    const isActiveA = slot.active === "a";
+
+    // Pre-load next project into the inactive slot
+    if (isActiveA) {
+      slot.b = next;
+    } else {
+      slot.a = next;
+    }
 
     setAnimating(true);
-    setDirection(dir);
 
-    const currentEl = currentCardRef.current;
-    const nextEl = nextCardRef.current;
-    if (!currentEl || !nextEl) return;
+    // Let React re-render the inactive slot with the new project before animating
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const currentEl = isActiveA ? cardARef.current : cardBRef.current;
+        const nextEl = isActiveA ? cardBRef.current : cardARef.current;
 
-    // Pre-position the incoming card
-    const fromX = dir === "left" ? "100%" : "-100%";
-    const toX = dir === "left" ? "-100%" : "100%";
+        if (!currentEl || !nextEl) {
+          setAnimating(false);
+          return;
+        }
 
-    gsap.set(nextEl, {
-      x: fromX,
-      rotateY: dir === "left" ? 15 : -15,
-      opacity: 0.6,
-      scale: 0.92,
-      zIndex: 2,
+        const fromX = dir === "left" ? "110%" : "-110%";
+        const exitX = dir === "left" ? "-110%" : "110%";
+
+        gsap.set(nextEl, {
+          x: fromX,
+          rotateY: dir === "left" ? 15 : -15,
+          opacity: 0.7,
+          scale: 0.93,
+          zIndex: 2,
+        });
+        gsap.set(currentEl, { zIndex: 1 });
+
+        const tl = gsap.timeline({
+          onComplete: () => {
+            slot.active = isActiveA ? "b" : "a";
+            gsap.set([cardARef.current, cardBRef.current], { clearProps: "all" });
+            setCurrent(next);
+            setAnimating(false);
+          },
+        });
+
+        tl.to(currentEl, {
+          x: exitX,
+          rotateY: dir === "left" ? -15 : 15,
+          opacity: 0,
+          scale: 0.93,
+          duration: 0.4,
+          ease: "power3.in",
+        });
+
+        tl.to(
+          nextEl,
+          {
+            x: "0%",
+            rotateY: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.4,
+            ease: "power3.out",
+          },
+          "-=0.2"
+        );
+      });
     });
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setCurrent(targetIndex);
-        setAnimating(false);
-        setDirection(null);
-        // Reset both cards so state is clean for next gesture
-        gsap.set([currentEl, nextEl], { clearProps: "all" });
-      },
-    });
-
-    // Current card exits
-    tl.to(currentEl, {
-      x: toX,
-      rotateY: dir === "left" ? -15 : 15,
-      opacity: 0,
-      scale: 0.92,
-      duration: 0.42,
-      ease: "power3.in",
-    });
-
-    // Next card enters (overlapping)
-    tl.to(
-      nextEl,
-      {
-        x: "0%",
-        rotateY: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.42,
-        ease: "power3.out",
-      },
-      "-=0.22"
-    );
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -215,85 +162,97 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     const dy = e.changedTouches[0].clientY - touchStartY.current;
 
-    // Only trigger if horizontal swipe dominates
     if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
 
-    if (dx < 0 && current < projects.length - 1) {
+    if (dx < 0) {
       goTo(current + 1, "left");
-    } else if (dx > 0 && current > 0) {
+    } else {
       goTo(current - 1, "right");
     }
   };
 
-  // The "next" project index to render offscreen
-  const pendingIndex =
-    direction === "left"
-      ? Math.min(current + 1, projects.length - 1)
-      : direction === "right"
-      ? Math.max(current - 1, 0)
-      : current;
-
-  const project = projects[current];
-  const pendingProject = projects[pendingIndex];
+  const slot = slotRef.current;
+  const projectA = projects[slot.a];
+  const projectB = projects[slot.b];
+  const activeProject = projects[current];
 
   return (
     <div
-      className="relative w-full overflow-hidden"
+      className="relative w-full"
       style={{ perspective: "1200px" }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* ── Progress dots ── */}
-      <div className="flex justify-center gap-1.5 mb-3">
+      {/* Card stack — overflow-hidden scoped here only */}
+      <div
+        className="relative overflow-hidden rounded-[2.5rem]"
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* Slot A */}
+        <div
+          ref={cardARef}
+          style={{
+            position: slot.active === "a" ? "relative" : "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: slot.active === "a" ? 1 : 0,
+            transformStyle: "preserve-3d",
+          }}
+        >
+          <MobileProjectCard project={projectA} />
+        </div>
+
+        {/* Slot B */}
+        <div
+          ref={cardBRef}
+          style={{
+            position: slot.active === "b" ? "relative" : "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: slot.active === "b" ? 1 : 0,
+            transformStyle: "preserve-3d",
+          }}
+        >
+          <MobileProjectCard project={projectB} />
+        </div>
+      </div>
+
+      {/* Dot indicators */}
+      <div className="flex justify-center gap-2 mt-4">
         {projects.map((_, i) => (
-          <span
+          <button
             key={i}
-            className="block rounded-full transition-all duration-300"
+            onClick={() => {
+              if (!animating && i !== current)
+                goTo(i, i > current ? "left" : "right");
+            }}
+            className="rounded-full transition-all duration-300"
             style={{
-              width: i === current ? 20 : 6,
-              height: 6,
+              width: i === current ? 20 : 8,
+              height: 8,
               backgroundColor:
-                i === current ? project.theme.primary : "#d1d5db",
+                i === current
+                  ? activeProject.theme.primary
+                  : activeProject.theme.accent,
+              opacity: i === current ? 1 : 0.4,
+              border: "none",
+              cursor: "pointer",
             }}
           />
         ))}
       </div>
 
-      {/* ── Card stack ── */}
-      <div className="relative" style={{ transformStyle: "preserve-3d" }}>
-        {/* Current card */}
-        <div
-          ref={currentCardRef}
-          style={{ position: "relative", zIndex: 1, transformStyle: "preserve-3d" }}
-        >
-          <MobileProjectCard project={project} />
-        </div>
-
-        {/* Pending/next card — rendered off-screen, GSAP moves it in */}
-        {animating && pendingIndex !== current && (
-          <div
-            ref={nextCardRef}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              zIndex: 2,
-              transformStyle: "preserve-3d",
-            }}
-          >
-            <MobileProjectCard project={pendingProject} />
-          </div>
-        )}
-      </div>
-
-      {/* ── Swipe hint (only on first card, first load) ── */}
-      {current === 0 && projects.length > 1 && (
+      {/* Swipe hint */}
+      {projects.length > 1 && (
         <p
-          className="text-center text-[11px] mt-3 font-medium select-none"
-          style={{ color: project.theme.accent, opacity: 0.55 }}
+          className="text-center text-[11px] mt-2 mb-2 font-medium select-none"
+          style={{ color: activeProject.theme.accent, opacity: 0.55 }}
         >
-          swipe left to next project →
+          {current === projects.length - 1
+            ? "← swipe right · wraps around"
+            : "swipe left for next project →"}
         </p>
       )}
     </div>
@@ -301,11 +260,10 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
 }
 
 // ─────────────────── Mobile Project Card ───────────────────
-// Extracted from ProjectCard — mobile-only, no Visual Preview / Features / Metrics / Challenges
 function MobileProjectCard({ project }: { project: Project }) {
   return (
     <div
-      className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+      className="bg-white rounded-[2.5rem] overflow-hidden"
       style={{ backgroundColor: "#f5f1ea" }}
     >
       {/* Hero Image */}
@@ -326,7 +284,6 @@ function MobileProjectCard({ project }: { project: Project }) {
 
       {/* Content */}
       <div className="px-4 pt-4 pb-8 space-y-4">
-        {/* Title */}
         <h3
           className="text-xl font-bold leading-tight"
           style={{ color: project.theme.primary }}
@@ -334,7 +291,6 @@ function MobileProjectCard({ project }: { project: Project }) {
           {project.title}
         </h3>
 
-        {/* Tech Stack */}
         <div>
           <p className="text-sm font-bold text-gray-900 mb-2">Tech Stack:</p>
           <div className="flex flex-wrap gap-1.5">
@@ -356,13 +312,11 @@ function MobileProjectCard({ project }: { project: Project }) {
           </div>
         </div>
 
-        {/* Description */}
         <MobileDescription
           description={project.description}
           primary={project.theme.primary}
         />
 
-        {/* CTA Buttons */}
         <div className="flex gap-2 pt-1 flex-wrap">
           {project.demoUrl && (
             <a
@@ -485,7 +439,6 @@ export default function Projects() {
 function ProjectCard({ project }: { project: Project }) {
   return (
     <div className="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
-      {/* ══════════════ DESKTOP LAYOUT ══════════════ */}
       <div
         className="flex flex-col"
         style={{ height: "90vh", minHeight: "600px" }}
@@ -634,7 +587,6 @@ function ProjectCard({ project }: { project: Project }) {
             className="flex flex-col h-full overflow-hidden"
             style={{ padding: "clamp(1.5rem,2.5vh,2.5rem)", paddingLeft: "clamp(0.75rem,1.5vh,1.25rem)" }}
           >
-            {/* Safari browser mockup */}
             <div className="flex-1 min-h-0 overflow-hidden rounded-2xl shadow-xl mb-[1.5vh]">
               <Safari
                 url={project.demoUrl ?? "project.demo"}
@@ -643,7 +595,6 @@ function ProjectCard({ project }: { project: Project }) {
               />
             </div>
 
-            {/* Metrics */}
             <div
               className="flex-shrink-0 rounded-3xl overflow-hidden"
               style={{
@@ -688,7 +639,6 @@ function ProjectCard({ project }: { project: Project }) {
               </ul>
             </div>
 
-            {/* Challenges & Solutions */}
             <div
               className="rounded-3xl bg-white shadow-lg flex-1 overflow-hidden flex flex-col"
               style={{ padding: "clamp(1rem,2vh,1.5rem)" }}
