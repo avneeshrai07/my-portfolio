@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const SKILLS = {
   row1: ["TypeScript", "React", "Node.js", "Python", "Docker"],

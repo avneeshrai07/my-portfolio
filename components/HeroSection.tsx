@@ -3,7 +3,7 @@
 import { useState, useRef, MouseEvent, TouchEvent, useEffect, useCallback } from "react";
 
 type PreparedText = unknown;
-interface LayoutLine { text: string; width: number; cursor: number }
+interface LayoutLine { text: string; width: number }
 
 const SERVICES = ["Brand Design", "Product Design", "UI/UX Design", "Design Consultancy"];
 const TAGLINE  = "FULL-STACK DEVELOPER & SAAS BUILDER";
@@ -18,7 +18,6 @@ export default function HeroSection() {
   const circleRef     = useRef<HTMLDivElement>(null);
   const photoCentreRef= useRef<HTMLDivElement>(null);
 
-  // Pretext reflow state — lines of bio wrapping around the centre photo
   const [bioLines, setBioLines] = useState<string[]>([]);
   const bioRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +28,6 @@ export default function HeroSection() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  // ── Reflow bio around the *centre photo column* (not the batman circle) ───
   const reflow = useCallback(async () => {
     if (typeof window === "undefined" || isMobile) return;
     if (!containerRef.current || !photoCentreRef.current || !bioRef.current) return;
@@ -41,12 +39,10 @@ export default function HeroSection() {
       const photoRect = photoCentreRef.current.getBoundingClientRect();
       const bioRect   = bioRef.current.getBoundingClientRect();
 
-      // Photo obstacle in hero-relative coords
       const obsLeft = photoRect.left   - heroRect.left;
       const obsTop  = photoRect.top    - heroRect.top;
       const obsBot  = photoRect.bottom - heroRect.top;
 
-      // Bio container in hero-relative coords
       const bioX = bioRect.left - heroRect.left;
       const bioY = bioRect.top  - heroRect.top;
       const bioW = bioRect.width;
@@ -56,44 +52,39 @@ export default function HeroSection() {
 
       const handle: PreparedText = prepareWithSegments(BIO, FONT);
       const lines: string[] = [];
-      let cursor = 0;
+      let cursor: unknown = 0;
 
       for (let i = 0; i < 20; i++) {
         const lineTop = bioY + i * LINE_H;
         const lineMid = lineTop + LINE_H / 2;
 
-        // Does this line vertically overlap the photo?
         const overlaps = lineMid > obsTop && lineMid < obsBot;
-
-        // Available width: if overlapping, cut off before the photo column
         const lineW = overlaps
           ? Math.max(60, obsLeft - bioX - 16)
           : bioW;
 
-        const line = (layoutNextLine as (
-          p: PreparedText, c: number, w: number
-        ) => LayoutLine | null)(handle, cursor, lineW);
+        const result = (layoutNextLine as unknown as (
+          p: unknown, c: unknown, w: number
+        ) => [LayoutLine, unknown] | null)(handle, cursor, lineW);
 
-        if (!line) break;
+        if (!result) break;
+        const [line, nextCursor] = result;
         lines.push(line.text);
-        cursor = line.cursor;
-        if (cursor >= BIO.length) break;
+        cursor = nextCursor;
       }
 
       setBioLines(lines);
     } catch {
-      setBioLines([]); // fallback to plain paragraph
+      setBioLines([]);
     }
   }, [isMobile]);
 
   useEffect(() => {
-    // Run after layout settles
     const t = setTimeout(reflow, 100);
     window.addEventListener("resize", reflow);
     return () => { clearTimeout(t); window.removeEventListener("resize", reflow); };
   }, [reflow]);
 
-  // ── Batman circle position ────────────────────────────────────────────────
   const CIRCLE = isMobile ? 180 : 350;
 
   const updateCircle = (x: number, y: number) => {
@@ -123,7 +114,7 @@ export default function HeroSection() {
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      onTouchStart={(e) => { setIsHovering(true); handleTouchMove(e); }}
+      onTouchStart={(e) => { setIsHovering(true); handleTouchMove(e as TouchEvent<HTMLDivElement>); }}
       onTouchMove={handleTouchMove}
       onTouchEnd={() => setIsHovering(false)}
     >
@@ -139,12 +130,7 @@ export default function HeroSection() {
         }}
       />
 
-      {/*
-        ── Layer 1: Batman reveal circle ──
-        ONLY the background layer inside the circle is batman.
-        Text lives ABOVE this in z-index so it's never covered.
-        The circle punches through to show batman behind the photo.
-      */}
+      {/* ── Layer 1: Batman reveal circle ── */}
       <div
         ref={circleRef}
         className="absolute top-0 left-0 pointer-events-none"
@@ -157,7 +143,7 @@ export default function HeroSection() {
           transition: "opacity 0.2s ease",
           willChange: "transform",
           transform: "translate3d(0,0,0)",
-          zIndex: 2, // above bg photo, BELOW text (z-10)
+          zIndex: 2,
           contain: "layout paint",
         }}
       >
@@ -177,16 +163,7 @@ export default function HeroSection() {
       {/* Mobile-only gradient */}
       <div className="lg:hidden absolute inset-0 bg-gradient-to-t from-[#1a1207]/90 via-[#1a1207]/25 to-transparent z-3" />
 
-      {/* ════════════════ DESKTOP — Jenny Rose 3-col grid ════════════════
-          Left 38%: tagline + big name + Pretext-reflowed bio + CTA
-          Centre ~40%: pill-shaped portrait photo (the reflow obstacle)
-          Right 22%: services list
-
-          Text is at z-10 — ABOVE the batman circle (z-2).
-          When the batman circle slides over text, we use a
-          CSS `isolation: isolate` + `mix-blend-mode: difference`
-          trick so text inverts to light on the dark batman bg.
-      ══════════════════════════════════════════════════════════════════ */}
+      {/* ════════════════ DESKTOP — 3-col grid ════════════════ */}
       <div className="hidden lg:grid absolute inset-0 z-10" style={{ gridTemplateColumns: "38% 1fr 22%" }}>
 
         {/* ── Left column ── */}
@@ -204,7 +181,6 @@ export default function HeroSection() {
 
           {/* Name + Bio block */}
           <div>
-            {/* Giant name — Jenny Rose style */}
             <h1
               className="font-black leading-none mb-6 text-hero-skin"
               style={{ fontSize: "clamp(4rem, 8vw, 8rem)", mixBlendMode: "difference" }}
@@ -212,11 +188,6 @@ export default function HeroSection() {
               {NAME}
             </h1>
 
-            {/*
-              Bio — Pretext reflows lines so they don't enter the photo column.
-              Lines that overlap the photo's vertical range get shortened,
-              creating natural text-wraps-around-portrait effect.
-            */}
             <div
               ref={bioRef}
               className="font-semibold text-hero-suit/90 leading-[1.8]"
@@ -241,17 +212,11 @@ export default function HeroSection() {
           </div>
         </div>
 
-        {/* ── Centre: pill portrait — this is the Pretext obstacle ── */}
+        {/* ── Centre: pill portrait — Pretext reflow obstacle ── */}
         <div
           ref={photoCentreRef}
           className="relative flex items-end justify-center"
         >
-          {/*
-            The photo here is a styled pill on TOP of the full-bg photo.
-            It creates the visual "floating portrait" of Jenny Rose.
-            Rounded top, bleeds to bottom of section.
-          */}
-          
         </div>
 
         {/* ── Right column: services ── */}

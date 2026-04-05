@@ -31,79 +31,79 @@ interface Project {
   theme: { primary: string; secondary: string; accent: string };
 }
 
-// ─────────────────── Phone Frame ───────────────────
-function PhoneFrame({ src, className }: { src: string; className?: string }) {
-  return (
-    <div
-      className={`relative flex-shrink-0 ${className ?? ""}`}
-      style={{ aspectRatio: "9 / 19.5" }}
-    >
-      <div
-        className="absolute overflow-hidden"
-        style={{
-          top: "3.5%",
-          left: "5%",
-          right: "5%",
-          bottom: "3.5%",
-          borderRadius: "12px",
-          zIndex: 0,
-        }}
-      >
-        <img
-          src={src}
-          alt="Mobile preview"
-          className="w-full h-full object-cover object-top"
-        />
-      </div>
-      <svg
-        className="absolute inset-0 w-full h-full pointer-events-none select-none"
-        viewBox="0 0 90 195"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ zIndex: 1 }}
-      >
-        <rect x="1.5" y="1.5" width="87" height="192" rx="14.5" fill="none" stroke="#1a1a1a" strokeWidth="3" />
-        <rect x="0" y="52" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
-        <rect x="0" y="80" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
-        <rect x="87.5" y="66" width="2.5" height="32" rx="1.25" fill="#2a2a2a" />
-        <rect x="32" y="6" width="26" height="7" rx="3.5" fill="#1a1a1a" />
-        <rect x="33" y="184" width="24" height="3" rx="1.5" fill="#1a1a1a" opacity="0.4" />
-      </svg>
-    </div>
-  );
-}
+// // ─────────────────── Phone Frame ───────────────────
+// function PhoneFrame({ src, className }: { src: string; className?: string }) {
+//   return (
+//     <div
+//       className={`relative flex-shrink-0 ${className ?? ""}`}
+//       style={{ aspectRatio: "9 / 19.5" }}
+//     >
+//       <div
+//         className="absolute overflow-hidden"
+//         style={{
+//           top: "3.5%",
+//           left: "5%",
+//           right: "5%",
+//           bottom: "3.5%",
+//           borderRadius: "12px",
+//           zIndex: 0,
+//         }}
+//       >
+//         <img
+//           src={src}
+//           alt="Mobile preview"
+//           className="w-full h-full object-cover object-top"
+//         />
+//       </div>
+//       <svg
+//         className="absolute inset-0 w-full h-full pointer-events-none select-none"
+//         viewBox="0 0 90 195"
+//         fill="none"
+//         xmlns="http://www.w3.org/2000/svg"
+//         style={{ zIndex: 1 }}
+//       >
+//         <rect x="1.5" y="1.5" width="87" height="192" rx="14.5" fill="none" stroke="#1a1a1a" strokeWidth="3" />
+//         <rect x="0" y="52" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
+//         <rect x="0" y="80" width="2.5" height="22" rx="1.25" fill="#2a2a2a" />
+//         <rect x="87.5" y="66" width="2.5" height="32" rx="1.25" fill="#2a2a2a" />
+//         <rect x="32" y="6" width="26" height="7" rx="3.5" fill="#1a1a1a" />
+//         <rect x="33" y="184" width="24" height="3" rx="1.5" fill="#1a1a1a" opacity="0.4" />
+//       </svg>
+//     </div>
+//   );
+// }
 
-// ─────────────────── Tablet Frame ───────────────────
-function TabletFrame({ src, className }: { src: string; className?: string }) {
-  return (
-    <div
-      className={`relative flex-shrink-0 ${className ?? ""}`}
-      style={{ aspectRatio: "3 / 4" }}
-    >
-      <div
-        className="absolute overflow-hidden"
-        style={{
-          top: "9.5%",
-          left: "7.8%",
-          right: "7.8%",
-          bottom: "9.5%",
-          borderRadius: "2px",
-          zIndex: 0,
-        }}
-      >
-        <img
-          src={src}
-          alt="Desktop preview"
-          className="w-full h-full object-cover object-top"
-        />
-      </div>
-      <div
-        className="absolute inset-0 pointer-events-none select-none"
-        style={{ zIndex: 1, borderRadius: "12px", border: "6px solid #1f2937" }}
-      />
-    </div>
-  );
-}
+// // ─────────────────── Tablet Frame ───────────────────
+// function TabletFrame({ src, className }: { src: string; className?: string }) {
+//   return (
+//     <div
+//       className={`relative flex-shrink-0 ${className ?? ""}`}
+//       style={{ aspectRatio: "3 / 4" }}
+//     >
+//       <div
+//         className="absolute overflow-hidden"
+//         style={{
+//           top: "9.5%",
+//           left: "7.8%",
+//           right: "7.8%",
+//           bottom: "9.5%",
+//           borderRadius: "2px",
+//           zIndex: 0,
+//         }}
+//       >
+//         <img
+//           src={src}
+//           alt="Desktop preview"
+//           className="w-full h-full object-cover object-top"
+//         />
+//       </div>
+//       <div
+//         className="absolute inset-0 pointer-events-none select-none"
+//         style={{ zIndex: 1, borderRadius: "12px", border: "6px solid #1f2937" }}
+//       />
+//     </div>
+//   );
+// }
 
 // ─────────────────── Read More Toggle ───────────────────
 function MobileDescription({
