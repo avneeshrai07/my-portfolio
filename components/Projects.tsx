@@ -80,14 +80,12 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
   const goTo = (targetIndex: number, dir: "left" | "right") => {
     if (animating) return;
 
-    // Circular wrap
     const next = ((targetIndex % projects.length) + projects.length) % projects.length;
     if (next === current) return;
 
     const slot = slotRef.current;
     const isActiveA = slot.active === "a";
 
-    // Pre-load next project into the inactive slot
     if (isActiveA) {
       slot.b = next;
     } else {
@@ -96,7 +94,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
 
     setAnimating(true);
 
-    // Let React re-render the inactive slot with the new project before animating
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const currentEl = isActiveA ? cardARef.current : cardBRef.current;
@@ -107,19 +104,20 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
           return;
         }
 
-        const fromX = dir === "left" ? "110%" : "-110%";
-        const exitX = dir === "left" ? "-110%" : "110%";
+        const fromX = dir === "left" ? "100%" : "-100%";
+        const exitX = dir === "left" ? "-30%" : "30%";
 
+        // Incoming card starts off-screen, slightly scaled down
         gsap.set(nextEl, {
           x: fromX,
-          rotateY: dir === "left" ? 15 : -15,
-          opacity: 0.7,
-          scale: 0.93,
+          scale: 0.96,
+          opacity: 0,
           zIndex: 2,
         });
         gsap.set(currentEl, { zIndex: 1 });
 
         const tl = gsap.timeline({
+          defaults: { ease: "expo.out", duration: 0.55 },
           onComplete: () => {
             slot.active = isActiveA ? "b" : "a";
             gsap.set([cardARef.current, cardBRef.current], { clearProps: "all" });
@@ -128,26 +126,26 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
           },
         });
 
+        // Current card: slides out with slight shrink + fade
         tl.to(currentEl, {
           x: exitX,
-          rotateY: dir === "left" ? -15 : 15,
+          scale: 0.94,
           opacity: 0,
-          scale: 0.93,
-          duration: 0.4,
-          ease: "power3.in",
+          duration: 0.38,
+          ease: "expo.in",
         });
 
+        // Incoming card: slides in, scales up to full, fades in — overlapping current exit
         tl.to(
           nextEl,
           {
             x: "0%",
-            rotateY: 0,
-            opacity: 1,
             scale: 1,
-            duration: 0.4,
-            ease: "power3.out",
+            opacity: 1,
+            duration: 0.55,
+            ease: "expo.out",
           },
-          "-=0.2"
+          "-=0.28" // generous overlap so there's no "gap" between cards
         );
       });
     });
@@ -183,7 +181,7 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      {/* Card stack — overflow-hidden scoped here only */}
+      {/* Card stack */}
       <div
         className="relative overflow-hidden rounded-[2.5rem]"
         style={{ transformStyle: "preserve-3d" }}
@@ -193,11 +191,10 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
           ref={cardARef}
           style={{
             position: slot.active === "a" ? "relative" : "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
+            top: 0, left: 0, right: 0,
             zIndex: slot.active === "a" ? 1 : 0,
             transformStyle: "preserve-3d",
+            willChange: "transform, opacity",
           }}
         >
           <MobileProjectCard project={projectA} />
@@ -208,11 +205,10 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
           ref={cardBRef}
           style={{
             position: slot.active === "b" ? "relative" : "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
+            top: 0, left: 0, right: 0,
             zIndex: slot.active === "b" ? 1 : 0,
             transformStyle: "preserve-3d",
+            willChange: "transform, opacity",
           }}
         >
           <MobileProjectCard project={projectB} />
@@ -258,7 +254,6 @@ function MobileProjectSwiper({ projects }: { projects: Project[] }) {
     </div>
   );
 }
-
 // ─────────────────── Mobile Project Card ───────────────────
 function MobileProjectCard({ project }: { project: Project }) {
   return (
