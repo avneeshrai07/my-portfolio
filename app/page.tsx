@@ -14,11 +14,12 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
       {/* Music Section */}
+      <Skills/>
       <MusicSection />
 
       <MovieSection />
       <Projects />
-      <Skills/>
+
       {/* Featured Projects */}
 
       <section className="container  mx-auto px-4 py-12 max-w-6xl">
