@@ -3,10 +3,6 @@
 import { useEffect, useRef, useState } from "react";
 import data from "@/data/my_journey_data.json";
 
-
-// ─────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────
 interface JourneyItem {
   year: string;
   period?: string;
@@ -17,14 +13,14 @@ interface JourneyItem {
   highlights?: string[];
 }
 
-const ITEMS: JourneyItem[] = data.journey
+const ITEMS: JourneyItem[] = data.journey;
 
 interface RowProps {
   item: JourneyItem;
   index: number;
   isLeft: boolean;
   dotRef: (el: HTMLDivElement | null) => void;
-  mobileDotRef: (el: HTMLDivElement | null) => void; // NEW
+  mobileDotRef: (el: HTMLDivElement | null) => void;
 }
 
 function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
@@ -197,10 +193,9 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
       {/* ── MOBILE ────────────────────────────────────────────── */}
       <div className="tj-mobile" style={{ display: "none" }}>
         <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
-          {/* Left: dot column with line drawn by parent SVG */}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
             <div
-              ref={mobileDotRef}  // NEW — captured for mobile SVG line
+              ref={mobileDotRef}
               style={{
                 width: 18, height: 18, borderRadius: "50%", flexShrink: 0,
                 border: `2px solid ${visible ? "var(--tj-accent)" : "var(--tj-ring)"}`,
@@ -217,7 +212,6 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
             </div>
           </div>
 
-          {/* Right: year + content */}
           <div style={{ flex: 1, minWidth: 0, paddingBottom: "0.65rem" }}>
             <div style={{ marginBottom: "0.45rem" }}>
               <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--tj-muted)", letterSpacing: "0.04em", lineHeight: 1 }}>
@@ -229,7 +223,6 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
                 </div>
               )}
             </div>
-
             {item.tag && (
               <span style={{
                 display: "inline-block", fontSize: "0.62rem", fontWeight: 700,
@@ -279,26 +272,25 @@ function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
 // ─────────────────────────────────────────────────────────────────
 export default function MyJourney() {
   const dotRefs       = useRef<(HTMLDivElement | null)[]>(ITEMS.map(() => null));
-  const mobileDotRefs = useRef<(HTMLDivElement | null)[]>(ITEMS.map(() => null)); // NEW
+  const mobileDotRefs = useRef<(HTMLDivElement | null)[]>(ITEMS.map(() => null));
   const wrapRef       = useRef<HTMLDivElement>(null);
 
-  // ── Desktop SVG refs ──────────────────────────────────────────
   const svgRef   = useRef<SVGSVGElement>(null);
   const trackRef = useRef<SVGLineElement>(null);
   const fillRef  = useRef<SVGLineElement>(null);
-  const pulseRef = useRef<SVGCircleElement>(null); // NEW — animated dot riding the fill
+  const pulseRef = useRef<SVGCircleElement>(null);
 
-  // ── Mobile SVG refs ───────────────────────────────────────────
-  const mSvgRef   = useRef<SVGSVGElement>(null);   // NEW
-  const mTrackRef = useRef<SVGLineElement>(null);   // NEW
-  const mFillRef  = useRef<SVGLineElement>(null);   // NEW
-  const mPulseRef = useRef<SVGCircleElement>(null); // NEW
+  const mSvgRef   = useRef<SVGSVGElement>(null);
+  const mTrackRef = useRef<SVGLineElement>(null);
+  const mFillRef  = useRef<SVGLineElement>(null);
+  const mPulseRef = useRef<SVGCircleElement>(null);
 
   useEffect(() => {
     function draw() {
       const wrap = wrapRef.current;
       if (!wrap) return;
       const wRect = wrap.getBoundingClientRect();
+
       const scrollProgress = (len: number, y1: number) =>
         Math.min(Math.max(
           (window.scrollY + window.innerHeight * 0.62
@@ -332,65 +324,86 @@ export default function MyJourney() {
         const len = y2 - y1;
         if (len > 0) {
           const p = scrollProgress(len, y1);
+
           fill.setAttribute("x1", String(cx)); fill.setAttribute("y1", String(y1));
           fill.setAttribute("x2", String(cx)); fill.setAttribute("y2", String(y2));
           fill.style.strokeDasharray  = String(len);
           fill.style.strokeDashoffset = String(len * (1 - p));
 
-          // Pulse dot rides the tip of the fill line
           if (pulse) {
             const py = y1 + len * p;
             pulse.setAttribute("cx", String(cx));
             pulse.setAttribute("cy", String(py));
             pulse.style.opacity = p > 0 && p < 1 ? "1" : "0";
+
+            const ring = document.getElementById("tj-pulse-ring-desktop");
+            if (ring) {
+              ring.setAttribute("cx", String(cx));
+              ring.setAttribute("cy", String(py));
+              ring.style.opacity = p > 0 && p < 1 ? "1" : "0";
+            }
           }
         }
       }
 
       // ── MOBILE ───────────────────────────────────────────────
-      const mSvg   = mSvgRef.current;
-      const mTrack = mTrackRef.current;
-      const mFill  = mFillRef.current;
-      const mPulse = mPulseRef.current;
-      const mDots  = mobileDotRefs.current.filter((d): d is HTMLDivElement => d !== null);
+const mSvg   = mSvgRef.current;
+const mTrack = mTrackRef.current;
+const mFill  = mFillRef.current;
+const mPulse = mPulseRef.current;
+const mDots  = mobileDotRefs.current.filter((d): d is HTMLDivElement => d !== null);
 
-      if (mSvg && mTrack && mFill && mDots.length >= 2) {
-        const W = wrap.offsetWidth;
-        const H = wrap.offsetHeight;
-        const first = mDots[0].getBoundingClientRect();
-        const last  = mDots[mDots.length - 1].getBoundingClientRect();
-        const cx = first.left + first.width  / 2 - wRect.left;
-        const y1 = first.top  + first.height / 2 - wRect.top;
-        const y2 = last.top   + last.height  / 2 - wRect.top;
+if (mSvg && mTrack && mFill && mDots.length >= 2) {
+  // Only run mobile logic when the mobile layout is actually visible
+  if (mDots[0].offsetParent === null) return;
 
-        mSvg.setAttribute("width",   String(W));
-        mSvg.setAttribute("height",  String(H));
-        mSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  const W = wrap.offsetWidth;
+  const H = wrap.offsetHeight;
+  const first = mDots[0].getBoundingClientRect();
+  const last  = mDots[mDots.length - 1].getBoundingClientRect();
 
-        mTrack.setAttribute("x1", String(cx)); mTrack.setAttribute("y1", String(y1));
-        mTrack.setAttribute("x2", String(cx)); mTrack.setAttribute("y2", String(y2));
+  // Guard: if dots have no size, layout hasn't painted yet — skip
+  if (first.width === 0) return;
 
-        const len = y2 - y1;
-        if (len > 0) {
-          const p = scrollProgress(len, y1);
-          mFill.setAttribute("x1", String(cx)); mFill.setAttribute("y1", String(y1));
-          mFill.setAttribute("x2", String(cx)); mFill.setAttribute("y2", String(y2));
-          mFill.style.strokeDasharray  = String(len);
-          mFill.style.strokeDashoffset = String(len * (1 - p));
+  const cx = first.left + first.width  / 2 - wRect.left;
+  const y1 = first.top  + first.height / 2 - wRect.top;
+  const y2 = last.top   + last.height  / 2 - wRect.top;
 
-          if (mPulse) {
-            const py = y1 + len * p;
-            mPulse.setAttribute("cx", String(cx));
-            mPulse.setAttribute("cy", String(py));
-            mPulse.style.opacity = p > 0 && p < 1 ? "1" : "0";
-          }
-        }
+  mSvg.setAttribute("width",   String(W));
+  mSvg.setAttribute("height",  String(H));
+  mSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+  mTrack.setAttribute("x1", String(cx)); mTrack.setAttribute("y1", String(y1));
+  mTrack.setAttribute("x2", String(cx)); mTrack.setAttribute("y2", String(y2));
+
+  const len = y2 - y1;
+  if (len > 0) {
+    const p = scrollProgress(len, y1);
+
+    mFill.setAttribute("x1", String(cx)); mFill.setAttribute("y1", String(y1));
+    mFill.setAttribute("x2", String(cx)); mFill.setAttribute("y2", String(y2));
+    mFill.style.strokeDasharray  = String(len);
+    mFill.style.strokeDashoffset = String(len * (1 - p));
+
+    if (mPulse) {
+      const py = y1 + len * p;
+      mPulse.setAttribute("cx", String(cx));
+      mPulse.setAttribute("cy", String(py));
+      mPulse.style.opacity = p > 0 && p < 1 ? "1" : "0";
+
+      const mRing = document.getElementById("tj-pulse-ring-mobile");
+      if (mRing) {
+        mRing.setAttribute("cx", String(cx));
+        mRing.setAttribute("cy", String(py));
+        mRing.style.opacity = p > 0 && p < 1 ? "1" : "0";
       }
+    }
+  }
+}
     }
 
     let r1: number, r2: number;
     r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(draw); });
-
     window.addEventListener("scroll", draw, { passive: true });
     window.addEventListener("resize", draw);
     return () => {
@@ -429,14 +442,14 @@ export default function MyJourney() {
           font-family: Satoshi, Inter, system-ui, sans-serif;
           -webkit-font-smoothing: antialiased;
         }
-        @keyframes tj-pulse-ring {
-          0%   { r: 4px;  opacity: 0.7; }
-          100% { r: 9px;  opacity: 0;   }
+        @keyframes tj-ripple {
+          0%   { transform: scale(1);   opacity: 0.8; }
+          100% { transform: scale(3.2); opacity: 0;   }
         }
         .tj-pulse-ring {
-          animation: tj-pulse-ring 1.4s ease-out infinite;
           transform-box: fill-box;
           transform-origin: center;
+          animation: tj-ripple 1.5s ease-out infinite;
         }
         @media (max-width: 580px) {
           .tj-desktop { display: none  !important; }
@@ -466,7 +479,7 @@ export default function MyJourney() {
       <div className="tj-wrap" style={{ paddingBottom: "clamp(4rem, 8vw, 7rem)" }}>
         <div ref={wrapRef} style={{ position: "relative" }}>
 
-          {/* ── DESKTOP SVG beam ───────────────────────────────── */}
+          {/* ── DESKTOP SVG ─────────────────────────────────── */}
           <svg
             ref={svgRef}
             aria-hidden="true"
@@ -475,59 +488,59 @@ export default function MyJourney() {
             style={{
               position: "absolute", top: 0, left: 0,
               pointerEvents: "none", zIndex: 0, overflow: "visible",
-              display: "block",       // overridden by media query to none on mobile
+              display: "block",
             }}
           >
             <defs>
+              {/* Completed portion: vivid teal → cyan */}
               <linearGradient id="tj-grad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#01696f" />
-                <stop offset="100%" stopColor="#4f98a3" />
+                <stop offset="0%"   stopColor="#00897b" />
+                <stop offset="40%"  stopColor="#0097a7" />
+                <stop offset="100%" stopColor="#26c6da" />
               </linearGradient>
             </defs>
-            {/* Track */}
+
+            {/* Track (unfilled) */}
             <line
               ref={trackRef}
-              strokeWidth="2"
-              stroke="currentColor"
-              opacity="0.15"
-              style={{ color: "var(--tj-faint)" }}
+              strokeWidth="3"
+              stroke="#d4d1ca"
+              opacity="0.5"
             />
-            {/* Animated fill */}
+
+            {/* Colored fill — grows with scroll */}
             <line
               ref={fillRef}
-              strokeWidth="2.5"
+              strokeWidth="3.5"
               stroke="url(#tj-grad)"
               strokeLinecap="round"
               style={{
-                filter: "drop-shadow(0 0 4px #01696f66)",
-                transition: "stroke-dashoffset 0.07s linear",
+                transition: "stroke-dashoffset 0.08s linear",
               }}
             />
-            {/* Pulse ring at the tip */}
+
+            {/* Solid dot at the leading tip */}
             <circle
               ref={pulseRef}
-              r="4"
-              fill="none"
-              stroke="#01696f"
-              strokeWidth="1.5"
+              r="5"
+              fill="#26c6da"
               opacity="0"
               style={{ transition: "opacity 0.2s" }}
             />
+
+            {/* Ripple ring around the tip — scale() animation, no r mutation */}
             <circle
+              id="tj-pulse-ring-desktop"
               className="tj-pulse-ring"
-              ref={(el) => {
-                // this is the animated expanding ring — driven purely by CSS
-              }}
-              r="4"
+              r="5"
               fill="none"
-              stroke="#01696f"
-              strokeWidth="1"
+              stroke="#26c6da"
+              strokeWidth="1.5"
               opacity="0"
-              // We'll drive this via a second pulse element rendered inline below
             />
           </svg>
 
-          {/* ── MOBILE SVG beam ────────────────────────────────── */}
+          {/* ── MOBILE SVG ──────────────────────────────────── */}
           <svg
             ref={mSvgRef}
             aria-hidden="true"
@@ -541,33 +554,45 @@ export default function MyJourney() {
           >
             <defs>
               <linearGradient id="tj-grad-m" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stopColor="#01696f" />
-                <stop offset="100%" stopColor="#4f98a3" />
+                <stop offset="0%"   stopColor="#00897b" />
+                <stop offset="40%"  stopColor="#0097a7" />
+                <stop offset="100%" stopColor="#26c6da" />
               </linearGradient>
             </defs>
+
             <line
               ref={mTrackRef}
-              strokeWidth="2"
-              stroke="currentColor"
-              opacity="0.15"
-              style={{ color: "var(--tj-faint)" }}
+              strokeWidth="3"
+              stroke="#d4d1ca"
+              opacity="0.5"
             />
+
             <line
               ref={mFillRef}
-              strokeWidth="2.5"
+              strokeWidth="3.5"
               stroke="url(#tj-grad-m)"
               strokeLinecap="round"
               style={{
-                filter: "drop-shadow(0 0 4px #01696f66)",
-                transition: "stroke-dashoffset 0.07s linear",
+                transition: "stroke-dashoffset 0.08s linear",
               }}
             />
+
             <circle
               ref={mPulseRef}
-              r="4"
-              fill="#01696f"
+              r="5"
+              fill="#26c6da"
               opacity="0"
               style={{ transition: "opacity 0.2s" }}
+            />
+
+            <circle
+              id="tj-pulse-ring-mobile"
+              className="tj-pulse-ring"
+              r="5"
+              fill="none"
+              stroke="#26c6da"
+              strokeWidth="1.5"
+              opacity="0"
             />
           </svg>
 
