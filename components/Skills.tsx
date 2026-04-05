@@ -109,7 +109,7 @@ export default function Skills() {
           items={SKILLS.row2}
           direction="right"
           speed={22}
-          dotClass="bg-[var(--shirt-tan)]"
+          dotClass="bg-[var(--suit-brown)]"
           accentClass="text-hero-suit"
           italic
         />
@@ -119,7 +119,7 @@ export default function Skills() {
           items={SKILLS.row3}
           direction="left"
           speed={32}
-          dotClass="bg-[var(--shirt-tan)]"
+          dotClass="bg-[var(--suit-brown)]"
           accentClass="text-hero-suit"
           thin
         />

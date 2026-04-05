@@ -6,6 +6,7 @@ import MusicSection from "@/components/MusicSection";
 import MovieSection from "@/components/MoviesSection";
 import Projects from '@/components/Projects';
 import Skills from '@/components/Skills'
+import MyJourney from "@/components/MyJourney";
 export default function Home() {
   const featuredProjects = PROJECTS.filter((p) => p.featured);
 
@@ -13,6 +14,7 @@ export default function Home() {
     <main className="min-h-screen  ">
       {/* Hero Section */}
       <HeroSection />
+      <MyJourney/>
       {/* Music Section */}
       <Skills/>
       <MusicSection />

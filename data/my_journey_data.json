@@ -1,0 +1,33 @@
+{
+  "journey": [
+    
+    {
+      "year": "20XX – XX",
+      "period": "Higher Secondary",
+      "tag": "Education",
+      "title": "School / Junior College Name",
+      "subtitle": "Science / Commerce / Arts"
+    },
+    {
+      "year": "20XX – XX",
+      "period": "Undergrad",
+      "tag": "College",
+      "title": "University / College Name",
+      "subtitle": "B.Tech / B.Sc / B.E — Major"
+    },
+    {
+      "year": "20XX",
+      "period": "First Role",
+      "tag": "Career",
+      "title": "Company / Startup Name",
+      "subtitle": "Job Title"
+    },
+    {
+      "year": "Present",
+      "period": "Current",
+      "tag": "Now",
+      "title": "What you are working on today",
+      "subtitle": "Role / Venture"
+    }
+  ]
+}
