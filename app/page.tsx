@@ -5,6 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import MusicSection from "@/components/MusicSection";
 import MovieSection from "@/components/MoviesSection";
 import Projects from '@/components/Projects';
+import Skills from '@/components/Skills'
 export default function Home() {
   const featuredProjects = PROJECTS.filter((p) => p.featured);
 
@@ -17,6 +18,7 @@ export default function Home() {
 
       <MovieSection />
       <Projects />
+      <Skills/>
       {/* Featured Projects */}
 
       <section className="container  mx-auto px-4 py-12 max-w-6xl">

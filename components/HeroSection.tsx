@@ -2,11 +2,9 @@
 
 import { useState, useRef, MouseEvent, TouchEvent, useEffect, useCallback } from "react";
 
-// ─── Pretext types ────────────────────────────────────────────────────────────
 type PreparedText = unknown;
 interface LayoutLine { text: string; width: number; cursor: number }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 const SERVICES = ["Brand Design", "Product Design", "UI/UX Design", "Design Consultancy"];
 const TAGLINE  = "FULL-STACK DEVELOPER & SAAS BUILDER";
 const NAME     = "Avneesh";
@@ -15,92 +13,66 @@ const BIO      = "Building high-performance APIs, progressive web apps, and scal
 export default function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering,    setIsHovering]    = useState(false);
-  const [isMobileDevice,setIsMobileDevice]= useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const circleRef    = useRef<HTMLDivElement>(null);
+  const [isMobile,      setIsMobile]      = useState(false);
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const circleRef     = useRef<HTMLDivElement>(null);
+  const photoCentreRef= useRef<HTMLDivElement>(null);
 
-  // ── Pretext: reflow bio around the batman circle ──────────────────────────
+  // Pretext reflow state — lines of bio wrapping around the centre photo
   const [bioLines, setBioLines] = useState<string[]>([]);
-  const bioRef = useRef<HTMLParagraphElement>(null);
-
-  const batmanOffset = {
-    desktop: { x: -8, y: 0 },
-    mobile:  { x: 0,  y: 0 },
-  };
+  const bioRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobileDevice(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
 
-  const getCircleSize  = () => (isMobileDevice ? 180 : 350);
-  const getBatmanOffset= () => (isMobileDevice ? batmanOffset.mobile : batmanOffset.desktop);
-
-  // ── Reflow bio text around the batman reveal circle ───────────────────────
-  //
-  // The batman circle is centred on mousePosition. When hovering, it overlaps
-  // the bio paragraph. We use Pretext layoutNextLine() to carve the circle
-  // out of each line's available width so the text wraps around it cleanly.
-  //
+  // ── Reflow bio around the *centre photo column* (not the batman circle) ───
   const reflow = useCallback(async () => {
-    if (typeof window === "undefined" || isMobileDevice) return;
-    if (!containerRef.current || !bioRef.current) return;
+    if (typeof window === "undefined" || isMobile) return;
+    if (!containerRef.current || !photoCentreRef.current || !bioRef.current) return;
 
     try {
       const { prepareWithSegments, layoutNextLine } = await import("@chenglou/pretext");
 
-      const heroRect = containerRef.current.getBoundingClientRect();
-      const bioRect  = bioRef.current.getBoundingClientRect();
+      const heroRect  = containerRef.current.getBoundingClientRect();
+      const photoRect = photoCentreRef.current.getBoundingClientRect();
+      const bioRect   = bioRef.current.getBoundingClientRect();
 
-      const bioX = bioRect.left  - heroRect.left;
-      const bioY = bioRect.top   - heroRect.top;
+      // Photo obstacle in hero-relative coords
+      const obsLeft = photoRect.left   - heroRect.left;
+      const obsTop  = photoRect.top    - heroRect.top;
+      const obsBot  = photoRect.bottom - heroRect.top;
+
+      // Bio container in hero-relative coords
+      const bioX = bioRect.left - heroRect.left;
+      const bioY = bioRect.top  - heroRect.top;
       const bioW = bioRect.width;
 
-      // Batman circle bounds in hero-relative coords
-      const circleR = getCircleSize() / 2;
-      const cx      = mousePosition.x;
-      const cy      = mousePosition.y;
-
-      const FONT   = "600 18px system-ui";
-      const LINE_H = 32;
+      const FONT   = "600 17px system-ui, sans-serif";
+      const LINE_H = 30;
 
       const handle: PreparedText = prepareWithSegments(BIO, FONT);
       const lines: string[] = [];
       let cursor = 0;
 
       for (let i = 0; i < 20; i++) {
-        const lineY      = bioY + i * LINE_H;
-        const lineMidY   = lineY + LINE_H / 2;
+        const lineTop = bioY + i * LINE_H;
+        const lineMid = lineTop + LINE_H / 2;
 
-        // Vertical distance from line midpoint to circle centre
-        const dy = lineMidY - cy;
+        // Does this line vertically overlap the photo?
+        const overlaps = lineMid > obsTop && lineMid < obsBot;
 
-        let lineWidth = bioW;
-
-        if (Math.abs(dy) < circleR) {
-          // Chord width of circle at this y
-          const chordHalf = Math.sqrt(circleR * circleR - dy * dy);
-          const circleLeft  = cx - chordHalf - heroRect.left;
-          const circleRight = cx + chordHalf - heroRect.left;
-
-          // Does the circle intrude into the bio column?
-          if (circleRight > bioX && circleLeft < bioX + bioW) {
-            // Clip from whichever side the circle enters
-            if (circleLeft <= bioX) {
-              // Circle enters from the left — push text right
-              lineWidth = Math.max(40, bioX + bioW - circleRight - 8);
-            } else {
-              // Circle enters from the right — shrink line
-              lineWidth = Math.max(40, circleLeft - bioX - 8);
-            }
-          }
-        }
+        // Available width: if overlapping, cut off before the photo column
+        const lineW = overlaps
+          ? Math.max(60, obsLeft - bioX - 16)
+          : bioW;
 
         const line = (layoutNextLine as (
           p: PreparedText, c: number, w: number
-        ) => LayoutLine | null)(handle, cursor, lineWidth);
+        ) => LayoutLine | null)(handle, cursor, lineW);
 
         if (!line) break;
         lines.push(line.text);
@@ -110,96 +82,82 @@ export default function HeroSection() {
 
       setBioLines(lines);
     } catch {
-      // Pretext not installed — fall back to plain text
-      setBioLines([]);
+      setBioLines([]); // fallback to plain paragraph
     }
-  }, [isMobileDevice, mousePosition]);
-
-  // Re-run reflow whenever the mouse moves (circle moves = obstacle moves)
-  useEffect(() => {
-    reflow();
-  }, [reflow]);
+  }, [isMobile]);
 
   useEffect(() => {
+    // Run after layout settles
+    const t = setTimeout(reflow, 100);
     window.addEventListener("resize", reflow);
-    return () => window.removeEventListener("resize", reflow);
+    return () => { clearTimeout(t); window.removeEventListener("resize", reflow); };
   }, [reflow]);
 
-  // ── Batman reveal circle position ────────────────────────────────────────
-  const updateCirclePosition = (x: number, y: number) => {
-    if (!containerRef.current || !circleRef.current) return;
-    const circleSize = getCircleSize();
-    const halfCircle = circleSize / 2;
-    circleRef.current.style.transform = `translate3d(${x - halfCircle}px, ${y - halfCircle}px, 0)`;
+  // ── Batman circle position ────────────────────────────────────────────────
+  const CIRCLE = isMobile ? 180 : 350;
+
+  const updateCircle = (x: number, y: number) => {
+    if (!circleRef.current) return;
+    circleRef.current.style.transform = `translate3d(${x - CIRCLE / 2}px, ${y - CIRCLE / 2}px, 0)`;
     setMousePosition({ x, y });
   };
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    updateCirclePosition(e.clientX - rect.left, e.clientY - rect.top);
+    const r = containerRef.current.getBoundingClientRect();
+    updateCircle(e.clientX - r.left, e.clientY - r.top);
   };
 
   const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
-    const touch = e.touches[0];
-    const rect  = containerRef.current.getBoundingClientRect();
-    updateCirclePosition(touch.clientX - rect.left, touch.clientY - rect.top);
+    const t = e.touches[0];
+    const r = containerRef.current.getBoundingClientRect();
+    updateCircle(t.clientX - r.left, t.clientY - r.top);
   };
-
-  const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
-    setIsHovering(true);
-    handleTouchMove(e);
-  };
-
-  const circleSize    = getCircleSize();
-  const halfCircle    = circleSize / 2;
-  const currentOffset = getBatmanOffset();
 
   return (
     <section
       ref={containerRef}
-      className="relative w-full overflow-hidden cursor-pointer bg-[#EEEADF]"
-      style={{ height: "100svh", minHeight: 600, touchAction: "pan-y" }}
+      className="relative w-full overflow-hidden bg-[#EEEADF]"
+      style={{ height: "100svh", minHeight: 600, touchAction: "pan-y", cursor: "crosshair" }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => { setIsHovering(false); setBioLines([]); }}
-      onTouchStart={handleTouchStart}
+      onMouseLeave={() => setIsHovering(false)}
+      onTouchStart={(e) => { setIsHovering(true); handleTouchMove(e); }}
       onTouchMove={handleTouchMove}
       onTouchEnd={() => setIsHovering(false)}
     >
 
-      {/* ── Professional Photo — Full Background ── */}
+      {/* ── Layer 0: Professional photo — full background ── */}
       <div
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0"
         style={{
           backgroundImage: "url(/my_professional.png)",
           backgroundSize: "cover",
           backgroundPosition: "center center",
           backgroundRepeat: "no-repeat",
-          willChange: "auto",
-          contain: "paint",
         }}
       />
 
-      {/* Mobile-only gradient */}
-      <div className="md:hidden absolute inset-0 bg-gradient-to-t from-[#1a1207]/90 via-[#1a1207]/25 to-transparent" />
-
-      {/* ── Batman Reveal Circle ── */}
+      {/*
+        ── Layer 1: Batman reveal circle ──
+        ONLY the background layer inside the circle is batman.
+        Text lives ABOVE this in z-index so it's never covered.
+        The circle punches through to show batman behind the photo.
+      */}
       <div
         ref={circleRef}
-        className="absolute top-0 left-0 pointer-events-none z-20"
+        className="absolute top-0 left-0 pointer-events-none"
         style={{
-          width: `${circleSize}px`,
-          height: `${circleSize}px`,
+          width: CIRCLE,
+          height: CIRCLE,
           borderRadius: "50%",
           overflow: "hidden",
           opacity: isHovering ? 1 : 0,
           transition: "opacity 0.2s ease",
-          willChange: "transform, opacity",
-          transform: "translate3d(0, 0, 0)",
-          backfaceVisibility: "hidden",
-          WebkitBackfaceVisibility: "hidden",
+          willChange: "transform",
+          transform: "translate3d(0,0,0)",
+          zIndex: 2, // above bg photo, BELOW text (z-10)
           contain: "layout paint",
         }}
       >
@@ -210,64 +168,116 @@ export default function HeroSection() {
             backgroundImage: "url(/batman.png)",
             backgroundSize: "cover",
             backgroundPosition: "center center",
-            backgroundRepeat: "no-repeat",
-            transform: `translate3d(${-mousePosition.x + halfCircle + currentOffset.x}px, ${
-              -mousePosition.y + halfCircle + currentOffset.y
-            }px, 0)`,
+            transform: `translate3d(${-mousePosition.x + CIRCLE / 2 - 8}px, ${-mousePosition.y + CIRCLE / 2}px, 0)`,
             willChange: "transform",
-            backfaceVisibility: "hidden",
-            WebkitBackfaceVisibility: "hidden",
-            contain: "paint",
           }}
         />
       </div>
 
-      {/* ════════════════ DESKTOP — doc5 layout + Pretext reflow ════════════════ */}
-      <div
-        className="hidden md:flex absolute inset-0 items-center pointer-events-none z-10"
-        style={{ contain: "layout style" }}
-      >
-        <div className="container mx-auto px-8 md:px-16 max-w-7xl">
-          <div className="max-w-2xl">
-            <p className="text-sm md:text-base text-hero-suit/80 mb-4 tracking-widest uppercase font-semibold">
-              {TAGLINE}
-            </p>
-            <h1 className="text-6xl text-hero-skin md:text-8xl font-bold mb-6 leading-tight">
+      {/* Mobile-only gradient */}
+      <div className="lg:hidden absolute inset-0 bg-gradient-to-t from-[#1a1207]/90 via-[#1a1207]/25 to-transparent z-3" />
+
+      {/* ════════════════ DESKTOP — Jenny Rose 3-col grid ════════════════
+          Left 38%: tagline + big name + Pretext-reflowed bio + CTA
+          Centre ~40%: pill-shaped portrait photo (the reflow obstacle)
+          Right 22%: services list
+
+          Text is at z-10 — ABOVE the batman circle (z-2).
+          When the batman circle slides over text, we use a
+          CSS `isolation: isolate` + `mix-blend-mode: difference`
+          trick so text inverts to light on the dark batman bg.
+      ══════════════════════════════════════════════════════════════════ */}
+      <div className="hidden lg:grid absolute inset-0 z-10" style={{ gridTemplateColumns: "38% 1fr 22%" }}>
+
+        {/* ── Left column ── */}
+        <div
+          className="flex flex-col justify-between py-12 pl-12 pr-6"
+          style={{ isolation: "isolate" }}
+        >
+          {/* Tagline */}
+          <p
+            className="text-[11px] font-bold tracking-[0.25em] uppercase text-hero-suit/60"
+            style={{ mixBlendMode: "difference", color: "var(--hero-suit)" }}
+          >
+            {TAGLINE}
+          </p>
+
+          {/* Name + Bio block */}
+          <div>
+            {/* Giant name — Jenny Rose style */}
+            <h1
+              className="font-black leading-none mb-6 text-hero-skin"
+              style={{ fontSize: "clamp(4rem, 8vw, 8rem)", mixBlendMode: "difference" }}
+            >
               {NAME}
             </h1>
 
             {/*
-              Bio — Pretext reflows lines around the batman circle while hovering.
-              When not hovering (bioLines is empty) renders as a normal paragraph.
+              Bio — Pretext reflows lines so they don't enter the photo column.
+              Lines that overlap the photo's vertical range get shortened,
+              creating natural text-wraps-around-portrait effect.
             */}
-            {bioLines.length > 0 ? (
-              <p
-                ref={bioRef}
-                className="text-lg md:text-xl text-hero-suit/90 mb-8 max-w-xl"
-                style={{ lineHeight: "2rem" }}
-              >
-                {bioLines.map((line, i) => (
-                  <span key={i} style={{ display: "block" }}>{line}</span>
-                ))}
-              </p>
-            ) : (
-              <p
-                ref={bioRef}
-                className="text-lg md:text-xl text-hero-suit/90 mb-8 max-w-xl"
-              >
-                {BIO}
-              </p>
-            )}
+            <div
+              ref={bioRef}
+              className="font-semibold text-hero-suit/90 leading-[1.8]"
+              style={{ fontSize: 17, mixBlendMode: "difference" }}
+            >
+              {bioLines.length > 0 ? (
+                bioLines.map((line, i) => <div key={i}>{line}</div>)
+              ) : (
+                <p className="max-w-xs">{BIO}</p>
+              )}
+            </div>
+          </div>
 
-            <button className="pointer-events-auto px-8 py-4 bg-hero-suit/20 text-hero-suit rounded-full hover:bg-hero-suit/30 transition-all duration-300 border-2 border-hero-suit/30 font-semibold active:scale-95">
+          {/* CTA */}
+          <div className="flex items-center gap-6">
+            <button
+              className="pointer-events-auto px-8 py-4 bg-hero-suit/20 text-hero-suit rounded-full hover:bg-hero-suit/30 transition-all duration-300 border-2 border-hero-suit/30 font-semibold active:scale-95 text-sm"
+            >
               View My Work
             </button>
+            <div className="h-px flex-1 bg-hero-suit/20" />
           </div>
+        </div>
+
+        {/* ── Centre: pill portrait — this is the Pretext obstacle ── */}
+        <div
+          ref={photoCentreRef}
+          className="relative flex items-end justify-center"
+        >
+          {/*
+            The photo here is a styled pill on TOP of the full-bg photo.
+            It creates the visual "floating portrait" of Jenny Rose.
+            Rounded top, bleeds to bottom of section.
+          */}
+          
+        </div>
+
+        {/* ── Right column: services ── */}
+        <div className="flex flex-col justify-center py-12 pr-12 pl-4">
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-hero-suit/40 mb-8">
+            Services
+          </p>
+          <ul className="space-y-4">
+            {SERVICES.map((s, i) => (
+              <li
+                key={s}
+                className={`text-sm font-semibold tracking-wide transition-colors ${
+                  i === 1
+                    ? "text-hero-suit"
+                    : "text-hero-suit/35 hover:text-hero-suit/60"
+                }`}
+              >
+                {s}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      {/* ════════════════ MOBILE — doc6 layout ════════════════ */}
-      <div className="md:hidden absolute inset-x-0 bottom-0 z-10">
+      {/* ════════════════ MOBILE — bottom-anchored panel ════════════════ */}
+      <div className="lg:hidden absolute inset-x-0 bottom-0 z-10">
         <div
           className="px-6 pt-8 pb-10 space-y-4"
           style={{ background: "linear-gradient(to top, rgba(26,18,7,0.92) 80%, transparent)" }}
@@ -287,7 +297,6 @@ export default function HeroSection() {
             {BIO}
           </p>
 
-          {/* Services pills */}
           <div className="flex flex-wrap gap-2 pt-1">
             {SERVICES.map((s, i) => (
               <span
