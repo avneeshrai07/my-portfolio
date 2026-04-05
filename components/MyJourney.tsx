@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import data from "@/data/my_journey_data.json";
+
+
 // ─────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────
@@ -22,9 +24,10 @@ interface RowProps {
   index: number;
   isLeft: boolean;
   dotRef: (el: HTMLDivElement | null) => void;
+  mobileDotRef: (el: HTMLDivElement | null) => void; // NEW
 }
 
-function Row({ item, index, isLeft, dotRef }: RowProps) {
+function Row({ item, index, isLeft, dotRef, mobileDotRef }: RowProps) {
   const rowRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const delay = index * 80;
@@ -42,7 +45,6 @@ function Row({ item, index, isLeft, dotRef }: RowProps) {
     return () => obs.disconnect();
   }, []);
 
-  // Dot
   const dot = (
     <div
       ref={dotRef}
@@ -68,7 +70,6 @@ function Row({ item, index, isLeft, dotRef }: RowProps) {
     </div>
   );
 
-  // Date label
   const dateBlock = (align: "left" | "right") => (
     <div style={{
       textAlign: align, flexShrink: 0,
@@ -95,7 +96,6 @@ function Row({ item, index, isLeft, dotRef }: RowProps) {
     </div>
   );
 
-  // Content block
   const slideX = isLeft ? "-12px" : "12px";
   const contentBlock = (align: "left" | "right") => (
     <div style={{
@@ -175,7 +175,6 @@ function Row({ item, index, isLeft, dotRef }: RowProps) {
         columnGap: "clamp(0.75rem, 2vw, 1.5rem)",
         alignItems: "flex-start",
       }}>
-        {/* Left col */}
         <div style={{
           display: "flex", justifyContent: "flex-end",
           alignItems: "flex-start",
@@ -183,13 +182,9 @@ function Row({ item, index, isLeft, dotRef }: RowProps) {
         }}>
           {isLeft ? contentBlock("right") : dateBlock("right")}
         </div>
-
-        {/* Centre col — dot only */}
         <div style={{ lineHeight: 0, paddingTop: "0.1rem" }}>
           {dot}
         </div>
-
-        {/* Right col */}
         <div style={{
           display: "flex", justifyContent: "flex-start",
           alignItems: "flex-start",
@@ -201,70 +196,77 @@ function Row({ item, index, isLeft, dotRef }: RowProps) {
 
       {/* ── MOBILE ────────────────────────────────────────────── */}
       <div className="tj-mobile" style={{ display: "none" }}>
-        {/* Dot + year row */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.65rem" }}>
-          <div style={{
-            width: 18, height: 18, borderRadius: "50%", flexShrink: 0,
-            border: `2px solid ${visible ? "var(--tj-accent)" : "var(--tj-ring)"}`,
-            background: "var(--tj-dot-bg)", display: "grid", placeItems: "center",
-            transition: `border-color 0.3s ${delay + 80}ms`,
-          }}>
-            <div style={{
-              width: 7, height: 7, borderRadius: "50%", background: "var(--tj-accent)",
-              opacity: visible ? 1 : 0, transform: visible ? "scale(1)" : "scale(0)",
-              transition: `opacity 0.3s ${delay + 200}ms, transform 0.35s ${delay + 200}ms cubic-bezier(0.34,1.56,0.64,1)`,
-            }} />
-          </div>
-          <div>
-            <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--tj-muted)", letterSpacing: "0.04em", lineHeight: 1 }}>
-              {item.year}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem" }}>
+          {/* Left: dot column with line drawn by parent SVG */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flexShrink: 0 }}>
+            <div
+              ref={mobileDotRef}  // NEW — captured for mobile SVG line
+              style={{
+                width: 18, height: 18, borderRadius: "50%", flexShrink: 0,
+                border: `2px solid ${visible ? "var(--tj-accent)" : "var(--tj-ring)"}`,
+                background: "var(--tj-dot-bg)", display: "grid", placeItems: "center",
+                transition: `border-color 0.3s ${delay + 80}ms`,
+                position: "relative", zIndex: 2,
+              }}
+            >
+              <div style={{
+                width: 7, height: 7, borderRadius: "50%", background: "var(--tj-accent)",
+                opacity: visible ? 1 : 0, transform: visible ? "scale(1)" : "scale(0)",
+                transition: `opacity 0.3s ${delay + 200}ms, transform 0.35s ${delay + 200}ms cubic-bezier(0.34,1.56,0.64,1)`,
+              }} />
             </div>
-            {item.period && (
-              <div style={{ fontSize: "0.68rem", color: "var(--tj-faint)", marginTop: "0.15rem" }}>
-                {item.period}
+          </div>
+
+          {/* Right: year + content */}
+          <div style={{ flex: 1, minWidth: 0, paddingBottom: "0.65rem" }}>
+            <div style={{ marginBottom: "0.45rem" }}>
+              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--tj-muted)", letterSpacing: "0.04em", lineHeight: 1 }}>
+                {item.year}
               </div>
+              {item.period && (
+                <div style={{ fontSize: "0.68rem", color: "var(--tj-faint)", marginTop: "0.15rem" }}>
+                  {item.period}
+                </div>
+              )}
+            </div>
+
+            {item.tag && (
+              <span style={{
+                display: "inline-block", fontSize: "0.62rem", fontWeight: 700,
+                letterSpacing: "0.1em", textTransform: "uppercase" as const,
+                color: "var(--tj-accent)", background: "var(--tj-accent-bg)",
+                borderRadius: 9999, padding: "0.2em 0.75em", marginBottom: "0.5rem",
+              }}>
+                {item.tag}
+              </span>
+            )}
+            <h2 style={{
+              fontSize: "clamp(1rem, 4.5vw, 1.25rem)", fontWeight: 700,
+              color: "var(--tj-text)", lineHeight: 1.2, marginBottom: "0.3rem",
+            }}>
+              {item.title}
+            </h2>
+            {item.subtitle && (
+              <p style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--tj-accent)", lineHeight: 1.4, marginBottom: "0.4rem" }}>
+                {item.subtitle}
+              </p>
+            )}
+            {item.body && (
+              <p style={{ fontSize: "0.82rem", color: "var(--tj-muted)", lineHeight: 1.8, maxWidth: "44ch" }}>
+                {item.body}
+              </p>
+            )}
+            {!!item.highlights?.length && (
+              <ul style={{ listStyle: "none", margin: "0.65rem 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "0.3rem" }}>
+                {item.highlights.map((h, hi) => (
+                  <li key={hi} style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", fontSize: "0.78rem", color: "var(--tj-muted)", lineHeight: 1.6 }}>
+                    <span style={{ flexShrink: 0, width: 5, height: 5, borderRadius: "50%", background: "var(--tj-accent)", opacity: 0.6, marginTop: "0.48em", display: "inline-block" }} />
+                    {h}
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
-        </div>
-
-        {/* Content, indented to align with text after dot */}
-        <div style={{ paddingLeft: "calc(18px + 0.6rem)" }}>
-          {item.tag && (
-            <span style={{
-              display: "inline-block", fontSize: "0.62rem", fontWeight: 700,
-              letterSpacing: "0.1em", textTransform: "uppercase" as const,
-              color: "var(--tj-accent)", background: "var(--tj-accent-bg)",
-              borderRadius: 9999, padding: "0.2em 0.75em", marginBottom: "0.5rem",
-            }}>
-              {item.tag}
-            </span>
-          )}
-          <h2 style={{
-            fontSize: "clamp(1rem, 4.5vw, 1.25rem)", fontWeight: 700,
-            color: "var(--tj-text)", lineHeight: 1.2, marginBottom: "0.3rem",
-          }}>
-            {item.title}
-          </h2>
-          {item.subtitle && (
-            <p style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--tj-accent)", lineHeight: 1.4, marginBottom: "0.4rem" }}>
-              {item.subtitle}
-            </p>
-          )}
-          {item.body && (
-            <p style={{ fontSize: "0.82rem", color: "var(--tj-muted)", lineHeight: 1.8, maxWidth: "44ch" }}>
-              {item.body}
-            </p>
-          )}
-          {!!item.highlights?.length && (
-            <ul style={{ listStyle: "none", margin: "0.65rem 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "0.3rem" }}>
-              {item.highlights.map((h, hi) => (
-                <li key={hi} style={{ display: "flex", alignItems: "flex-start", gap: "0.4rem", fontSize: "0.78rem", color: "var(--tj-muted)", lineHeight: 1.6 }}>
-                  <span style={{ flexShrink: 0, width: 5, height: 5, borderRadius: "50%", background: "var(--tj-accent)", opacity: 0.6, marginTop: "0.48em", display: "inline-block" }} />
-                  {h}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
       </div>
 
@@ -276,60 +278,116 @@ function Row({ item, index, isLeft, dotRef }: RowProps) {
 // Main export
 // ─────────────────────────────────────────────────────────────────
 export default function MyJourney() {
-  const dotRefs  = useRef<(HTMLDivElement | null)[]>(ITEMS.map(() => null));
-  const wrapRef  = useRef<HTMLDivElement>(null);
+  const dotRefs       = useRef<(HTMLDivElement | null)[]>(ITEMS.map(() => null));
+  const mobileDotRefs = useRef<(HTMLDivElement | null)[]>(ITEMS.map(() => null)); // NEW
+  const wrapRef       = useRef<HTMLDivElement>(null);
+
+  // ── Desktop SVG refs ──────────────────────────────────────────
   const svgRef   = useRef<SVGSVGElement>(null);
   const trackRef = useRef<SVGLineElement>(null);
   const fillRef  = useRef<SVGLineElement>(null);
+  const pulseRef = useRef<SVGCircleElement>(null); // NEW — animated dot riding the fill
+
+  // ── Mobile SVG refs ───────────────────────────────────────────
+  const mSvgRef   = useRef<SVGSVGElement>(null);   // NEW
+  const mTrackRef = useRef<SVGLineElement>(null);   // NEW
+  const mFillRef  = useRef<SVGLineElement>(null);   // NEW
+  const mPulseRef = useRef<SVGCircleElement>(null); // NEW
 
   useEffect(() => {
     function draw() {
-      const wrap  = wrapRef.current;
-      const svg   = svgRef.current;
-      const track = trackRef.current;
-      const fill  = fillRef.current;
-      if (!wrap || !svg || !track || !fill) return;
-
-      const dots = dotRefs.current.filter((d): d is HTMLDivElement => d !== null);
-      if (dots.length < 2) return;
-
+      const wrap = wrapRef.current;
+      if (!wrap) return;
       const wRect = wrap.getBoundingClientRect();
-      const W = wrap.offsetWidth;
-      const H = wrap.offsetHeight;
-
-      const first = dots[0].getBoundingClientRect();
-      const last  = dots[dots.length - 1].getBoundingClientRect();
-
-      const cx = first.left + first.width  / 2 - wRect.left;
-      const y1 = first.top  + first.height / 2 - wRect.top;
-      const y2 = last.top   + last.height  / 2 - wRect.top;
-
-      svg.setAttribute("width",   String(W));
-      svg.setAttribute("height",  String(H));
-      svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-
-      track.setAttribute("x1", String(cx)); track.setAttribute("y1", String(y1));
-      track.setAttribute("x2", String(cx)); track.setAttribute("y2", String(y2));
-
-      const len = y2 - y1;
-      if (len <= 0) return;
-
-      const progress = Math.min(
-        Math.max(
+      const scrollProgress = (len: number, y1: number) =>
+        Math.min(Math.max(
           (window.scrollY + window.innerHeight * 0.62
             - (wRect.top + window.scrollY) - y1) / len,
           0
-        ),
-        1
-      );
+        ), 1);
 
-      fill.setAttribute("x1", String(cx)); fill.setAttribute("y1", String(y1));
-      fill.setAttribute("x2", String(cx)); fill.setAttribute("y2", String(y2));
-      fill.style.strokeDasharray  = String(len);
-      fill.style.strokeDashoffset = String(len * (1 - progress));
+      // ── DESKTOP ──────────────────────────────────────────────
+      const svg   = svgRef.current;
+      const track = trackRef.current;
+      const fill  = fillRef.current;
+      const pulse = pulseRef.current;
+      const dots  = dotRefs.current.filter((d): d is HTMLDivElement => d !== null);
+
+      if (svg && track && fill && dots.length >= 2) {
+        const W = wrap.offsetWidth;
+        const H = wrap.offsetHeight;
+        const first = dots[0].getBoundingClientRect();
+        const last  = dots[dots.length - 1].getBoundingClientRect();
+        const cx = first.left + first.width  / 2 - wRect.left;
+        const y1 = first.top  + first.height / 2 - wRect.top;
+        const y2 = last.top   + last.height  / 2 - wRect.top;
+
+        svg.setAttribute("width",   String(W));
+        svg.setAttribute("height",  String(H));
+        svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+        track.setAttribute("x1", String(cx)); track.setAttribute("y1", String(y1));
+        track.setAttribute("x2", String(cx)); track.setAttribute("y2", String(y2));
+
+        const len = y2 - y1;
+        if (len > 0) {
+          const p = scrollProgress(len, y1);
+          fill.setAttribute("x1", String(cx)); fill.setAttribute("y1", String(y1));
+          fill.setAttribute("x2", String(cx)); fill.setAttribute("y2", String(y2));
+          fill.style.strokeDasharray  = String(len);
+          fill.style.strokeDashoffset = String(len * (1 - p));
+
+          // Pulse dot rides the tip of the fill line
+          if (pulse) {
+            const py = y1 + len * p;
+            pulse.setAttribute("cx", String(cx));
+            pulse.setAttribute("cy", String(py));
+            pulse.style.opacity = p > 0 && p < 1 ? "1" : "0";
+          }
+        }
+      }
+
+      // ── MOBILE ───────────────────────────────────────────────
+      const mSvg   = mSvgRef.current;
+      const mTrack = mTrackRef.current;
+      const mFill  = mFillRef.current;
+      const mPulse = mPulseRef.current;
+      const mDots  = mobileDotRefs.current.filter((d): d is HTMLDivElement => d !== null);
+
+      if (mSvg && mTrack && mFill && mDots.length >= 2) {
+        const W = wrap.offsetWidth;
+        const H = wrap.offsetHeight;
+        const first = mDots[0].getBoundingClientRect();
+        const last  = mDots[mDots.length - 1].getBoundingClientRect();
+        const cx = first.left + first.width  / 2 - wRect.left;
+        const y1 = first.top  + first.height / 2 - wRect.top;
+        const y2 = last.top   + last.height  / 2 - wRect.top;
+
+        mSvg.setAttribute("width",   String(W));
+        mSvg.setAttribute("height",  String(H));
+        mSvg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+
+        mTrack.setAttribute("x1", String(cx)); mTrack.setAttribute("y1", String(y1));
+        mTrack.setAttribute("x2", String(cx)); mTrack.setAttribute("y2", String(y2));
+
+        const len = y2 - y1;
+        if (len > 0) {
+          const p = scrollProgress(len, y1);
+          mFill.setAttribute("x1", String(cx)); mFill.setAttribute("y1", String(y1));
+          mFill.setAttribute("x2", String(cx)); mFill.setAttribute("y2", String(y2));
+          mFill.style.strokeDasharray  = String(len);
+          mFill.style.strokeDashoffset = String(len * (1 - p));
+
+          if (mPulse) {
+            const py = y1 + len * p;
+            mPulse.setAttribute("cx", String(cx));
+            mPulse.setAttribute("cy", String(py));
+            mPulse.style.opacity = p > 0 && p < 1 ? "1" : "0";
+          }
+        }
+      }
     }
 
-    // Wait two frames so the grid is fully painted before measuring dot positions
     let r1: number, r2: number;
     r1 = requestAnimationFrame(() => { r2 = requestAnimationFrame(draw); });
 
@@ -371,6 +429,15 @@ export default function MyJourney() {
           font-family: Satoshi, Inter, system-ui, sans-serif;
           -webkit-font-smoothing: antialiased;
         }
+        @keyframes tj-pulse-ring {
+          0%   { r: 4px;  opacity: 0.7; }
+          100% { r: 9px;  opacity: 0;   }
+        }
+        .tj-pulse-ring {
+          animation: tj-pulse-ring 1.4s ease-out infinite;
+          transform-box: fill-box;
+          transform-origin: center;
+        }
         @media (max-width: 580px) {
           .tj-desktop { display: none  !important; }
           .tj-mobile  { display: block !important; }
@@ -399,14 +466,16 @@ export default function MyJourney() {
       <div className="tj-wrap" style={{ paddingBottom: "clamp(4rem, 8vw, 7rem)" }}>
         <div ref={wrapRef} style={{ position: "relative" }}>
 
-          {/* SVG beam: first dot center → last dot center */}
+          {/* ── DESKTOP SVG beam ───────────────────────────────── */}
           <svg
             ref={svgRef}
             aria-hidden="true"
             width="0" height="0"
+            className="tj-desktop"
             style={{
               position: "absolute", top: 0, left: 0,
               pointerEvents: "none", zIndex: 0, overflow: "visible",
+              display: "block",       // overridden by media query to none on mobile
             }}
           >
             <defs>
@@ -415,6 +484,7 @@ export default function MyJourney() {
                 <stop offset="100%" stopColor="#4f98a3" />
               </linearGradient>
             </defs>
+            {/* Track */}
             <line
               ref={trackRef}
               strokeWidth="2"
@@ -422,15 +492,82 @@ export default function MyJourney() {
               opacity="0.15"
               style={{ color: "var(--tj-faint)" }}
             />
+            {/* Animated fill */}
             <line
               ref={fillRef}
               strokeWidth="2.5"
               stroke="url(#tj-grad)"
               strokeLinecap="round"
               style={{
-                filter: "drop-shadow(0 0 5px #01696f88)",
+                filter: "drop-shadow(0 0 4px #01696f66)",
                 transition: "stroke-dashoffset 0.07s linear",
               }}
+            />
+            {/* Pulse ring at the tip */}
+            <circle
+              ref={pulseRef}
+              r="4"
+              fill="none"
+              stroke="#01696f"
+              strokeWidth="1.5"
+              opacity="0"
+              style={{ transition: "opacity 0.2s" }}
+            />
+            <circle
+              className="tj-pulse-ring"
+              ref={(el) => {
+                // this is the animated expanding ring — driven purely by CSS
+              }}
+              r="4"
+              fill="none"
+              stroke="#01696f"
+              strokeWidth="1"
+              opacity="0"
+              // We'll drive this via a second pulse element rendered inline below
+            />
+          </svg>
+
+          {/* ── MOBILE SVG beam ────────────────────────────────── */}
+          <svg
+            ref={mSvgRef}
+            aria-hidden="true"
+            width="0" height="0"
+            className="tj-mobile"
+            style={{
+              position: "absolute", top: 0, left: 0,
+              pointerEvents: "none", zIndex: 0, overflow: "visible",
+              display: "none",
+            }}
+          >
+            <defs>
+              <linearGradient id="tj-grad-m" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stopColor="#01696f" />
+                <stop offset="100%" stopColor="#4f98a3" />
+              </linearGradient>
+            </defs>
+            <line
+              ref={mTrackRef}
+              strokeWidth="2"
+              stroke="currentColor"
+              opacity="0.15"
+              style={{ color: "var(--tj-faint)" }}
+            />
+            <line
+              ref={mFillRef}
+              strokeWidth="2.5"
+              stroke="url(#tj-grad-m)"
+              strokeLinecap="round"
+              style={{
+                filter: "drop-shadow(0 0 4px #01696f66)",
+                transition: "stroke-dashoffset 0.07s linear",
+              }}
+            />
+            <circle
+              ref={mPulseRef}
+              r="4"
+              fill="#01696f"
+              opacity="0"
+              style={{ transition: "opacity 0.2s" }}
             />
           </svg>
 
@@ -441,6 +578,7 @@ export default function MyJourney() {
               index={i}
               isLeft={i % 2 === 0}
               dotRef={(el) => { dotRefs.current[i] = el; }}
+              mobileDotRef={(el) => { mobileDotRefs.current[i] = el; }}
             />
           ))}
 
