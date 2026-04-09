@@ -8,7 +8,7 @@ import CTA from "./sections/CTA";
 const FlowCanvas = dynamic(() => import("@/components/flow/FlowCanvas"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[380px] rounded-2xl border border-white/10 bg-slate-950/80 animate-pulse" />
+    <div className="w-full flex-1 rounded-2xl border border-white/10 bg-slate-950/80 animate-pulse" />
   ),
 });
 
@@ -23,36 +23,27 @@ export default function ProjectCard({ project, className = "" }: ProjectCardProp
   return (
     <article
       className={[
-        "relative w-full rounded-2xl border border-white/10 bg-slate-900/60",
-        "backdrop-blur-md p-6 md:p-8 shadow-2xl shadow-black/40",
-        "flex flex-col gap-5",
+        "relative w-full flex flex-col",
+        "rounded-2xl border border-white/10 bg-slate-900/60",
+        "backdrop-blur-md shadow-2xl shadow-black/40",
+        "p-4 md:p-5 gap-3",
         className,
       ].join(" ")}
     >
-      {/* Top gradient accent line */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-500/40 to-transparent rounded-t-2xl" />
 
-      {/* ── Top: Header (title + description + tech stack) ── */}
-      <Header
-        project={{
-          title: project.title,
-          description: project.description,
-          techStack: project.techStack,
-          badge: project.badge,
-          status: project.status,
-        }}
-      />
+      <Header project={{ title: project.title, description: project.description, techStack: project.techStack, badge: project.badge, status: project.status }} />
 
-      {/* ── Middle: Flow Canvas ── */}
-      <div>
-        <p className="text-[10px] uppercase tracking-widest text-white/25 font-mono mb-2">
+      <div className="flex-1 flex flex-col min-h-0">
+        <p className="text-[10px] uppercase tracking-widest text-white/25 font-mono mb-1.5">
           System Flow
         </p>
-        <FlowCanvas initialNodes={nodes} initialEdges={edges} />
+        <div style={{ height: "320px" }}>
+          <FlowCanvas initialNodes={nodes} initialEdges={edges} />
+        </div>
       </div>
 
-      {/* ── Bottom: Metrics left, CTA right ── */}
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 pt-1">
         <Metrics metrics={project.metrics} />
         <CTA cta={project.cta} />
       </div>

@@ -6,7 +6,7 @@ export default function ProjectsPage() {
     <main className="min-h-screen bg-slate-950 px-4 py-16">
       <div className="max-w-5xl mx-auto">
 
-        {/* Page heading */}
+        {/* Page heading
         <div className="mb-10">
           <p className="text-[10px] font-mono uppercase tracking-widest text-pink-400/70 mb-2">
             Work
@@ -14,7 +14,7 @@ export default function ProjectsPage() {
           <h1 className="text-3xl font-bold text-white tracking-tight">
             Projects
           </h1>
-        </div>
+        </div> */}
 
         {/* Carousel — arrows on both sides like the sketch */}
         <div className="pb-10">

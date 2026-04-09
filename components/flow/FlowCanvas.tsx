@@ -5,7 +5,7 @@ import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
+  // MiniMap,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -52,8 +52,9 @@ export default function FlowCanvas({
 
   return (
     <div
+      style={{ width: "100%", height: "100%", minHeight: "320px" }}
       className={[
-        "relative w-full h-[420px] rounded-2xl overflow-hidden",
+        "rounded-2xl overflow-hidden",
         "border border-white/10 bg-slate-950/80",
         className,
       ].join(" ")}
@@ -88,7 +89,7 @@ export default function FlowCanvas({
         />
 
         {/* Minimap */}
-        <MiniMap
+        {/* <MiniMap
           nodeStrokeWidth={3}
           className="!bg-slate-900/80 !border-white/10 !rounded-xl !overflow-hidden"
           nodeColor={(n: Node) => {
@@ -99,7 +100,7 @@ export default function FlowCanvas({
             };
             return colorMap[n.type ?? "service"] ?? "#94a3b8";
           }}
-        />
+        /> */}
 
         {/* Edit / View toggle panel */}
         <Panel position="top-right" className="flex gap-2">
