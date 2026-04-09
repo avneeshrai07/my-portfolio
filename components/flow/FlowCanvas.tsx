@@ -10,14 +10,14 @@ import {
   useNodesState,
   useEdgesState,
   BackgroundVariant,
-  type Connection,  // ← comma here was missing
-  type Node,        // ← needed for MiniMap nodeColor callback
+  type Connection,
   Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 
 import { nodeTypes } from "./nodeTypes";
 import type { AppNode, AppEdge } from "@/types/flow";
+
 interface FlowCanvasProps {
   initialNodes: AppNode[];
   initialEdges: AppEdge[];
@@ -37,14 +37,18 @@ export default function FlowCanvas({
     (connection: Connection) =>
       setEdges((eds) =>
         addEdge(
-          { ...connection, animated: true, type: "smoothstep", style: { strokeWidth: 2 } },
+          {
+            ...connection,
+            animated: true,
+            type: "smoothstep",
+            style: { strokeWidth: 2 },
+          },
           eds
         )
       ),
     [setEdges]
   );
 
-  // Reset to initial state
   const handleReset = useCallback(() => {
     setNodes(initialNodes);
     setEdges(initialEdges);
@@ -75,7 +79,6 @@ export default function FlowCanvas({
         proOptions={{ hideAttribution: true }}
         className="!bg-transparent"
       >
-        {/* Grid background */}
         <Background
           variant={BackgroundVariant.Dots}
           gap={20}
@@ -83,12 +86,8 @@ export default function FlowCanvas({
           className="!opacity-20"
         />
 
-        {/* Controls */}
-        <Controls
-          className="!bg-slate-900/80 !border-white/10 !rounded-xl !shadow-xl [&>button]:!text-white/60 [&>button:hover]:!text-white [&>button]:!bg-transparent [&>button]:!border-white/10"
-        />
+        <Controls className="!bg-slate-900/80 !border-white/10 !rounded-xl !shadow-xl [&>button]:!text-white/60 [&>button:hover]:!text-white [&>button]:!bg-transparent [&>button]:!border-white/10" />
 
-        {/* Minimap */}
         {/* <MiniMap
           nodeStrokeWidth={3}
           className="!bg-slate-900/80 !border-white/10 !rounded-xl !overflow-hidden"
@@ -102,10 +101,9 @@ export default function FlowCanvas({
           }}
         /> */}
 
-        {/* Edit / View toggle panel */}
         <Panel position="top-right" className="flex gap-2">
           <button
-            onClick={() => setIsEditing((v) => !v)}
+            onClick={() => setIsEditing((value) => !value)}
             className={[
               "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200",
               "border backdrop-blur-sm",
@@ -127,7 +125,6 @@ export default function FlowCanvas({
           )}
         </Panel>
 
-        {/* Hint */}
         {isEditing && (
           <Panel position="bottom-left">
             <p className="text-[10px] text-white/30 font-mono">
