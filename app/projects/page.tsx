@@ -1,13 +1,26 @@
-// ✅ Correct — matches your actual folder structure
-import ProjectCard from "@/components/projects/ProjectCard";
-import { sunakku } from "@/components/data/projects/sunakku";
+import ProjectCarousel from "@/components/projects/ProjectCarousel";
+import { allProjects } from "@/components/data/projects";
 
 export default function ProjectsPage() {
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-16">
-      <div className="max-w-4xl mx-auto space-y-10">
-        <ProjectCard project={sunakku} />
-        {/* add more cards here */}
+    <main className="min-h-screen bg-slate-950 px-4 py-16">
+      <div className="max-w-5xl mx-auto">
+
+        {/* Page heading */}
+        <div className="mb-10">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-pink-400/70 mb-2">
+            Work
+          </p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">
+            Projects
+          </h1>
+        </div>
+
+        {/* Carousel — arrows on both sides like the sketch */}
+        <div className="pb-10">
+          <ProjectCarousel projects={allProjects} />
+        </div>
+
       </div>
     </main>
   );

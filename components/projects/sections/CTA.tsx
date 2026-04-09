@@ -18,7 +18,7 @@ export default function CTA({ cta }: CTAProps) {
   if (!cta.length) return null;
 
   return (
-    <div className="mt-6 flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-2 sm:justify-end">
       {cta.map((item) => (
         <Link
           key={item.label}
@@ -27,12 +27,12 @@ export default function CTA({ cta }: CTAProps) {
           rel="noopener noreferrer"
           className={[
             "inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border text-xs font-semibold",
-            "backdrop-blur-sm transition-all duration-200 select-none",
+            "backdrop-blur-sm transition-all duration-200 select-none whitespace-nowrap",
             VARIANT_STYLES[item.variant ?? "secondary"],
           ].join(" ")}
         >
           {item.label}
-          <span className="opacity-60 text-[10px]">↗</span>
+          <span className="opacity-50 text-[10px]">↗</span>
         </Link>
       ))}
     </div>
