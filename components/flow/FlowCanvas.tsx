@@ -1,0 +1,140 @@
+"use client";
+
+import { useCallback, useState } from "react";
+import {
+  ReactFlow,
+  Background,
+  Controls,
+  MiniMap,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  BackgroundVariant,
+  type Connection,  // ← comma here was missing
+  type Node,        // ← needed for MiniMap nodeColor callback
+  Panel,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+
+import { nodeTypes } from "./nodeTypes";
+import type { AppNode, AppEdge } from "@/types/flow";
+interface FlowCanvasProps {
+  initialNodes: AppNode[];
+  initialEdges: AppEdge[];
+  className?: string;
+}
+
+export default function FlowCanvas({
+  initialNodes,
+  initialEdges,
+  className = "",
+}: FlowCanvasProps) {
+  const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<AppEdge>(initialEdges);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const onConnect = useCallback(
+    (connection: Connection) =>
+      setEdges((eds) =>
+        addEdge(
+          { ...connection, animated: true, type: "smoothstep", style: { strokeWidth: 2 } },
+          eds
+        )
+      ),
+    [setEdges]
+  );
+
+  // Reset to initial state
+  const handleReset = useCallback(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [initialNodes, initialEdges, setNodes, setEdges]);
+
+  return (
+    <div
+      className={[
+        "relative w-full h-[420px] rounded-2xl overflow-hidden",
+        "border border-white/10 bg-slate-950/80",
+        className,
+      ].join(" ")}
+    >
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        nodeTypes={nodeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.25 }}
+        deleteKeyCode={isEditing ? "Backspace" : null}
+        nodesDraggable={isEditing}
+        nodesConnectable={isEditing}
+        elementsSelectable={isEditing}
+        proOptions={{ hideAttribution: true }}
+        className="!bg-transparent"
+      >
+        {/* Grid background */}
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={20}
+          size={1}
+          className="!opacity-20"
+        />
+
+        {/* Controls */}
+        <Controls
+          className="!bg-slate-900/80 !border-white/10 !rounded-xl !shadow-xl [&>button]:!text-white/60 [&>button:hover]:!text-white [&>button]:!bg-transparent [&>button]:!border-white/10"
+        />
+
+        {/* Minimap */}
+        <MiniMap
+          nodeStrokeWidth={3}
+          className="!bg-slate-900/80 !border-white/10 !rounded-xl !overflow-hidden"
+          nodeColor={(n: Node) => {
+            const colorMap: Record<string, string> = {
+              api: "#ec4899", db: "#38bdf8", cache: "#fb923c",
+              service: "#a78bfa", client: "#94a3b8",
+              queue: "#facc15", auth: "#34d399", storage: "#22d3ee",
+            };
+            return colorMap[n.type ?? "service"] ?? "#94a3b8";
+          }}
+        />
+
+        {/* Edit / View toggle panel */}
+        <Panel position="top-right" className="flex gap-2">
+          <button
+            onClick={() => setIsEditing((v) => !v)}
+            className={[
+              "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200",
+              "border backdrop-blur-sm",
+              isEditing
+                ? "bg-pink-500/20 border-pink-500/50 text-pink-300 shadow-lg shadow-pink-500/20"
+                : "bg-white/5 border-white/10 text-white/50 hover:text-white/80 hover:bg-white/10",
+            ].join(" ")}
+          >
+            {isEditing ? "✏️ Editing" : "🔒 View"}
+          </button>
+
+          {isEditing && (
+            <button
+              onClick={handleReset}
+              className="px-3 py-1.5 rounded-lg text-xs font-semibold border bg-white/5 border-white/10 text-white/50 hover:text-white/80 hover:bg-white/10 backdrop-blur-sm transition-all"
+            >
+              ↺ Reset
+            </button>
+          )}
+        </Panel>
+
+        {/* Hint */}
+        {isEditing && (
+          <Panel position="bottom-left">
+            <p className="text-[10px] text-white/30 font-mono">
+              Drag nodes · Connect handles · Backspace to delete
+            </p>
+          </Panel>
+        )}
+      </ReactFlow>
+    </div>
+  );
+}
