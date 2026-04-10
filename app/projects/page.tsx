@@ -3,7 +3,7 @@ import { allProjects } from "@/components/data/projects";
 
 export default function ProjectsPage() {
   return (
-    <main className="min-h-screen bg-slate-950 px-4 py-16">
+    <main className="min-h-screen bg-hero-gradient px-4 py-16">
       <div className="max-w-5xl mx-auto">
 
         {/* Page heading

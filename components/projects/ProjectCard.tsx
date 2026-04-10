@@ -24,7 +24,7 @@ export default function ProjectCard({ project, className = "" }: ProjectCardProp
     <article
       className={[
         "relative w-full flex flex-col",
-        "rounded-2xl border border-white/10 bg-slate-900/60",
+        "rounded-2xl border border-white/10 bg-[var(--shirt-tan)]",
         "backdrop-blur-md shadow-2xl shadow-black/40",
         "p-4 md:p-5 gap-3",
         className,

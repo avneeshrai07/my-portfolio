@@ -40,12 +40,12 @@ export default function Header({ project }: HeaderProps) {
       </div>
 
       {/* Title */}
-      <h2 className="text-2xl font-bold text-white mb-2 tracking-tight leading-tight">
+      <h2 className="text-2xl font-bold text-[var(--suit-brown)] mb-2 tracking-tight leading-tight">
         {project.title}
       </h2>
 
       {/* Description */}
-      <p className="text-sm text-white/55 leading-relaxed mb-4">
+      <p className="text-sm text-[var(--suit-brown)] leading-relaxed mb-4">
         {project.description}
       </p>
 
@@ -54,7 +54,7 @@ export default function Header({ project }: HeaderProps) {
         {project.techStack.map((tech) => (
           <span
             key={tech}
-            className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/60 font-mono hover:bg-white/10 hover:text-white/80 transition-colors"
+            className="text-[11px] px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[var(--suit-brown)] font-mono hover:bg-white/10 hover:text-white/80 transition-colors"
           >
             {tech}
           </span>

@@ -59,7 +59,7 @@ export default function FlowCanvas({
       style={{ width: "100%", height: "100%", minHeight: "320px" }}
       className={[
         "rounded-2xl overflow-hidden",
-        "border border-white/10 bg-slate-950/80",
+        "border border-white/10 bg-[var(--secondary-dark)]",
         className,
       ].join(" ")}
     >

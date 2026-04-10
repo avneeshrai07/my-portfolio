@@ -43,6 +43,27 @@ const CARD_TRANSITION_DURATION = 400;
 // ⭐ NEW: Mobile scroll configuration
 // const MOBILE_SCROLL_DISTANCE_PER_MOVIE = 30; // 30vh per movie
 
+// ── ADDED: scales font-size so text exactly fills its parent's width ──────────
+// Uses scrollWidth (not getBoundingClientRect) because block elements always
+// report getBoundingClientRect.width === parent width regardless of font size.
+function fitTextToContainer(el: HTMLElement | null) {
+  if (!el) return;
+  const parent = el.parentElement;
+  if (!parent) return;
+  el.style.whiteSpace = "nowrap";
+  el.style.display = "block";
+  const targetWidth = parent.getBoundingClientRect().width;
+  if (targetWidth === 0) return;
+  let low = 1, high = 300;
+  while (high - low > 0.25) {
+    const mid = (low + high) / 2;
+    el.style.fontSize = `${mid}px`;
+    if (el.scrollWidth <= targetWidth) { low = mid; } else { high = mid; }
+  }
+  el.style.fontSize = `${low}px`;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function MovieSection() {
   const [movies] = useState<Movie[]>([
     { title: "When Life Gives You Tangerines", localPoster: null, link: "https://www.netflix.com/title/81681535" },
@@ -59,6 +80,11 @@ export default function MovieSection() {
 
   const sectionRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLElement>(null);
+
+  // ── ADDED: label refs ──────────────────────────────────────────────────────
+  const desktopLabelRef = useRef<HTMLHeadingElement>(null);
+  const mobileLabelRef = useRef<HTMLHeadingElement>(null);
+  // ──────────────────────────────────────────────────────────────────────────
 
   // ⭐ DESKTOP Refs for GSAP animations
   const posterRef = useRef<HTMLDivElement>(null);
@@ -85,6 +111,21 @@ export default function MovieSection() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // ── ADDED: text-fit effect ─────────────────────────────────────────────────
+  useEffect(() => {
+    if (!isMounted) return;
+    const run = () => {
+      fitTextToContainer(desktopLabelRef.current);
+      fitTextToContainer(mobileLabelRef.current);
+    };
+    const timer = setTimeout(run, 50);
+    const observer = new ResizeObserver(run);
+    if (desktopLabelRef.current?.parentElement) observer.observe(desktopLabelRef.current.parentElement);
+    if (mobileLabelRef.current?.parentElement) observer.observe(mobileLabelRef.current.parentElement);
+    return () => { clearTimeout(timer); observer.disconnect(); };
+  }, [isMounted]);
+  // ──────────────────────────────────────────────────────────────────────────
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -349,9 +390,24 @@ export default function MovieSection() {
         className="bg-hero-gradient py-4 lg:py-0 overflow-hidden flex items-center lg:min-h-screen"
       >
         <div className="container mx-auto px-4 md:px-6 w-full">
-          <h1 className="text-hero-suit/60 text-2xl md:text-2.5xl lg:text-3xl font-semibold text-left lg:ml-6 mb-6 lg:mb-6">
-            Currently watching
-          </h1>
+
+          {/* ── ADDED: desktop label row — hidden on mobile, sits above the
+              original grid as a sibling. Same gap-4 + col-span-3 +
+              max-w-[50vh] mx-auto mirrors the poster column exactly.
+              The original desktop grid below is 100% UNCHANGED. ── */}
+          <div className="hidden lg:grid grid-cols-12 gap-4 max-w-6xl mx-auto mb-3">
+            <div className="col-span-3">
+              <div className="w-full max-w-[50vh] mx-auto">
+                <h1
+                  ref={desktopLabelRef}
+                  className="text-hero-suit/60 font-semibold whitespace-nowrap overflow-hidden"
+                  style={{ fontSize: "1px" }}
+                >
+                  Currently watching
+                </h1>
+              </div>
+            </div>
+          </div>
 
           {/* ⭐ DESKTOP LAYOUT - UNCHANGED */}
           <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-6xl mx-auto">
@@ -511,8 +567,15 @@ export default function MovieSection() {
           <div className="lg:hidden flex flex-col gap-4">
             {/* Top Row: Poster + Details (40-60 split) */}
             <div className="flex gap-3">
-              {/* Left - Poster (40%) */}
-              <div className="w-[40%] flex-shrink-0">
+              {/* Left - Poster (40%) ── ONLY CHANGE: added flex flex-col + label above poster */}
+              <div className="w-[40%] flex-shrink-0 flex flex-col">
+                <h1
+                  ref={mobileLabelRef}
+                  className="text-hero-suit/60 font-semibold mb-2 whitespace-nowrap overflow-hidden"
+                  style={{ fontSize: "1px" }}
+                >
+                  Currently watching
+                </h1>
                 <div 
                   ref={mobilePosterRef}
                   className="relative w-full aspect-[1.85/3] rounded-lg overflow-hidden shadow-xl border border-secondary/30"
@@ -546,7 +609,7 @@ export default function MovieSection() {
                 </div>
               </div>
 
-              {/* Right - Details (60%) */}
+              {/* Right - Details (60%) - UNCHANGED */}
               <div className="flex-1 flex flex-col justify-center">
                 <div ref={mobileDetailsRef} style={{ opacity: 1 }}>
                   {selectedData ? (
@@ -599,7 +662,7 @@ export default function MovieSection() {
               </div>
             </div>
 
-            {/* Bottom Row: Scrollable "More to Watch" Cards */}
+            {/* Bottom Row: Scrollable "More to Watch" Cards - UNCHANGED */}
             <div className="w-full">
               <h3 className="text-xs font-bold text-hero-suit/90 mb-2 uppercase tracking-wider">
                 More to Watch
