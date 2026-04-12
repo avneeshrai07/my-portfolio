@@ -5,7 +5,7 @@ import projects from '@/data/projects.json';
 
 const ProjectsSection = () => {
   return (
-    <section className="w-full py-16 md:py-24 px-6 md:px-12 lg:px-20">
+    <section className="bg-hero-gradient w-full py-16 md:py-24 px-6 md:px-12 lg:px-20">
       {/* Section header */}
       <div className="mb-12 md:mb-20">
         <p

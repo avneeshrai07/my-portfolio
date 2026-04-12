@@ -13,10 +13,13 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
-      <ProjectsSection/>
+      
       
       {/* Music Section */}
       <Skills/>
+
+      <ProjectsSection/>
+      
       <MusicSection />
 
       <MovieSection />

@@ -80,7 +80,7 @@ const BookCard = ({
 
         {/* ── Inner page ── */}
         <div
-          className="book-layer inner absolute inset-0 flex flex-col justify-between rounded-2xl cursor-pointer px-[9%] py-[10%]"
+          className="book-layer inner absolute inset-0 flex flex-col justify-between rounded-2xl cursor-pointer px-[15%] py-[10%]"
           style={{ background: '#faf7f2', boxShadow: '2px 4px 14px rgba(0,0,0,0.07)' }}
           onClick={() => router.push(href)}
           role="link"
