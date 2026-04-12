@@ -42,7 +42,7 @@
     },
     "strictNullChecks": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "noImplicitReturns": true
   },
   "include": [

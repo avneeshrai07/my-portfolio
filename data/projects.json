@@ -1,128 +1,122 @@
 [
   {
     "id": "sunakku",
-    "title": "Sunakku Restaurant Website",
-    "tagline": "asian street food",
-    "heroImage": "https://images.unsplash.com/photo-1528605105345-5344ea20e269?w=1920&q=80",
-    "description": "A full-stack e-commerce platform for a Studio Ghibli-inspired Asian street food restaurant. Features seamless online ordering, dynamic menu management, and a visually immersive experience.",
-    "techStack": [
-      { "name": "React", "color": "#61DAFB" },
-      { "name": "Next.js", "color": "#000000" },
-      { "name": "TypeScript", "color": "#3178C6" },
-      { "name": "Tailwind CSS", "color": "#06B6D4" },
-      { "name": "GSAP", "color": "#88CE02" },
-      { "name": "Node.js", "color": "#339933" },
-      { "name": "PostgreSQL", "color": "#4169E1" }
+    "num": "01",
+    "name": "Sunakku",
+    "sub": "snack ordering platform — queue-based, real-time, high-throughput",
+    "tags": [
+      { "label": "Live", "type": "live" },
+      { "label": "BullMQ / Queue", "type": "type" },
+      { "label": "Next.js + Node", "type": "type" }
+    ],
+    "overview": "A real-time snack ordering system built for high-throughput cafeteria environments. Order intake is fully decoupled from processing — the REST API stays responsive under peak kitchen load while BullMQ workers handle fulfillment asynchronously. Redis caching eliminates 94% of redundant DB reads, and atomic locks prevent race conditions on limited-stock items before enqueuing.",
+    "problem": "Cafeteria POS systems fail under peak load — multiple users race to order the last item simultaneously. Synchronous flows either over-block throughput or allow overselling. We needed guaranteed inventory consistency without sacrificing API response time.",
+    "challenges": [
+      "Race conditions on low-stock items solved with Redis SET NX atomic locks before any enqueue operation",
+      "Worker crashes mid-job required idempotency keys on all order mutations to prevent duplicate fulfillment",
+      "Cache invalidation for menu updates — chose pub/sub over TTL-only for near-instant propagation"
+    ],
+    "decisions": [
+      "BullMQ over raw Redis — built-in retry logic, job prioritization, and ops dashboard out of the box",
+      "Redis 80s TTL on menu data eliminated 94% of redundant DB reads at peak lunch windows",
+      "Prisma over raw SQL — version-controlled migrations, far less deployment friction",
+      "Stateless JWT + Glauth — auth service scales horizontally with zero session store overhead"
     ],
     "features": [
-      "Responsive Ghibli Theme",
-      "Interactive Online Ordering",
-      "User Accounts & Order History",
-      "Admin Dashboard",
-      "Payment Integration"
+      { "title": "Live inventory sync", "desc": "Stock levels update in real-time across all clients via WebSocket on every order commit" },
+      { "title": "Atomic order locking", "desc": "Redis SET NX prevents two users from claiming the last item — lock released if queue job fails" },
+      { "title": "Queue-based processing", "desc": "BullMQ decouples intake from fulfillment — API stays sub-120ms even when workers are backlogged" },
+      { "title": "Smart cache layer", "desc": "Redis 80s TTL with pub/sub invalidation eliminates 94% of Postgres reads at peak" }
     ],
-    "images": {
-      "desktop": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80",
-      "mobile": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&q=80"
-    },
+    "stack": ["Next.js", "Node.js", "Express", "PostgreSQL", "Redis", "BullMQ", "Prisma", "Docker", "Nginx"],
     "metrics": [
-      { "label": "Lighthouse Score", "value": "95+" },
-      { "label": "Load Time", "value": "<1s" },
-      { "label": "Online Orders", "value": "20% ↑" }
+      { "value": "<120ms", "label": "API Response", "highlight": true },
+      { "value": "2,400+", "label": "Orders / Day", "highlight": false },
+      { "value": "94%", "label": "Cache Hit Rate", "highlight": false },
+      { "value": "99.9%", "label": "Uptime", "highlight": false }
     ],
-    "challenges": [
-      "Implementing complex GSAP animations with optimal performance, optimized database queries for menu items."
-    ],
-    "demoUrl": "https://sunakku-demo.com",
-    "githubUrl": "https://github.com/username/sunakku",
-    "theme": {
-      "primary": "#F4A5B9",
-      "secondary": "#FFE5EC",
-      "accent": "#D8536D"
-    }
+    "githubUrl": "https://github.com",
+    "demoUrl": "https://example.com",
+    "diagramType": "sunakku"
   },
   {
-    "id": "taskflow",
-    "title": "TaskFlow Project Manager",
-    "tagline": "productivity reimagined",
-    "heroImage": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=80",
-    "description": "A modern project management SaaS platform with real-time collaboration, AI-powered task suggestions, and advanced analytics. Built for remote teams to streamline workflows and boost productivity.",
-    "techStack": [
-      { "name": "Next.js 14", "color": "#000000" },
-      { "name": "TypeScript", "color": "#3178C6" },
-      { "name": "Prisma ORM", "color": "#2D3748" },
-      { "name": "Tailwind CSS", "color": "#06B6D4" },
-      { "name": "tRPC", "color": "#398CCB" },
-      { "name": "PostgreSQL", "color": "#4169E1" },
-      { "name": "Redis", "color": "#DC382D" }
+    "id": "velox",
+    "num": "02",
+    "name": "Velox",
+    "sub": "notification dispatch engine — event-driven, multi-channel, 500k msg/day",
+    "tags": [
+      { "label": "Production", "type": "live" },
+      { "label": "Kafka / Events", "type": "type" },
+      { "label": "Go Workers", "type": "type" }
+    ],
+    "overview": "Velox completely decouples notification triggering from delivery. Any upstream service drops a Kafka event without knowing which channels are downstream. A central router fans out to isolated Go workers — one per channel. Each worker owns its retry logic, rate limiting, and provider failover independently, so a Twilio outage never touches SendGrid throughput.",
+    "problem": "Monolithic notification pipelines become single points of failure. One slow SMS provider stalls email delivery for unrelated users. Notification logic bleeds into business services and a single security patch requires 6 coordinated deploys across the stack.",
+    "challenges": [
+      "Provider failover — circuit breaker trips after 3 consecutive 5xx responses, rerouting to backup provider",
+      "Exactly-once delivery using idempotency tokens in Redis with 24h TTL to safely deduplicate Kafka replays",
+      "Per-user per-channel rate limiting without blocking sibling users in the same Kafka partition"
+    ],
+    "decisions": [
+      "Kafka over RabbitMQ — log retention enables full replay of missed notifications during any channel outage",
+      "Go workers per channel — goroutines handle the concurrency profile far cheaper than Node.js thread pools",
+      "Dead letter queue after 3 retries — no silent failures, everything is inspectable and replayable",
+      "Redis preference store — O(1) channel lookup before every dispatch, no DB touch at 500k msg/day"
     ],
     "features": [
-      "Real-time Collaboration with WebSockets",
-      "Kanban, List & Calendar Views",
-      "AI-Powered Task Prioritization",
-      "Time Tracking & Analytics",
-      "Team Chat & File Sharing"
+      { "title": "Channel isolation", "desc": "Each delivery channel runs in its own Go worker — Twilio outage never affects SendGrid or FCM" },
+      { "title": "Event replay", "desc": "Kafka log retention enables full replay of missed notifications during outages with zero data loss" },
+      { "title": "Circuit breaker", "desc": "Automatic provider failover after 3 consecutive failures — switches to backup within milliseconds" },
+      { "title": "Preference routing", "desc": "Per-user channel preferences stored in Redis for O(1) lookup — no DB touch per dispatch at scale" }
     ],
-    "images": {
-      "desktop": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=800&q=80",
-      "mobile": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&q=80"
-    },
+    "stack": ["Node.js", "Kafka", "Go", "MongoDB", "Redis", "SendGrid", "Twilio", "FCM", "Kubernetes"],
     "metrics": [
-      { "label": "Active Users", "value": "2.5K+" },
-      { "label": "Uptime", "value": "99.9%" },
-      { "label": "Task Completion", "value": "35% ↑" }
+      { "value": "500k+", "label": "Msgs / Day", "highlight": true },
+      { "value": "99.97%", "label": "Delivery Rate", "highlight": false },
+      { "value": "<800ms", "label": "P99 Latency", "highlight": false },
+      { "value": "3", "label": "Channels", "highlight": false }
     ],
-    "challenges": [
-      "Built real-time sync with WebSockets and optimistic updates, implemented efficient caching with Redis for sub-50ms response times."
-    ],
-    "demoUrl": "https://taskflow-demo.com",
-    "githubUrl": "https://github.com/username/taskflow",
-    "theme": {
-      "primary": "#6366F1",
-      "secondary": "#E0E7FF",
-      "accent": "#4F46E5"
-    }
+    "githubUrl": "https://github.com",
+    "demoUrl": "",
+    "diagramType": "velox"
   },
   {
-    "id": "ecotrack",
-    "title": "EcoTrack Carbon Footprint",
-    "tagline": "sustainability tracking",
-    "heroImage": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1920&q=80",
-    "description": "A mobile-first web application for tracking personal carbon footprint. Integrates with smart home devices, provides actionable insights, and gamifies eco-friendly behavior with rewards.",
-    "techStack": [
-      { "name": "React Native", "color": "#61DAFB" },
-      { "name": "Expo", "color": "#000020" },
-      { "name": "TypeScript", "color": "#3178C6" },
-      { "name": "Styled Components", "color": "#DB7093" },
-      { "name": "GraphQL", "color": "#E10098" },
-      { "name": "MongoDB", "color": "#47A248" },
-      { "name": "Firebase", "color": "#FFCA28" }
+    "id": "gatekeeper",
+    "num": "03",
+    "name": "Gatekeeper",
+    "sub": "multi-tenant auth gateway — OAuth2, RBAC, centralized identity plane",
+    "tags": [
+      { "label": "Deployed", "type": "live" },
+      { "label": "Go + gRPC", "type": "type" },
+      { "label": "Zero-Trust", "type": "type" }
+    ],
+    "overview": "A unified identity plane in front of all internal microservices. Instead of each service implementing its own auth, they delegate token verification to Gatekeeper via a lightweight gRPC sidecar. Security policy, RBAC rules, and audit logs all live in one place — enforcing zero-trust defaults with under 2ms overhead per request.",
+    "problem": "Auth scattered across 8 services meant every security patch needed 8 coordinated deploys. A permission bug in one service could expose another tenant's data. Each service reinvented token validation slightly differently — impossible to audit uniformly across the platform.",
+    "challenges": [
+      "Token revocation propagation — pub/sub invalidation pushes to all Redis nodes within 200ms of a revoke call",
+      "Multi-tenant isolation via row-level security in Postgres so no policy evaluation crosses tenant boundaries",
+      "Graceful degradation — sidecars cache last valid token locally so a Gatekeeper restart cannot cascade"
+    ],
+    "decisions": [
+      "Casbin RBAC — policy-as-code with hot reload, zero restarts needed when permission rules change",
+      "gRPC sidecar over REST — binary protocol + persistent connections removed ~1.5ms per auth overhead",
+      "Redis token cache with 60s sliding TTL — eliminates DB pressure at 12k req/min sustained load",
+      "Append-only Postgres audit log with row checksums — tamper-evident, passes SOC2 requirements"
     ],
     "features": [
-      "Smart Home Device Integration",
-      "Daily Carbon Tracking & Reports",
-      "Community Challenges & Leaderboards",
-      "Eco-Friendly Product Recommendations",
-      "Push Notifications & Reminders"
+      { "title": "Centralized RBAC", "desc": "Casbin policy-as-code with hot reload — update permissions across all 8 services instantly, zero restarts" },
+      { "title": "gRPC sidecar auth", "desc": "Lightweight sidecar keeps auth overhead under 2ms — services never implement validation themselves" },
+      { "title": "Token cache layer", "desc": "Redis 60s sliding TTL absorbs 12k req/min without touching Postgres on every request" },
+      { "title": "Tamper-evident audit", "desc": "Append-only Postgres table with row-level checksums — every auth decision logged and verifiable" }
     ],
-    "images": {
-      "desktop": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80",
-      "mobile": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=400&q=80"
-    },
+    "stack": ["Go", "gRPC", "PostgreSQL", "Redis", "JWT", "OAuth2", "Casbin", "Envoy", "Prometheus"],
     "metrics": [
-      { "label": "Downloads", "value": "12K+" },
-      { "label": "Avg Session", "value": "8min" },
-      { "label": "CO2 Reduced", "value": "45T" }
+      { "value": "<2ms", "label": "Auth Overhead", "highlight": true },
+      { "value": "8", "label": "Services", "highlight": false },
+      { "value": "12k", "label": "Req / Min", "highlight": false },
+      { "value": "100%", "label": "Audit Coverage", "highlight": false }
     ],
-    "challenges": [
-      "Integrated IoT devices with RESTful APIs, optimized mobile performance with lazy loading and implemented offline-first architecture."
-    ],
-    "demoUrl": "https://ecotrack-demo.com",
-    "githubUrl": "https://github.com/username/ecotrack",
-    "theme": {
-      "primary": "#10B981",
-      "secondary": "#D1FAE5",
-      "accent": "#059669"
-    }
+    "githubUrl": "https://github.com",
+    "demoUrl": "",
+    "diagramType": "gatekeeper"
   }
 ]

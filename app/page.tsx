@@ -3,12 +3,17 @@ import MusicSection from "@/components/MusicSection";
 import MovieSection from "@/components/MoviesSection";
 import Skills from '@/components/Skills'
 import MyJourney from "@/components/MyJourney";
+import ProjectsCarousel from '@/components/projects/ProjectsCarousel'
+
+
 export default function Home() {
 
   return (
     <main className="min-h-screen  ">
       {/* Hero Section */}
       <HeroSection />
+
+
       
       {/* Music Section */}
       <Skills/>
@@ -18,8 +23,8 @@ export default function Home() {
       
       <MyJourney/>
 
-      {/* Featured Projects */}
-
+      
+      <ProjectsCarousel />
  
 
     </main>

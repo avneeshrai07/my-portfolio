@@ -1,0 +1,25 @@
+/* ─────────────────────────────────────────────────────────
+   ADD THESE LINES inside your existing :root { } block
+   in app/globals.css — right after the last variable.
+   ───────────────────────────────────────────────────────── */
+
+  /* Projects section — earthy palette */
+  --proj-cream:        #F5EDE0;
+  --proj-sand:         #EDE0CC;
+  --proj-sand-2:       #E0CEB0;
+  --proj-bark:         #7A4A28;
+  --proj-bark-2:       #5C3018;
+  --proj-bark-3:       #9A6A48;
+  --proj-terra:        #C4694A;
+  --proj-ink:          #1E0E04;
+  --proj-ink-2:        #3A2010;
+  --proj-ink-3:        #5A3E28;
+  --proj-ink-4:        #8A6A4A;
+  --proj-border:       #C8A870;
+  --proj-border-2:     #D4B896;
+  --proj-moss-bg:      #D4EBC4;
+  --proj-moss-bd:      #8AB870;
+  --proj-moss-tx:      #2A5010;
+  --proj-tag-live-bg:  #E8F0DC;
+  --proj-tag-live-tx:  #3A6820;
+  --proj-tag-live-bd:  #B0D088;
