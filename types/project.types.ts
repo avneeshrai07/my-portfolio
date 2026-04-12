@@ -18,6 +18,9 @@ export interface Project {
   id: string
   num: string
   name: string
+  category: string
+  href: string
+  year?: string
   sub: string
   tags: ProjectTag[]
   overview: string
