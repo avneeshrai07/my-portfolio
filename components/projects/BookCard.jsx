@@ -71,7 +71,7 @@ const BookCard = ({
       <div
         className="book flex items-center justify-center rounded-2xl"
         style={{
-          background: '#f5f0e8',
+          background: 'var(--proj-cream)',
           boxShadow: '3px 4px 16px rgba(0,0,0,0.09), inset 0 1px 0 rgba(255,255,255,0.8)',
         }}
         onMouseEnter={() => setHovered(true)}
@@ -80,21 +80,23 @@ const BookCard = ({
 
         {/* ── Inner page ── */}
         <div
-          className="book-layer inner absolute inset-0 flex flex-col justify-between rounded-2xl cursor-pointer px-[15%] py-[10%]"
-          style={{ background: '#faf7f2', boxShadow: '2px 4px 14px rgba(0,0,0,0.07)' }}
+          className="book-layer inner absolute inset-0 flex flex-col justify-between rounded-2xl cursor-pointer pl-[18%] pr-[9%] py-[10%]"
+          style={{
+            // background: 'bg-white/90',
+            boxShadow: '2px 4px 14px rgba(0,0,0,0.07)',
+          }}
           onClick={() => router.push(href)}
           role="link"
           aria-label={`View ${title}`}
         >
           {/* Top rule */}
-          <div className="w-full h-px" style={{ background: 'rgba(0,0,0,0.07)' }} />
+          <div className="w-full h-px" style={{ background: 'var(--proj-border-2)' }} />
 
-          {/* Main content: title → subtitle → year */}
           <div className="flex flex-col gap-4">
 
             {/* Title */}
             <div className={hovered ? 'line-reveal' : 'opacity-0'}>
-              <p className="book-title-in font-light tracking-tight leading-tight" style={{ color: '#1a1a1a' }}>
+              <p className="book-title-in font-light tracking-tight leading-tight text-hero-suit">
                 {title}
               </p>
             </div>
@@ -104,7 +106,7 @@ const BookCard = ({
               className={hovered ? 'line-reveal' : 'opacity-0'}
               style={hovered ? { animationDelay: '0.08s' } : {}}
             >
-              <p className="book-sub font-light leading-relaxed" style={{ color: 'rgba(26,26,26,0.55)' }}>
+              <p className="book-sub font-light leading-relaxed" style={{ color: 'var(--proj-ink-3)' }}>
                 {sub}
               </p>
             </div>
@@ -114,21 +116,21 @@ const BookCard = ({
               className={hovered ? 'line-reveal' : 'opacity-0'}
               style={hovered ? { animationDelay: '0.16s' } : {}}
             >
-              <p className="book-label tracking-[0.22em] uppercase mb-1" style={{ color: 'rgba(26,26,26,0.35)' }}>
+              <p className="book-label tracking-[0.22em] uppercase mb-1" style={{ color: 'var(--proj-ink-4)' }}>
                 Year
               </p>
-              <p className="book-year font-light" style={{ color: '#1a1a1a' }}>{year}</p>
+              <p className="book-year font-light text-hero-suit">{year}</p>
             </div>
 
           </div>
 
           {/* Bottom rule + open hint */}
           <div className="flex items-center">
-            <div className="flex-1 h-px" style={{ background: 'rgba(0,0,0,0.07)' }} />
+            <div className="flex-1 h-px" style={{ background: 'var(--proj-border-2)' }} />
             {hovered && (
               <span
                 className="open-hint ml-3 book-hint tracking-[0.18em] uppercase whitespace-nowrap"
-                style={{ color: 'rgba(26,26,26,0.32)' }}
+                style={{ color: 'var(--proj-ink-4)' }}
               >
                 open →
               </span>
@@ -139,24 +141,28 @@ const BookCard = ({
         {/* ── Cover page ── */}
         <div
           className="book-layer cover absolute inset-0 flex flex-col items-center justify-center rounded-2xl gap-2"
-          style={{ background: '#ede8de', boxShadow: '2px 4px 14px rgba(0,0,0,0.09)' }}
+          style={{
+            background: '#e9ddc9',
+            boxShadow: '2px 4px 14px rgba(0,0,0,0.09)',
+          }}
         >
+          {/* Spine */}
           <div
             className="absolute left-0 top-0 bottom-0 w-[4px] rounded-l-2xl"
-            style={{ background: 'rgba(0,0,0,0.06)' }}
+            style={{ background: 'var(--proj-border)' }}
           />
-          <p className="cover-num tracking-[0.3em] uppercase" style={{ color: 'rgba(26,26,26,0.25)' }}>{num}</p>
-          <div className="w-6 h-px my-1" style={{ background: 'rgba(0,0,0,0.15)' }} />
-          <p
-            className="cover-title font-light tracking-[0.2em] uppercase text-center px-[10%]"
-            style={{ color: 'rgba(26,26,26,0.6)' }}
-          >
+
+          <p className="cover-num tracking-[0.3em] uppercase" style={{ color: 'var(--proj-ink-4)' }}>
+            {num}
+          </p>
+          <div className="w-6 h-px my-1" style={{ background: 'var(--proj-bark-3)' }} />
+          <p className="cover-title font-light tracking-[0.2em] uppercase text-center px-[10%] text-hero-suit">
             {title}
           </p>
-          <p className="cover-num tracking-[0.22em] uppercase mt-1" style={{ color: 'rgba(26,26,26,0.3)' }}>
+          <p className="cover-num tracking-[0.22em] uppercase mt-1" style={{ color: 'var(--proj-ink-3)' }}>
             {category}
           </p>
-          <div className="w-6 h-px mt-1" style={{ background: 'rgba(0,0,0,0.15)' }} />
+          <div className="w-6 h-px mt-1" style={{ background: 'var(--proj-bark-3)' }} />
         </div>
       </div>
     </>
