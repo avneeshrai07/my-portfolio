@@ -3,6 +3,8 @@
     "id": "sunakku",
     "num": "01",
     "name": "Sunakku",
+    "category": "Machine Learning",
+    "href": "/projects/sunakku",
     "sub": "snack ordering platform — queue-based, real-time, high-throughput",
     "tags": [
       { "label": "Live", "type": "live" },
@@ -43,6 +45,8 @@
     "id": "velox",
     "num": "02",
     "name": "Velox",
+    "category": "WebApp",
+    "href": "/projects/velox",
     "sub": "notification dispatch engine — event-driven, multi-channel, 500k msg/day",
     "tags": [
       { "label": "Production", "type": "live" },
@@ -83,6 +87,8 @@
     "id": "gatekeeper",
     "num": "03",
     "name": "Gatekeeper",
+    "category": "AI",
+    "href": "/projects/gatekeeper",
     "sub": "multi-tenant auth gateway — OAuth2, RBAC, centralized identity plane",
     "tags": [
       { "label": "Deployed", "type": "live" },

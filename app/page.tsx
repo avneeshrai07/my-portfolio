@@ -4,8 +4,8 @@ import MovieSection from "@/components/MoviesSection";
 import Skills from '@/components/Skills'
 import MyJourney from "@/components/MyJourney";
 import ProjectsCarousel from '@/components/projects/ProjectsCarousel'
-
-
+// import BookCard from '@/components/ProjectCard'
+import ProjectsSection from '@/components/ProjectsSection';
 export default function Home() {
 
   return (
@@ -13,7 +13,7 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection />
 
-
+      <ProjectsSection/>
       
       {/* Music Section */}
       <Skills/>
