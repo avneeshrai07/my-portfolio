@@ -2,8 +2,8 @@ import { TAGLINE, NAME, BIO, SERVICES } from "./constants";
 
 interface DesktopLayoutProps {
   bioLines: string[];
-  bioRef: React.RefObject<HTMLDivElement>;
-  photoCentreRef: React.RefObject<HTMLDivElement>;
+  bioRef: React.RefObject<HTMLDivElement | null>;
+  photoCentreRef: React.RefObject<HTMLDivElement | null>;
 }
 
 export default function DesktopLayout({ bioLines, bioRef, photoCentreRef }: DesktopLayoutProps) {

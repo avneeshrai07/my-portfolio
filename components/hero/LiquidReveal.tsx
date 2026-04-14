@@ -10,7 +10,7 @@ interface Particle {
 }
 
 interface Props {
-  sectionRef: RefObject<HTMLDivElement>;
+  sectionRef: RefObject<HTMLDivElement | null>;
 }
 
 export default function LiquidReveal({ sectionRef }: Props) {
@@ -22,21 +22,32 @@ export default function LiquidReveal({ sectionRef }: Props) {
     if (!canvas || !section) return;
 
     const ctx = canvas.getContext("2d")!;
-
-    let w = 0, h = 0, raf = 0;
-    let destroyed = false;
-    let noiseT = 0;
+    let w = 0, h = 0, raf = 0, destroyed = false, t = 0;
 
     const cursor = { x: -999, y: -999 };
     const prev   = { x: -999, y: -999 };
-    const smooth = { x: -999, y: -999 };
-    let radius = 0, isOver = false;
+
+    // blobPos lerps toward cursor while moving, then coasts on stop
+    const blobPos = { x: -999, y: -999 };
+    // smoothed cursor velocity — captured every frame, used to coast on stop
+    const cursorVel = { x: 0, y: 0 };
+    // coast velocity — active only after cursor stops
+    const coastVel  = { x: 0, y: 0 };
+
+    let radius   = 0;
+    let isMoving = false;
+    let moveTimer = 0;
+    const MOVE_TIMEOUT = 8;
+    const LINGER_FRAMES = 55; // ~0.9s at 60fps — blob holds shape before fading
+    let wasMoving = false; // detect the exact frame movement stops
+    let lingerTimer = 0;   // counts frames since cursor stopped
+
     const particles: Particle[] = [];
 
-    const img    = new Image();
-    img.src      = "/batman.png";
+    const img = new Image();
+    img.src = "/batman.png";
     let imgReady = false;
-    img.onload   = () => { imgReady = true; };
+    img.onload = () => { imgReady = true; };
 
     const syncSize = () => {
       const r = section.getBoundingClientRect();
@@ -49,38 +60,27 @@ export default function LiquidReveal({ sectionRef }: Props) {
     const ro = new ResizeObserver(syncSize);
     ro.observe(section);
 
-    /* ─── Noise: 3 layered sines, returns -1..1 ─── */
     const noise = (v: number) =>
-      Math.sin(v * 2.1)        * 0.50 +
-      Math.sin(v * 3.7 + 1.3)  * 0.30 +
-      Math.sin(v * 5.9 + 2.7)  * 0.20;
+      Math.sin(v * 2.1) * 0.50 +
+      Math.sin(v * 3.7 + 1.3) * 0.30 +
+      Math.sin(v * 5.9 + 2.7) * 0.20;
 
-    /* ─── Build wavy blob clip path ─── */
-    const wavyClip = (
-      cx: number, cy: number,
-      baseR: number, t: number,
-    ) => {
+    const wavyClip = (cx: number, cy: number, baseR: number, time: number) => {
       ctx.beginPath();
-      const steps = 120; // more steps = smoother curves
-      for (let i = 0; i <= steps; i++) {
-        const a = (i / steps) * Math.PI * 2;
-
-        // low frequency = fewer rounder bumps, not spiky
+      for (let i = 0; i <= 120; i++) {
+        const a = (i / 120) * Math.PI * 2;
         const wobble =
-          noise(a * 1.1 + t * 0.40) * baseR * 0.12 +  // 1–2 big gentle swells
-          noise(a * 2.0 + t * 0.65) * baseR * 0.06 +  // soft secondary
-          noise(a * 3.1 + t * 0.90) * baseR * 0.02;   // barely-there texture
-
-        const r = Math.max(baseR * 0.4, baseR + wobble); // never collapses
-        ctx.lineTo(
-          cx + Math.cos(a) * r,
-          cy + Math.sin(a) * r,
-        );
+          noise(a * 1.1 + time * 0.40) * baseR * 0.12 +
+          noise(a * 2.0 + time * 0.65) * baseR * 0.06 +
+          noise(a * 3.1 + time * 0.90) * baseR * 0.02;
+        const r = Math.max(baseR * 0.4, baseR + wobble);
+        i === 0
+          ? ctx.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r)
+          : ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
       }
       ctx.closePath();
     };
 
-    /* ─── Cover-fit draw ─── */
     const drawImg = () => {
       const s  = Math.max(w / img.naturalWidth, h / img.naturalHeight);
       const iw = img.naturalWidth  * s;
@@ -88,71 +88,111 @@ export default function LiquidReveal({ sectionRef }: Props) {
       ctx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
     };
 
-    /* ─── Render loop ─── */
     const loop = () => {
       if (destroyed) return;
       raf = requestAnimationFrame(loop);
-      noiseT += 0.020; // speed of idle morph
+      t += 0.022;
 
-      /* Smooth cursor follow */
-      if (smooth.x < 0 && cursor.x > 0) { smooth.x = cursor.x; smooth.y = cursor.y; }
-      smooth.x += (cursor.x - smooth.x) * 0.14;
-      smooth.y += (cursor.y - smooth.y) * 0.14;
+      const dx  = cursor.x - prev.x;
+      const dy  = cursor.y - prev.y;
+      const spd = Math.sqrt(dx * dx + dy * dy);
 
-      /* Radius spring — wider blob */
-      radius += ((isOver ? 140 : 0) - radius) * 0.07;
-
-      /* Spawn trail blobs constantly while moving, not just on fast swipe */
-      if (isOver && cursor.x > 0) {
-        const dx  = cursor.x - prev.x;
-        const dy  = cursor.y - prev.y;
-        const spd = Math.sqrt(dx * dx + dy * dy);
-        if (spd > 2) {
-          /* Always spawn 1-3 trail blobs behind the cursor */
-          const n = Math.min(3, 1 + Math.floor(spd * 0.12));
-          for (let i = 0; i < n; i++) {
-            /* Spawn slightly behind cursor in direction of travel */
-            const lag = (i + 1) * 0.18;
-            particles.push({
-              x: smooth.x - dx * lag * 4 + (Math.random() - 0.5) * 12,
-              y: smooth.y - dy * lag * 4 + (Math.random() - 0.5) * 12,
-              vx: -dx * 0.04 + (Math.random() - 0.5) * 0.4,
-              vy: -dy * 0.04 + (Math.random() - 0.5) * 0.4,
-              life: 1,
-              r: radius * (0.55 + Math.random() * 0.35), // trail blobs relative to main
-            });
-          }
-        }
+      wasMoving = isMoving;
+      if (spd > 0.5 && cursor.x > 0) {
+        isMoving  = true;
+        moveTimer = 0;
+      } else {
+        moveTimer++;
+        if (moveTimer > MOVE_TIMEOUT) isMoving = false;
       }
+
+      // First frame: init blob at cursor
+      if (blobPos.x < 0 && cursor.x > 0) {
+        blobPos.x = cursor.x;
+        blobPos.y = cursor.y;
+      }
+
+      if (isMoving) {
+        // PHASE 1 — TRACKING: blob follows cursor with a small lag
+        // Smooth the cursor velocity for coast phase
+        cursorVel.x = cursorVel.x * 0.6 + dx * 0.4;
+        cursorVel.y = cursorVel.y * 0.6 + dy * 0.4;
+
+        // Lerp blob toward cursor — 0.22 = slight lag, not instant
+        blobPos.x += (cursor.x - blobPos.x) * 0.22;
+        blobPos.y += (cursor.y - blobPos.y) * 0.22;
+
+        // Reset coast vel
+        coastVel.x = 0;
+        coastVel.y = 0;
+
+      } else {
+        // PHASE 2 — COASTING: cursor stopped, blob carries momentum forward
+        if (wasMoving && !isMoving) {
+          // Exactly on the frame movement stops: capture velocity and amplify
+          coastVel.x = cursorVel.x * 5.0;
+          coastVel.y = cursorVel.y * 5.0;
+        }
+
+        // Damp and integrate coast
+        coastVel.x *= 0.88;
+        coastVel.y *= 0.88;
+        blobPos.x  += coastVel.x;
+        blobPos.y  += coastVel.y;
+      }
+
       prev.x = cursor.x;
       prev.y = cursor.y;
 
-      /* Update particles — slow decay for long tail */
+      // Radius — appear fast, linger, then slow fade
+      if (isMoving) {
+        lingerTimer = 0;
+      } else {
+        lingerTimer++;
+      }
+      const waiting = lingerTimer < LINGER_FRAMES;
+      const targetR = (isMoving || waiting) ? Math.max(80, Math.min(w * 0.09, 130)) : 0;
+      const lerpSpd = targetR > radius ? 0.10 : 0.018;
+      radius += (targetR - radius) * lerpSpd;
+
+      // Trail particles
+      if (isMoving && spd > 2) {
+        const n = Math.min(3, 1 + Math.floor(spd * 0.10));
+        for (let i = 0; i < n; i++) {
+          const lag = (i + 1) * 0.3;
+          particles.push({
+            x:  blobPos.x - cursorVel.x * lag * 6 + (Math.random() - 0.5) * 8,
+            y:  blobPos.y - cursorVel.y * lag * 6 + (Math.random() - 0.5) * 8,
+            vx: cursorVel.x * 0.12,
+            vy: cursorVel.y * 0.12,
+            life: 1,
+            r: radius * (0.45 + Math.random() * 0.40),
+          });
+        }
+      }
+
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
-        p.x    += p.vx;  p.y    += p.vy;
-        p.vx   *= 0.92;  p.vy   *= 0.92;
-        p.life -= 0.012; // very slow fade = long lasting tail
+        p.x += p.vx; p.y += p.vy;
+        p.vx *= 0.93; p.vy *= 0.93;
+        p.life -= isMoving ? 0.010 : 0.020;
         if (p.life <= 0) particles.splice(i, 1);
       }
 
-      /* ── Draw ── */
       ctx.clearRect(0, 0, w, h);
-      if (!imgReady || radius < 2 || cursor.x < 0) return;
+      if (!imgReady || radius < 1 || blobPos.x < 0) return;
 
-      /* Main blob */
       ctx.save();
-      wavyClip(smooth.x, smooth.y, radius, noiseT);
+      wavyClip(blobPos.x, blobPos.y, radius, t);
       ctx.clip();
       drawImg();
       ctx.restore();
 
-      /* Ink drip particles */
       for (const p of particles) {
-        if (p.life < 0.05) continue;
+        if (p.life < 0.04) continue;
         ctx.save();
-        ctx.globalAlpha = Math.min(1, p.life * 1.4);
-        wavyClip(p.x, p.y, p.r * p.life, noiseT + p.life * 3);
+        ctx.globalAlpha = Math.min(1, p.life * 1.5);
+        wavyClip(p.x, p.y, p.r * Math.sqrt(p.life), t + p.life * 2);
         ctx.clip();
         drawImg();
         ctx.restore();
@@ -162,40 +202,31 @@ export default function LiquidReveal({ sectionRef }: Props) {
 
     raf = requestAnimationFrame(loop);
 
-    /* ── Events on the section (top-level, never blocked by UI layers) ── */
     const onMove = (e: MouseEvent) => {
       const r = section.getBoundingClientRect();
       cursor.x = e.clientX - r.left;
       cursor.y = e.clientY - r.top;
-      isOver = true;
     };
     const onTouch = (e: TouchEvent) => {
       const r = section.getBoundingClientRect();
       cursor.x = e.touches[0].clientX - r.left;
       cursor.y = e.touches[0].clientY - r.top;
-      isOver = true;
     };
-    const onLeave = () => { isOver = false; };
 
-    section.addEventListener("mousemove",  onMove   as EventListener);
-    section.addEventListener("mouseleave", onLeave);
-    section.addEventListener("touchmove",  onTouch  as EventListener, { passive: true });
-    section.addEventListener("touchend",   onLeave);
+    section.addEventListener("mousemove", onMove   as EventListener);
+    section.addEventListener("touchmove", onTouch  as EventListener, { passive: true });
 
     return () => {
       destroyed = true;
       cancelAnimationFrame(raf);
       ro.disconnect();
-      section.removeEventListener("mousemove",  onMove   as EventListener);
-      section.removeEventListener("mouseleave", onLeave);
-      section.removeEventListener("touchmove",  onTouch  as EventListener);
-      section.removeEventListener("touchend",   onLeave);
+      section.removeEventListener("mousemove", onMove   as EventListener);
+      section.removeEventListener("touchmove", onTouch  as EventListener);
     };
   }, [sectionRef]);
 
   return (
     <>
-      {/* Base photo — plain CSS, zero canvas involvement */}
       <div
         className="absolute inset-0"
         style={{
@@ -205,7 +236,6 @@ export default function LiquidReveal({ sectionRef }: Props) {
           zIndex: 0,
         }}
       />
-      {/* Reveal canvas — fully transparent except inside blob */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none"

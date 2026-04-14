@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, RefObject } from "react";
 import BackgroundLayers from "./hero/BackgroundLayers";
 import DesktopLayout    from "./hero/DesktopLayout";
 import MobileLayout     from "./hero/MobileLayout";
@@ -18,16 +18,16 @@ export default function HeroSection() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const { bioLines, bioRef } = useBioReflow(isMobile, containerRef, photoCentreRef);
+  const { bioLines, bioRef } = useBioReflow(isMobile, containerRef as RefObject<HTMLDivElement | null>, photoCentreRef as RefObject<HTMLDivElement | null>);
 
   return (
     <section
       ref={containerRef}
       className="relative w-full overflow-hidden bg-[#EEEADF]"
-      style={{ height: "100svh", minHeight: 600, touchAction: "pan-y", cursor: "crosshair" }}
+      style={{ height: "100svh", minHeight: 600, touchAction: "pan-y", cursor: "default" }}
     >
       {/* BackgroundLayers listens to mousemove on the section via prop */}
-      <BackgroundLayers sectionRef={containerRef} />
+      <BackgroundLayers sectionRef={containerRef as RefObject<HTMLDivElement | null>} />
 
       <DesktopLayout
         bioLines={bioLines}

@@ -4,7 +4,7 @@ import { RefObject } from "react";
 export default function BackgroundLayers({
   sectionRef,
 }: {
-  sectionRef: RefObject<HTMLDivElement>;
+  sectionRef: RefObject<HTMLDivElement | null>;
 }) {
   return (
     <>

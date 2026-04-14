@@ -6,8 +6,8 @@ interface LayoutLine { text: string; width: number }
 
 export function useBioReflow(
   isMobile: boolean,
-  containerRef: RefObject<HTMLDivElement>,
-  photoCentreRef: RefObject<HTMLDivElement>
+  containerRef: RefObject<HTMLDivElement | null>,
+  photoCentreRef: RefObject<HTMLDivElement | null>
 ) {
   const [bioLines, setBioLines] = useState<string[]>([]);
   const bioRef = useRef<HTMLDivElement>(null);
