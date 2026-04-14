@@ -25,7 +25,7 @@ export default function LiquidReveal({ sectionRef }: Props) {
 
     let w = 0, h = 0, raf = 0;
     let destroyed = false;
-    let noiseT    = 0;
+    let noiseT = 0;
 
     const cursor = { x: -999, y: -999 };
     const prev   = { x: -999, y: -999 };
@@ -49,56 +49,77 @@ export default function LiquidReveal({ sectionRef }: Props) {
     const ro = new ResizeObserver(syncSize);
     ro.observe(section);
 
-    /* Layered sine noise for organic blob edge */
+    /* ─── Noise: 3 layered sines, returns -1..1 ─── */
     const noise = (v: number) =>
-      Math.sin(v * 2.1)       * 0.50 +
-      Math.sin(v * 3.7 + 1.3) * 0.30 +
-      Math.sin(v * 5.9 + 2.7) * 0.20;
+      Math.sin(v * 2.1)        * 0.50 +
+      Math.sin(v * 3.7 + 1.3)  * 0.30 +
+      Math.sin(v * 5.9 + 2.7)  * 0.20;
 
-    /* Draw a wavy circle clip path */
-    const wavyClip = (cx: number, cy: number, baseR: number, t: number) => {
+    /* ─── Build wavy blob clip path ─── */
+    const wavyClip = (
+      cx: number, cy: number,
+      baseR: number, t: number,
+    ) => {
       ctx.beginPath();
-      const steps = 80;
+      const steps = 120; // more steps = smoother curves
       for (let i = 0; i <= steps; i++) {
         const a = (i / steps) * Math.PI * 2;
+
+        // low frequency = fewer rounder bumps, not spiky
         const wobble =
-          noise(a * 1.8 + t * 0.9)  * baseR * 0.18 +
-          noise(a * 3.2 + t * 0.6)  * baseR * 0.09 +
-          noise(a * 6.1 + t * 0.3)  * baseR * 0.04;
-        const r = baseR + wobble;
-        const x = cx + Math.cos(a) * r;
-        const y = cy + Math.sin(a) * r;
-        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          noise(a * 1.1 + t * 0.40) * baseR * 0.12 +  // 1–2 big gentle swells
+          noise(a * 2.0 + t * 0.65) * baseR * 0.06 +  // soft secondary
+          noise(a * 3.1 + t * 0.90) * baseR * 0.02;   // barely-there texture
+
+        const r = Math.max(baseR * 0.4, baseR + wobble); // never collapses
+        ctx.lineTo(
+          cx + Math.cos(a) * r,
+          cy + Math.sin(a) * r,
+        );
       }
       ctx.closePath();
     };
 
+    /* ─── Cover-fit draw ─── */
+    const drawImg = () => {
+      const s  = Math.max(w / img.naturalWidth, h / img.naturalHeight);
+      const iw = img.naturalWidth  * s;
+      const ih = img.naturalHeight * s;
+      ctx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
+    };
+
+    /* ─── Render loop ─── */
     const loop = () => {
       if (destroyed) return;
       raf = requestAnimationFrame(loop);
-      noiseT += 0.018;
+      noiseT += 0.020; // speed of idle morph
 
-      /* Lerp cursor */
+      /* Smooth cursor follow */
       if (smooth.x < 0 && cursor.x > 0) { smooth.x = cursor.x; smooth.y = cursor.y; }
-      smooth.x += (cursor.x - smooth.x) * 0.12;
-      smooth.y += (cursor.y - smooth.y) * 0.12;
-      radius   += ((isOver ? 140 : 0) - radius) * 0.08;
+      smooth.x += (cursor.x - smooth.x) * 0.14;
+      smooth.y += (cursor.y - smooth.y) * 0.14;
 
-      /* Spawn particles on fast movement */
+      /* Radius spring — wider blob */
+      radius += ((isOver ? 140 : 0) - radius) * 0.07;
+
+      /* Spawn trail blobs constantly while moving, not just on fast swipe */
       if (isOver && cursor.x > 0) {
-        const dx = cursor.x - prev.x;
-        const dy = cursor.y - prev.y;
+        const dx  = cursor.x - prev.x;
+        const dy  = cursor.y - prev.y;
         const spd = Math.sqrt(dx * dx + dy * dy);
-        if (spd > 7) {
-          const count = Math.min(3, Math.floor(spd * 0.15));
-          for (let i = 0; i < count; i++) {
-            const a = Math.random() * Math.PI * 2;
+        if (spd > 2) {
+          /* Always spawn 1-3 trail blobs behind the cursor */
+          const n = Math.min(3, 1 + Math.floor(spd * 0.12));
+          for (let i = 0; i < n; i++) {
+            /* Spawn slightly behind cursor in direction of travel */
+            const lag = (i + 1) * 0.18;
             particles.push({
-              x: smooth.x, y: smooth.y,
-              vx: Math.cos(a) * (1 + Math.random() * spd * 0.08),
-              vy: Math.sin(a) * (1 + Math.random() * spd * 0.08),
+              x: smooth.x - dx * lag * 4 + (Math.random() - 0.5) * 12,
+              y: smooth.y - dy * lag * 4 + (Math.random() - 0.5) * 12,
+              vx: -dx * 0.04 + (Math.random() - 0.5) * 0.4,
+              vy: -dy * 0.04 + (Math.random() - 0.5) * 0.4,
               life: 1,
-              r: 35 + Math.random() * 50,
+              r: radius * (0.55 + Math.random() * 0.35), // trail blobs relative to main
             });
           }
         }
@@ -106,47 +127,42 @@ export default function LiquidReveal({ sectionRef }: Props) {
       prev.x = cursor.x;
       prev.y = cursor.y;
 
-      /* Update particles */
+      /* Update particles — slow decay for long tail */
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
-        p.x += p.vx; p.y += p.vy;
-        p.vx *= 0.90; p.vy *= 0.90;
-        p.life -= 0.025;
+        p.x    += p.vx;  p.y    += p.vy;
+        p.vx   *= 0.92;  p.vy   *= 0.92;
+        p.life -= 0.012; // very slow fade = long lasting tail
         if (p.life <= 0) particles.splice(i, 1);
       }
 
-      /* ── Render ── */
-      /* Canvas is transparent — base photo CSS div shows through everywhere */
+      /* ── Draw ── */
       ctx.clearRect(0, 0, w, h);
-
       if (!imgReady || radius < 2 || cursor.x < 0) return;
 
-      const drawBatmanInBlob = (cx: number, cy: number, r: number, offsetT: number) => {
-        ctx.save();
-        wavyClip(cx, cy, r, noiseT + offsetT);
-        ctx.clip();
+      /* Main blob */
+      ctx.save();
+      wavyClip(smooth.x, smooth.y, radius, noiseT);
+      ctx.clip();
+      drawImg();
+      ctx.restore();
 
-        /* cover-fit batman */
-        const s  = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-        const iw = img.naturalWidth  * s;
-        const ih = img.naturalHeight * s;
-        ctx.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih);
-        ctx.restore();
-      };
-
-      /* Main cursor blob */
-      drawBatmanInBlob(smooth.x, smooth.y, radius, 0);
-
-      /* Ink particle blobs */
+      /* Ink drip particles */
       for (const p of particles) {
-        if (p.life > 0.05) {
-          drawBatmanInBlob(p.x, p.y, p.r * p.life, p.life);
-        }
+        if (p.life < 0.05) continue;
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, p.life * 1.4);
+        wavyClip(p.x, p.y, p.r * p.life, noiseT + p.life * 3);
+        ctx.clip();
+        drawImg();
+        ctx.restore();
       }
+      ctx.globalAlpha = 1;
     };
 
     raf = requestAnimationFrame(loop);
 
+    /* ── Events on the section (top-level, never blocked by UI layers) ── */
     const onMove = (e: MouseEvent) => {
       const r = section.getBoundingClientRect();
       cursor.x = e.clientX - r.left;
@@ -179,7 +195,7 @@ export default function LiquidReveal({ sectionRef }: Props) {
 
   return (
     <>
-      {/* Base — plain CSS, never touched by canvas */}
+      {/* Base photo — plain CSS, zero canvas involvement */}
       <div
         className="absolute inset-0"
         style={{
@@ -189,7 +205,7 @@ export default function LiquidReveal({ sectionRef }: Props) {
           zIndex: 0,
         }}
       />
-      {/* Reveal canvas — transparent everywhere except blob */}
+      {/* Reveal canvas — fully transparent except inside blob */}
       <canvas
         ref={canvasRef}
         className="absolute inset-0 pointer-events-none"
