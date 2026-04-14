@@ -1,10 +1,14 @@
 export const SERVICES = [
-  "Brand Design",
-  "Product Design",
-  "UI/UX Design",
-  "Design Consultancy",
+  "High-Performance API Engineering",
+  "Distributed System Design",
+  "Scalable Backend Architecture",
+  "Database Optimizations",
+  "Microservices Architecture Design",
+  "Caching & Performance Tuning",
 ];
-export const TAGLINE = "FULL-STACK DEVELOPER & SAAS BUILDER";
+export const TAGLINE =
+  "BACKEND ENGINEER | AI & ML DEVELOPER";
+
 export const NAME = "Avneesh";
-export const BIO =
-  "Building high-performance APIs, progressive web apps, and scalable systems that ship fast and last long.";
+
+export const BIO = "I Design Backend Systems That Don’t Break At Scale.";
