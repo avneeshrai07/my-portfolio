@@ -87,7 +87,7 @@
   --color-hero-suit: var(--suit-brown);
   --color-hero-shirt: var(--shirt-tan);
   --color-hero-skin: var(--skin-tone);
-
+  --color-shirt-tan: var(--shirt-tan);
   --color-primary: var(--primary);
   --color-primary-light: var(--primary-light);
   --color-primary-dark: var(--primary-dark);

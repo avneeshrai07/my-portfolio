@@ -20,7 +20,7 @@ export default function MobileLayout() {
 
         <p className="text-[15px] text-white/80 leading-relaxed max-w-xs">{BIO}</p>
 
-        <div className="flex flex-wrap gap-2 pt-1">
+        {/* <div className="flex flex-wrap gap-2 pt-1">
           {SERVICES.map((s, i) => (
             <span
               key={s}
@@ -33,11 +33,15 @@ export default function MobileLayout() {
               {s}
             </span>
           ))}
-        </div>
+        </div> */}
 
-        <button className="pointer-events-auto mt-2 flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#d4a882]/20 border-2 border-[#d4a882]/40 text-[#d4a882] font-bold text-sm tracking-wide active:scale-95 transition-transform">
-          View My Work →
-        </button>
+        <div className="flex items-center gap-6">
+          <a href="/resume.pdf" download>
+            <button className="cursor-pointer pointer-events-auto px-8 py-4 bg-shirt-tan/80 text-hero-suit rounded-full hover:bg-shirt-tan/110 transition-all duration-300 border-2 border-white/300 font-semibold active:scale-95 text-sm">
+              View Resume
+            </button>
+          </a>
+        </div>
       </div>
     </div>
   );
