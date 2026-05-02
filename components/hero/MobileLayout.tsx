@@ -1,4 +1,4 @@
-import { TAGLINE, NAME, BIO, SERVICES } from "./constants";
+import { TAGLINE, NAME, BIO} from "./constants";
 
 export default function MobileLayout() {
   return (
