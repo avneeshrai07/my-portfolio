@@ -2,23 +2,10 @@
 
 import React from "react";
 
-const LBL = "text-[9px] uppercase tracking-[0.14em] font-medium block mb-1";
+const LBL = "text-[10px] uppercase tracking-[0.14em] font-medium block mb-1"; // 9px → 10px
 
 export default function ProjectCard({ data }) {
   return (
-    /*
-      Grid layout:
-      ╔═══════════╦═══════════════╦═══════════════════════╗
-      ║ Title/Sub ║               ║ Role, Duration, Status ║  row 1
-      ╠═══════════╣    Image      ╠═══════════════════════╣
-      ║  Impact   ║   (rows 1-2)  ║       Overview        ║  row 2
-      ╠═══════════╩═══════════════╣     (rows 2-3)         ║
-      ║      Tech Stack (cols 1+2)║                       ║  row 3
-      ╚═══════════════════════════╩═══════════════════════╝
-
-      Columns:  3fr | 4fr | 3fr
-      Rows:     1.2fr | 1fr | 0.8fr
-    */
     <div
       className="w-full flex flex-col overflow-hidden rounded-[10px]"
       style={{
@@ -28,7 +15,6 @@ export default function ProjectCard({ data }) {
         border: "1px solid var(--proj-border)",
       }}
     >
-      {/* ── Main grid ── */}
       <div
         className="flex-1 min-h-0"
         style={{
@@ -41,7 +27,7 @@ export default function ProjectCard({ data }) {
       >
 
         {/* ══ A1 — Title / Sub ══ */}
-        <div
+         <div
           className="flex flex-col justify-end overflow-hidden"
           style={{
             background: "var(--proj-cream)",
@@ -49,40 +35,41 @@ export default function ProjectCard({ data }) {
             padding: "clamp(10px,1.2vw,18px)",
           }}
         >
+        {/*
           <div className="flex items-center justify-between mb-2">
             <span
               className="uppercase tracking-[0.12em]"
-              style={{ fontSize: "clamp(7px,0.6vw,9px)", color: "var(--proj-ink-4)" }}
+              style={{ fontSize: "clamp(7px,0.6vw,9px)", color: "var(--proj-ink-4)" }} // 7→8, 0.6→0.7, 9→11
             >
               {data.category} · {data.type}
             </span>
             <span
               className="font-mono"
-              style={{ fontSize: "clamp(7px,0.6vw,9px)", color: "var(--proj-border)" }}
+              style={{ fontSize: "clamp(8px,0.7vw,11px)", color: "var(--proj-border)" }} // 7→8, 0.6→0.7, 9→11
             >
               {data.num}
             </span>
-          </div>
+          </div> */}
           <div style={{ height: 1, background: "var(--proj-bark)", marginBottom: "clamp(6px,0.8vh,12px)" }} />
           <h2
             className="font-medium leading-none m-0"
             style={{
-              fontSize: "clamp(24px,3.5vw,56px)",
+              fontSize: "clamp(24px,3.5vw,56px)", // title stays same — already big
               letterSpacing: "-0.04em",
-              color: "var(--proj-ink)",
+              color: "var(--suit-brown)",
             }}
           >
             {data.name}
           </h2>
           <p
             className="font-medium mt-1 leading-snug"
-            style={{ fontSize: "clamp(8px,0.75vw,11px)", color: "var(--proj-ink-3)" }}
+            style={{ fontSize: "clamp(10px,0.85vw,13px)", color: "var(--proj-ink-3)" }} // 8→10, 0.75→0.85, 11→13
           >
             {data.title}
           </p>
           <p
             className="mt-0.5"
-            style={{ fontSize: "clamp(7px,0.65vw,10px)", color: "var(--proj-ink-4)", lineHeight: 1.6 }}
+            style={{ fontSize: "clamp(9px,0.75vw,12px)", color: "var(--proj-ink-4)", lineHeight: 1.6 }} // 7→9, 0.65→0.75, 10→12
           >
             {data.sub}
           </p>
@@ -91,7 +78,7 @@ export default function ProjectCard({ data }) {
         {/* ══ B — Image (rows 1–2) ══ */}
         <div
           className="relative overflow-hidden"
-          style={{ gridColumn: 2, gridRow: "1 / 3", background: "#0a0a0a" }}
+          style={{ gridColumn: 2, gridRow: "1 / 3", background: "var(--suit-brown)" }}
         >
           <img
             src={data.image}
@@ -103,7 +90,7 @@ export default function ProjectCard({ data }) {
             className="absolute inset-0 pointer-events-none"
             style={{
               background:
-                "linear-gradient(to bottom, var(--proj-cream) 0%, transparent 15%, transparent 85%, var(--proj-cream) 100%)",
+                "linear-gradient(to bottom, var(--proj-cream) 0%, transparent 10%, transparent 90%, var(--proj-cream) 100%)",
             }}
           />
         </div>
@@ -114,41 +101,40 @@ export default function ProjectCard({ data }) {
           style={{
             background: "var(--proj-cream)",
             gridColumn: 3, gridRow: 1,
-            padding: "clamp(10px,1.2vw,18px)",
+            padding: "clamp(10px,1.5vh,18px)",
           }}
         >
-          {/* Role */}
-          <div>
-            <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Role</span>
-            <p style={{ fontSize: "clamp(8px,0.72vw,11px)", color: "var(--proj-ink-3)", lineHeight: 1.5 }}>
-              {data.role}
-            </p>
-          </div>
-
-          {/* Duration */}
-          <div>
-            <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Duration</span>
-            <p style={{ fontSize: "clamp(8px,0.72vw,11px)", color: "var(--proj-ink-3)" }}>
-              {data.duration} · {data.year}
-            </p>
-          </div>
-
-          {/* Status */}
-          <div>
-            <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Status</span>
-            <div className="flex items-center gap-1.5">
-              <span
-                className="rounded-full shrink-0 inline-block"
-                style={{ width: 5, height: 5, background: "var(--proj-moss-tx)" }}
-              />
-              <span
-                className="font-medium"
-                style={{ fontSize: "clamp(8px,0.72vw,10px)", color: "var(--proj-moss-tx)", letterSpacing: "0.04em" }}
-              >
-                {data.status}
+          {[
+            { label: "Role",     value: `${data.role}` },
+            { label: "Status",   value: data.status },
+            { label: "Duration", value: `${data.duration}` },
+            { label: "Year",     value: `${data.year}` },
+          ].map(({ label, value }) => (
+            <p
+              key={label}
+              style={{
+                fontSize: "clamp(10px,0.82vw,13px)", // 8→10, 0.72→0.82, 11→13
+                color: "var(--proj-ink-3)",
+                lineHeight: 1.5,
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
+                minWidth: 0,
+              }}
+            >
+              <span style={{
+                display: "inline",
+                color: "var(--proj-bark-3)",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                fontSize: "clamp(8px,0.7vw,11px)", // 7→8, 0.6→0.7, 9→11
+                textTransform: "uppercase",
+                marginRight: "0.35em",
+              }}>
+                {label}:
               </span>
-            </div>
-          </div>
+              {value}
+            </p>
+          ))}
         </div>
 
         {/* ══ A2 — Impact ══ */}
@@ -163,8 +149,8 @@ export default function ProjectCard({ data }) {
           <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Impact</span>
           <p
             style={{
-              fontSize: "clamp(8px,0.72vw,11px)",
-              color: "var(--proj-ink-4)",
+              fontSize: "clamp(10px,0.82vw,13px)", // 8→10, 0.72→0.82, 11→13
+              color: "var(--suit-brown)",
               lineHeight: 1.75,
               fontStyle: "italic",
               borderLeft: "1px solid var(--proj-border-2)",
@@ -186,7 +172,7 @@ export default function ProjectCard({ data }) {
         >
           <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Overview</span>
           <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar">
-            <p style={{ fontSize: "clamp(8px,0.72vw,11px)", color: "var(--proj-ink-3)", lineHeight: 1.82 }}>
+            <p style={{ fontSize: "clamp(10px,0.82vw,13px)", color: "var(--suit-brown)", lineHeight: 1.82 }}> {/* 8→10 */}
               {data.overview}
             </p>
           </div>
@@ -203,15 +189,14 @@ export default function ProjectCard({ data }) {
         >
           <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Tech Stack</span>
           <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar">
-            {/* flex-wrap with auto width per pill — flexible to word length */}
             <div className="flex flex-wrap gap-[5px]">
               {data.stack.map((s) => (
                 <span
                   key={s}
                   className="font-mono shrink-0"
                   style={{
-                    fontSize: "clamp(7px,0.65vw,10px)",
-                    color: "var(--proj-ink-3)",
+                    fontSize: "clamp(8px,0.75vw,11px)", // 7→8, 0.65→0.75, 10→11
+                    color: "var(--suit-brown)",
                     border: "0.5px solid var(--proj-border-2)",
                     padding: "4px 10px",
                     borderRadius: "3px",
@@ -243,7 +228,7 @@ export default function ProjectCard({ data }) {
               key={t.label}
               className="font-medium"
               style={{
-                fontSize: "clamp(7px,0.6vw,8px)",
+                fontSize: "clamp(8px,0.7vw,10px)", // 7→8, 0.6→0.7, 8→10
                 padding: "2px 7px",
                 borderRadius: "2px",
                 letterSpacing: "0.06em",
@@ -260,7 +245,7 @@ export default function ProjectCard({ data }) {
           href={data.href}
           className="transition-opacity hover:opacity-60"
           style={{
-            fontSize: "clamp(7px,0.6vw,9px)",
+            fontSize: "clamp(8px,0.7vw,11px)", // 7→8, 0.6→0.7, 9→11
             color: "var(--proj-bark)",
             textDecoration: "none",
             letterSpacing: "0.1em",

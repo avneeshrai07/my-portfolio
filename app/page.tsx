@@ -13,13 +13,14 @@ export default function Home() {
 
       <Skills/>
 
+      <MyJourney/>
+
       <ProjectsSection/>
 
       <MusicSection />
 
       <MovieSection />
       
-      <MyJourney/>
 
     </main>
   );
