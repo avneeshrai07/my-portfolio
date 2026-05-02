@@ -9,19 +9,13 @@ const ProjectsSection = () => {
 
       {/* ── Section header ── */}
       <div className="mb-12 md:mb-20">
-        <p
-          className="text-[10px] md:text-[11px] tracking-[0.3em] uppercase mb-3"
-          style={{ color: 'rgba(26,26,26,0.35)' }}
+        <h1
+          className="text-[28px] md:text-[36px] lg:text-[42px] text-center font-light tracking-tight"
+          style={{ color: "var(--suit-brown)" }}
         >
-          Selected Work
-        </p>
-        <h2
-          className="text-[28px] md:text-[36px] lg:text-[42px] font-light tracking-tight"
-          style={{ color: '#1a1a1a' }}
-        >
-          Projects
-        </h2>
-        <div className="w-8 h-px mt-4" style={{ background: 'rgba(0,0,0,0.2)' }} />
+          See What I’ve Built
+        </h1>
+        <div className="w-[75vw] h-px mt-4 mx-auto" style={{ background: "var(--suit-brown)" }} />
       </div>
 
       {/* ── Project cards — one per row, full width ── */}

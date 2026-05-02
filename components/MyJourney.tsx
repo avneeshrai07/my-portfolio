@@ -425,9 +425,10 @@ export default function MyJourney() {
 
         {/* Header */}
         <div className="tj-wrap pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(1.5rem,4vw,2.5rem)] relative z-[1]">
-          <p className="text-[clamp(0.6rem,0.9vw,0.7rem)] font-bold tracking-[0.12em] uppercase text-[var(--suit-brown)] mb-[0.6rem]">
-            My Journey
-          </p>
+          <h1 className="text-[clamp(1.8rem,4vw,3rem)] font-light tracking-tight text-[var(--suit-brown)] text-center">
+            My Story So Far
+          </h1>
+        <div className="w-[50vw] h-px mt-4 mx-auto mb-6" style={{ background: "var(--suit-brown)" }} />
         </div>
 
         {/* Timeline */}
