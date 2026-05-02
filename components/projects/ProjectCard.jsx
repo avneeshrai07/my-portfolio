@@ -35,12 +35,10 @@ export default function ProjectCard({ data }) {
             padding: "clamp(10px,10.2vw,18px)",
           }}
         >
-          {/* Hidden on mobile, visible on sm+ */}
-          <div className="hidden sm:block" style={{ height: 1, background: "var(--proj-bark)", marginBottom: "clamp(6px,0.8vh,12px)" }} />
           <h2
             className="font-medium leading-none m-0"
             style={{
-              fontSize: "clamp(24px,3.5vw,56px)",
+              fontSize: "clamp(13px, 2vw + 0.6rem, 52px)",
               letterSpacing: "-0.04em",
               color: "var(--suit-brown)",
             }}
