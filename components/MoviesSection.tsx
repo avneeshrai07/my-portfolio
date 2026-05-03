@@ -67,7 +67,7 @@ function fitTextToContainer(el: HTMLElement | null) {
 export default function MovieSection() {
   const [movies] = useState<Movie[]>([
     { title: "When Life Gives You Tangerines", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/when Life gives you tangerines.jpeg`, link: "https://www.netflix.com/title/81681535" },
-    { title: "DARK", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/dark.jpeg`, link: "https://www.netflix.com/title/81278456" },
+    { title: "DARK", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/dark.jpeg`, link: "https://www.netflix.com/title/80236911" },
     { title: "Wednesday", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/wednesday.jpeg `, link: "https://www.netflix.com/title/81231974" },
     { title: "YOU", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/You.jpeg`, link: "https://www.netflix.com/title/80211991"},
     { title: "BERSERK", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/Berserk.jpeg`, link: "https://www.netflix.com/title/80146743" },
