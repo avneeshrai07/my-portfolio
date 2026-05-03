@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'd2frnqcpu20t1j.cloudfront.net',
+      },
+      {
+        protocol: 'https',
         hostname: 'm.media-amazon.com',
         pathname: '/images/**',
       },

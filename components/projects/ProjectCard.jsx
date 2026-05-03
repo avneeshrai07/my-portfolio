@@ -25,13 +25,13 @@ export default function ProjectCard({ data }) {
           background: "var(--proj-border-2)",
         }}
       >
-
         {/* ══ A1 — Title / Sub ══ */}
         <div
           className="flex flex-col justify-end overflow-hidden"
           style={{
             background: "var(--proj-cream)",
-            gridColumn: 1, gridRow: 1,
+            gridColumn: 1,
+            gridRow: 1,
             padding: "clamp(10px,10.2vw,18px)",
           }}
         >
@@ -47,13 +47,20 @@ export default function ProjectCard({ data }) {
           </h2>
           <p
             className="font-medium mt-1 leading-snug"
-            style={{ fontSize: "clamp(10px,0.85vw,13px)", color: "var(--proj-ink-3)" }}
+            style={{
+              fontSize: "clamp(10px,0.85vw,13px)",
+              color: "var(--proj-ink-3)",
+            }}
           >
             {data.title}
           </p>
           <p
             className="mt-0.5"
-            style={{ fontSize: "clamp(9px,0.75vw,12px)", color: "var(--proj-ink-4)", lineHeight: 1.6 }}
+            style={{
+              fontSize: "clamp(9px,0.75vw,12px)",
+              color: "var(--proj-ink-4)",
+              lineHeight: 1.6,
+            }}
           >
             {data.sub}
           </p>
@@ -62,10 +69,14 @@ export default function ProjectCard({ data }) {
         {/* ══ B — Image (rows 1–2) ══ */}
         <div
           className="relative overflow-hidden"
-          style={{ gridColumn: 2, gridRow: "1 / 3", background: "var(--suit-brown)" }}
+          style={{
+            gridColumn: 2,
+            gridRow: "1 / 3",
+            background: "var(--suit-brown)",
+          }}
         >
           <img
-            src={data.image}
+            src={`${process.env.NEXT_PUBLIC_CDN_URL}${data.image}`}
             alt={data.name}
             className="w-full h-full object-cover"
             style={{ opacity: 0.6 }}
@@ -84,16 +95,17 @@ export default function ProjectCard({ data }) {
           className="flex flex-col overflow-hidden"
           style={{
             background: "var(--proj-cream)",
-            gridColumn: 3, gridRow: 1,
+            gridColumn: 3,
+            gridRow: 1,
             padding: "clamp(10px,1.5vh,18px)",
           }}
         >
           <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar flex flex-col justify-between">
             {[
-              { label: "Role",     value: `${data.role}` },
-              { label: "Status",   value: data.status },
+              { label: "Role", value: `${data.role}` },
+              { label: "Status", value: data.status },
               { label: "Duration", value: `${data.duration}` },
-              { label: "Year",     value: `${data.year}` },
+              { label: "Year", value: `${data.year}` },
             ].map(({ label, value }) => (
               <p
                 key={label}
@@ -106,15 +118,17 @@ export default function ProjectCard({ data }) {
                   minWidth: 0,
                 }}
               >
-                <span style={{
-                  display: "inline",
-                  color: "var(--proj-bark-3)",
-                  fontWeight: 600,
-                  letterSpacing: "0.08em",
-                  fontSize: "clamp(8px,0.7vw,11px)",
-                  textTransform: "uppercase",
-                  marginRight: "0.35em",
-                }}>
+                <span
+                  style={{
+                    display: "inline",
+                    color: "var(--proj-bark-3)",
+                    fontWeight: 600,
+                    letterSpacing: "0.08em",
+                    fontSize: "clamp(8px,0.7vw,11px)",
+                    textTransform: "uppercase",
+                    marginRight: "0.35em",
+                  }}
+                >
                   {label}:
                 </span>
                 {value}
@@ -128,11 +142,14 @@ export default function ProjectCard({ data }) {
           className="flex flex-col overflow-hidden"
           style={{
             background: "var(--proj-cream)",
-            gridColumn: 1, gridRow: 2,
+            gridColumn: 1,
+            gridRow: 2,
             padding: "clamp(10px,1.2vw,18px)",
           }}
         >
-          <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Impact</span>
+          <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>
+            Impact
+          </span>
           <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar">
             <p
               style={{
@@ -154,13 +171,22 @@ export default function ProjectCard({ data }) {
           className="flex flex-col overflow-hidden"
           style={{
             background: "var(--proj-sand)",
-            gridColumn: 3, gridRow: "2 / 4",
+            gridColumn: 3,
+            gridRow: "2 / 4",
             padding: "clamp(10px,1.2vw,18px)",
           }}
         >
-          <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Overview</span>
+          <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>
+            Overview
+          </span>
           <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar">
-            <p style={{ fontSize: "clamp(10px,0.82vw,13px)", color: "var(--suit-brown)", lineHeight: 1.82 }}>
+            <p
+              style={{
+                fontSize: "clamp(10px,0.82vw,13px)",
+                color: "var(--suit-brown)",
+                lineHeight: 1.82,
+              }}
+            >
               {data.overview}
             </p>
           </div>
@@ -171,11 +197,14 @@ export default function ProjectCard({ data }) {
           className="flex flex-col overflow-hidden"
           style={{
             background: "var(--proj-cream)",
-            gridColumn: "1 / 3", gridRow: 3,
+            gridColumn: "1 / 3",
+            gridRow: 3,
             padding: "clamp(8px,1vw,14px)",
           }}
         >
-          <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>Tech Stack</span>
+          <span className={LBL} style={{ color: "var(--proj-bark-3)" }}>
+            Tech Stack
+          </span>
           <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar">
             <div className="flex flex-wrap gap-[5px]">
               {data.stack.map((s) => (
@@ -198,7 +227,6 @@ export default function ProjectCard({ data }) {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* ── Footer ── */}
@@ -220,9 +248,15 @@ export default function ProjectCard({ data }) {
                 padding: "2px 7px",
                 borderRadius: "2px",
                 letterSpacing: "0.06em",
-                background: t.type === "live" ? "var(--proj-tag-live-bg)" : "var(--proj-sand)",
+                background:
+                  t.type === "live"
+                    ? "var(--proj-tag-live-bg)"
+                    : "var(--proj-sand)",
                 border: `0.5px solid ${t.type === "live" ? "var(--proj-tag-live-bd)" : "var(--proj-border-2)"}`,
-                color: t.type === "live" ? "var(--proj-tag-live-tx)" : "var(--proj-ink-3)",
+                color:
+                  t.type === "live"
+                    ? "var(--proj-tag-live-tx)"
+                    : "var(--proj-ink-3)",
               }}
             >
               {t.label}

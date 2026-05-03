@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-
+// const CDN = process.env.NEXT_PUBLIC_CDN_URL;
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -66,12 +66,12 @@ function fitTextToContainer(el: HTMLElement | null) {
 
 export default function MovieSection() {
   const [movies] = useState<Movie[]>([
-    { title: "When Life Gives You Tangerines", localPoster: null, link: "https://www.netflix.com/title/81681535" },
-    { title: "Jujutsu Kaisen", localPoster: null, link: "https://www.netflix.com/title/81278456" },
-    { title: "Wednesday", localPoster: "/movies/wednesday.jpeg", link: "https://www.netflix.com/title/81231974" },
-    { title: "How to Sell Drugs Online (Fast)", localPoster: null, link: "https://www.netflix.com/title/80218448"},
-    { title: "Record of Ragnarok", localPoster: null, link: "https://aniwatchtv.by/?s=Record+of+Ragnarok" },
-    { title: "500 Days of Summer", localPoster: null, link: "https://www.hotstar.com/in/movies/500-days-of-summer/1770000925" },
+    { title: "When Life Gives You Tangerines", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/when Life gives you tangerines.jpeg`, link: "https://www.netflix.com/title/81681535" },
+    { title: "DARK", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/dark.jpeg`, link: "https://www.netflix.com/title/81278456" },
+    { title: "Wednesday", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/wednesday.jpeg `, link: "https://www.netflix.com/title/81231974" },
+    { title: "YOU", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/You.jpeg`, link: "https://www.netflix.com/title/80211991"},
+    { title: "BERSERK", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/Berserk.jpeg`, link: "https://www.netflix.com/title/80146743" },
+    { title: "500 Days of Summer", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/Movie_ 500 Days of Summer.jpeg `, link: "https://www.hotstar.com/in/movies/500-days-of-summer/1770000925" },
   ]);
 
   const [movieData, setMovieData] = useState<Record<string, MovieData>>({});

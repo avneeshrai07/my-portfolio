@@ -1,19 +1,12 @@
 {
   "journey": [
-    
+
     {
-      "year": "2018 – 2020",
-      "period": "Higher Secondary",
-      "tag": "School",
-      "title": "Central Hindu School",
-      "subtitle": "Science"
-    },
-    {
-      "year": "2021 – 2025",
-      "period": "Graduate",
-      "tag": "College",
-      "title": "Indian Institute Of Information Technology, Lucknow",
-      "subtitle": "B.Tech, Computer Science"
+      "year": "Present",
+      "period": "Current",
+      "tag": "Full Time",
+      "title": "OrbitAim",
+      "subtitle": "Backend Team Lead"
     },
     {
       "year": "Mar-2025",
@@ -23,11 +16,18 @@
       "subtitle": "Python Developer"
     },
     {
-      "year": "Present",
-      "period": "Current",
-      "tag": "Full Time",
-      "title": "OrbitAim",
-      "subtitle": "Backend Team Lead"
-    }
+      "year": "2021 – 2025",
+      "period": "Graduate",
+      "tag": "College",
+      "title": "Indian Institute Of Information Technology, Lucknow",
+      "subtitle": "B.Tech, Computer Science"
+    },
+    {
+      "year": "2018 – 2020",
+      "period": "Higher Secondary",
+      "tag": "School",
+      "title": "Central Hindu School",
+      "subtitle": "Science"
+    } 
   ]
 }

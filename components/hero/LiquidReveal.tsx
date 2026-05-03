@@ -45,7 +45,7 @@ export default function LiquidReveal({ sectionRef }: Props) {
     const particles: Particle[] = [];
 
     const img = new Image();
-    img.src = "/batman.png";
+    img.src = `${process.env.NEXT_PUBLIC_CDN_URL}/my_batman.png`;
     let imgReady = false;
     img.onload = () => { imgReady = true; };
 
@@ -230,7 +230,7 @@ export default function LiquidReveal({ sectionRef }: Props) {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage:    "url(/my_professional.png)",
+          backgroundImage: `url(${process.env.NEXT_PUBLIC_CDN_URL}/my_professional.png)`,
           backgroundSize:     "cover",
           backgroundPosition: "center",
           zIndex: 0,
