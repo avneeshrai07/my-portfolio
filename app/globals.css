@@ -1,4 +1,5 @@
 /* app/globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Cinzel:wght@400;600;700&family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap');
 @import "tailwindcss";
 @import "shadcn/tailwind.css";
 
@@ -77,6 +78,15 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+
+
+  --font-hero:          'Bodoni Moda', Georgia, serif;
+  --font-super-heading: 'Cormorant Garamond', Georgia, serif;
+  --text-super-heading: clamp(60px, 65vw, 70px);
+  --font-heading:       'Cinzel', Georgia, serif;
+  --font-body:          'Cormorant Garamond', Georgia, serif;
+  --font-handwriting:   'Caveat', cursive;
 }
 
 @theme {
@@ -103,6 +113,14 @@
 }
 
 @layer utilities {
+  .font-hero          { font-family: var(--font-hero); }
+  .font-super-heading { font-family: var(--font-super-heading); }
+  .text-super-heading { font-size: var(--text-super-heading); }
+  .font-heading       { font-family: var(--font-heading); }
+  .font-body          { font-family: var(--font-body); }
+  .font-handwriting   { font-family: var(--font-handwriting); }
+ 
+
   /* Solid hero gradient background */
   .bg-hero-gradient {
     position: relative;

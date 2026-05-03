@@ -424,12 +424,18 @@ export default function MyJourney() {
       <div className="bg-hero-gradient pb-8">
 
         {/* Header */}
-        <div className="tj-wrap pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(1.5rem,4vw,2.5rem)] relative z-[1]">
-          <h1 className="text-[clamp(1.8rem,4vw,3rem)] font-light tracking-tight text-[var(--suit-brown)] text-center">
-            My Story So Far
-          </h1>
-        <div className="w-[50vw] h-px mt-4 mx-auto mb-6" style={{ background: "var(--suit-brown)" }} />
-        </div>
+        <div className="tj-wrap pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(2vh,15vh,20vh)] relative z-[1] flex items-center gap-6">
+        <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
+
+        <h2
+          className="font-cormorant text-super-heading font-light leading-none tracking-[-2px] shrink-0"
+          style={{ color: "var(--suit-brown, #513720)" }}
+        >
+          My <em style={{ color: "var(--proj-terra, #C4694A)" }}>Story</em>
+        </h2>
+
+        <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
+      </div>
 
         {/* Timeline */}
         <div className="tj-wrap pb-4 relative z-[1]">

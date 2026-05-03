@@ -1,0 +1,264 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+
+/* ─── Pull these from your constants file ─────────────────────────────────
+   e.g. import { ABOUT_ME } from "@/constants";
+──────────────────────────────────────────────────────────────────────────── */
+export const ABOUT_ME = {
+  polaroidCaption: "Avneesh — '25",
+  bioLabel: "Subject Profile",
+  bioParagraphs: [
+    <>
+      I'm a <strong>Backend Engineer & AI/ML Developer</strong> who builds systems
+      that don't flinch under pressure. My work lives at the intersection of{" "}
+      <em>elegant architecture</em> and hard engineering constraints —
+      where milliseconds matter and scale is the only constant.
+    </>,
+    <>
+      Currently deep in distributed systems, database internals, and the craft of
+      making <strong>complex things feel simple</strong>. When I'm not profiling
+      queries or designing microservice boundaries, I'm exploring how AI can make
+      backend systems smarter, not just faster.
+    </>,
+  ],
+  annotation: "→ Always building. Never done.",
+  stats: [
+    { label: "Based in",  value: "New Delhi, IN" },
+    { label: "Role",      value: "Backend Eng."  },
+    { label: "Focus",     value: "AI & ML Dev"   },
+    { label: "Exp.",      value: "3+ Years"       },
+    { label: "Available", value: "Open to offers" },
+  ],
+};
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+export default function AboutMe() {
+  const sectionRef = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&display=swap');
+
+        .font-caveat    { font-family: 'Caveat', cursive; }
+        .font-cormorant { font-family: 'Cormorant Garamond', Georgia, serif; }
+        .font-bebas     { font-family: 'Bebas Neue', sans-serif; }
+
+        /* Rich-text colours inside bio */
+        .bio-para strong { font-weight: 600; color: var(--suit-brown, #513720); }
+        .bio-para em     { font-style: italic; color: var(--proj-terra, #C4694A); }
+
+        /* bio-label trailing line */
+        .bio-label-rule::after {
+          content: '';
+          flex: 1;
+          height: 1px;
+          background: var(--proj-border, #C8A870);
+        }
+
+        /* Card rotations — can't do arbitrary rotate + translate together cleanly in Tailwind */
+        .card-photo { transform: rotate(-1.5deg) translateY(32px); transition: transform 0.7s ease, opacity 0.7s ease, box-shadow 0.3s ease; }
+        .card-photo.card-in { transform: rotate(-1.5deg) translateY(0); }
+        .card-photo:hover   { transform: rotate(-0.5deg) translateY(-3px) !important; }
+
+        .card-stats { transform: rotate(0.8deg) translateY(32px); transition: transform 0.7s ease, opacity 0.7s ease, box-shadow 0.3s ease; }
+        .card-stats.card-in { transform: rotate(0.8deg) translateY(0); }
+        .card-stats:hover   { transform: rotate(0.3deg) translateY(-3px) !important; }
+
+        /* Stat row separator — last child override */
+        .stat-row { border-bottom: 1px dashed var(--proj-border-2, #D4B896); }
+        .stat-row:last-child { border-bottom: none; }
+
+        /* Tape strip */
+        .tape {
+          position: absolute;
+          width: 48px; height: 18px;
+          background: rgba(222,192,156,0.55);
+          border: 1px solid rgba(200,168,112,0.35);
+          z-index: 10;
+        }
+      `}</style>
+
+      <section
+        ref={sectionRef}
+        className="bg-hero-gradient am-section relative overflow-hidden min-h-screen px-5 py-20 md:px-10"
+        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
+      >
+        <div className="relative z-10 max-w-5xl mx-auto">
+
+          {/* ── Header ─────────────────────────────────────────────── */}
+          <div className={`flex items-center gap-6 mb-14 transition-all duration-700 ${
+              visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}>
+              <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
+
+              <h2
+                className="font-cormorant text-super-heading font-light leading-none tracking-[-2px] shrink-0"
+                style={{ color: "var(--suit-brown, #513720)" }}
+              >
+                About <em style={{ color: "var(--proj-terra, #C4694A)" }}>Me</em>
+              </h2>
+
+              <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
+            </div>
+
+          {/* ── Card Grid ──────────────────────────────────────────── */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
+
+            {/* ── CARD 1: Polaroid — desktop only ── */}
+            <div
+              className={`
+                hidden md:block
+                card-photo ${visible ? "card-in" : ""}
+                relative row-span-2 border
+                ${visible ? "opacity-100" : "opacity-0"}
+              `}
+              style={{
+                background: "#FAF5EC",
+                borderColor: "var(--proj-border-2, #D4B896)",
+                boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
+                padding: "14px 14px 36px",
+                transitionDelay: "0.1s",
+              }}
+            >
+              <div className="tape" style={{ top: "-9px", left: "20px", transform: "rotate(-1deg)" }} />
+
+              {/*
+                Replace this placeholder with your actual image:
+                <img src="..." alt="Avneesh" className="w-full object-cover block"
+                  style={{ aspectRatio:"3/4", filter:"sepia(0.18) contrast(1.05)" }} />
+              */}
+              <div
+                className="font-caveat w-full flex items-center justify-center font-semibold"
+                style={{
+                  aspectRatio: "3/4",
+                  background: "linear-gradient(145deg, var(--proj-sand, #EDE0CC), var(--shirt-tan, #dec09c))",
+                  color: "var(--proj-bark, #7A4A28)",
+                  fontSize: "18px",
+                }}
+              >
+                [ your photo ]
+              </div>
+
+              <p
+                className="font-caveat font-semibold text-center mt-2.5"
+                style={{ fontSize: "17px", color: "var(--proj-ink-3, #5A3E28)" }}
+              >
+                {ABOUT_ME.polaroidCaption}
+              </p>
+            </div>
+
+            {/* ── CARD 2: Bio ── */}
+            <div
+              className={`
+                col-span-1 md:col-span-2
+                relative border
+                transition-all duration-700
+                hover:-translate-y-0.5
+                ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
+              `}
+              style={{
+                background: "#FAF5EC",
+                borderColor: "var(--proj-border-2, #D4B896)",
+                boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
+                padding: "32px 36px",
+                transitionDelay: "0.2s",
+              }}
+            >
+              <div className="tape" style={{ top: "-9px", left: "20px", transform: "rotate(-1deg)" }} />
+              <div className="tape" style={{ top: "-9px", right: "20px", transform: "rotate(2deg)" }} />
+
+              {/* Label */}
+              <p
+                className="bio-label-rule font-bebas text-[10px] tracking-[4px] flex items-center gap-3 mb-4"
+                style={{ color: "var(--proj-bark-3, #9A6A48)" }}
+              >
+                {ABOUT_ME.bioLabel}
+              </p>
+
+              {ABOUT_ME.bioParagraphs.map((para, i) => (
+                <p
+                  key={i}
+                  className="bio-para font-cormorant font-light leading-relaxed mb-5"
+                  style={{ fontSize: "18px", color: "var(--proj-ink-2, #3A2010)" }}
+                >
+                  {para}
+                </p>
+              ))}
+
+              <span
+                className="font-caveat inline-block pb-0.5 mt-1"
+                style={{
+                  fontSize: "15px",
+                  color: "var(--proj-bark-3, #9A6A48)",
+                  transform: "rotate(-0.5deg)",
+                  borderBottom: "1.5px solid var(--proj-border, #C8A870)",
+                }}
+              >
+                {ABOUT_ME.annotation}
+              </span>
+            </div>
+
+            {/* ── CARD 3: Stats ── */}
+            <div
+              className={`
+                card-stats ${visible ? "card-in" : ""}
+                relative border
+                ${visible ? "opacity-100" : "opacity-0"}
+              `}
+              style={{
+                background: "#FAF5EC",
+                borderColor: "var(--proj-border-2, #D4B896)",
+                boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
+                padding: "24px 28px",
+                transitionDelay: "0.35s",
+              }}
+            >
+              {/* Paper clip SVG */}
+              <svg
+                className="absolute z-10"
+                style={{ top: "-6px", left: "16px" }}
+                width="20" height="44" viewBox="0 0 20 44" fill="none"
+              >
+                <path
+                  d="M10 2 C4 2 2 6 2 10 L2 34 C2 40 6 42 10 42 C14 42 18 40 18 34 L18 12 C18 8 16 6 12 6 L10 6 C7 6 6 8 6 10 L6 32 C6 34 7 35 9 35 L14 35"
+                  stroke="#9A6A48" strokeWidth="1.8" strokeLinecap="round" fill="none" opacity="0.6"
+                />
+              </svg>
+
+              {ABOUT_ME.stats.map(({ label, value }) => (
+                <div key={label} className="stat-row flex items-baseline justify-between gap-3 py-2.5">
+                  <span
+                    className="font-caveat"
+                    style={{ fontSize: "14px", color: "var(--proj-bark-3, #9A6A48)", minWidth: "80px" }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    className="font-cormorant font-semibold text-right flex-1"
+                    style={{ fontSize: "17px", color: "var(--suit-brown, #513720)" }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}
