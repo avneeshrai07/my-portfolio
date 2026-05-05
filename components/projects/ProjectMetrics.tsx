@@ -1,5 +1,5 @@
 import SectionLabel from './SectionLabel'
-import type { ProjectMetric } from '@/types/project.types'
+import type { ProjectMetric } from '@/types/projects'
 
 interface Props {
   metrics: ProjectMetric[]

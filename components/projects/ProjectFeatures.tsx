@@ -1,5 +1,5 @@
 import SectionLabel from './SectionLabel'
-import type { ProjectFeature } from '@/types/project.types'
+import type { ProjectFeature } from '@/types/projects'
 
 interface Props {
   features: ProjectFeature[]

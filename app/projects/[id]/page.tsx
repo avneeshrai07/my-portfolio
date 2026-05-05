@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import projectsData from '@/data/projects.json'
-import type { Project } from '@/types/project.types'
+import type { Project } from '@/types/projects'
 
 import ProjectHeader     from '@/components/projects/ProjectHeader'
 import ProjectOverview   from '@/components/projects/ProjectOverview'
