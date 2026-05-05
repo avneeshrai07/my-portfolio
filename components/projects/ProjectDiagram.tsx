@@ -1,6 +1,6 @@
 'use client'
 
-type DiagramType = 'sunakku' | 'velox' | 'gatekeeper'
+type DiagramType = string
 
 interface Props {
   type: DiagramType

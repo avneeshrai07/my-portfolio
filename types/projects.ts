@@ -21,7 +21,7 @@ export interface Metric {
 export type ProjectStatus = "Production" | "Development" | "Archived" | string;
 export type ProjectCategory = "Machine Learning" | "WebApp" | "AI" | "Backend" | string;
 export type ProjectType = "Backend System" | "Frontend App" | "Full Stack" | string;
-export type DiagramType = "sunakku" | "velox" | "gatekeeper" | string;
+export type DiagramType = string;
 
 export interface Project {
   id: string;

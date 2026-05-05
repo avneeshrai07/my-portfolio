@@ -1,11 +1,7 @@
 import SectionLabel from './SectionLabel'
-import type { ProjectFeature } from '@/types/projects'
+import type { Feature } from '@/types/projects'
 
-interface Props {
-  features: ProjectFeature[]
-}
-
-export default function ProjectFeatures({ features }: Props) {
+export default function ProjectFeatures({ features }: { features: Feature[] }) {
   return (
     <div className="mb-8">
       <SectionLabel>Key Features</SectionLabel>
