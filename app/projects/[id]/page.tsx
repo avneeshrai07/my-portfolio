@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
-import projectsData from '@/data/projects.json'
 import type { Project } from '@/types/projects'
-
+import { projects } from '@/types/projects'
 import ProjectHeader     from '@/components/projects/ProjectPage/ProjectHeader'
 import ProjectOverview   from '@/components/projects/ProjectPage/ProjectOverview'
 import ProjectProblem    from '@/components/projects/ProjectPage/ProjectProblem'
@@ -12,7 +11,6 @@ import ProjectDiagram    from '@/components/projects/ProjectPage/ProjectDiagram'
 import ProjectFeatures   from '@/components/projects/ProjectPage/ProjectFeatures'
 import ProjectMetrics    from '@/components/projects/ProjectPage/ProjectMetrics'
 
-const projects = projectsData as Project[]
 
 export function generateStaticParams() {
   return projects.map((p) => ({ id: p.id }))

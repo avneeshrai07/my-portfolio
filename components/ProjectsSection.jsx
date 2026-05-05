@@ -1,7 +1,7 @@
 'use client';
 
-import ProjectCard from '@/components/projects/ProjectCard';
-import projects from '@/data/projects.json';
+import ProjectCard from '@/components/projects/HomePageProject/ProjectCard';
+
 
 const ProjectsSection = () => {
   return (
@@ -20,13 +20,7 @@ const ProjectsSection = () => {
 
   <div className="flex-1" style={{ height: "1px", background: "var(--suit-brown)" }} />
 </div>
-
-      {/* ── Project cards — one per row, full width ── */}
-      <div className="flex flex-col gap-6 md:gap-8 lg:gap-10">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} data={project} />
-        ))}
-      </div>
+    <ProjectCard/>
 
     </section>
   );
