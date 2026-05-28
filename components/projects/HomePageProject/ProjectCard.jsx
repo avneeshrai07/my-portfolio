@@ -1,5 +1,29 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { projects as PROJECTS } from "@/types/projects"; // adjust path to your projects.ts
+import { projects as PROJECTS } from "@/types/projects";
+import TechCard from "@/components/TechCard";
+import { techStack } from "@/types/techStack";
+
+/* ─── TECH STACK LOOKUP ───────────────────────────────────────────────
+   Maps the plain string names used in projects.ts → techStack entries.
+   Add any name that appears in your projects.ts stack arrays.          */
+const TECH_BY_NAME = Object.fromEntries(
+  techStack.map((t) => [t.name.toLowerCase(), t])
+);
+
+// Some projects.ts names differ slightly from techStack names — alias them here
+const TECH_ALIASES = {
+  "next.js":    "next.js",
+  "node.js":    "node.js",
+  "aws s3":     "aws",
+  "socket.io":  "socket.io",
+  "postgresql": "postgresql",
+  // add more as needed
+};
+
+function resolveTech(stackName) {
+  const key = TECH_ALIASES[stackName.toLowerCase()] ?? stackName.toLowerCase();
+  return TECH_BY_NAME[key] ?? { name: stackName, iconName: stackName.toLowerCase().replace(/[^a-z0-9]/g, ""), bubbleColor: "#333" };
+}
 
 /* ─── STYLES ─────────────────────────────────────────────────────── */
 const S = {
@@ -134,7 +158,7 @@ const S = {
     alignItems: "flex-start",
     gap: 12,
     cursor: "default",
-    transition: "border-color 0.15s, transform 0.2s",
+    transition: "border-color 0.3s ease, transform 0.3s ease",
   },
   featureIcon: {
     width: 34,
@@ -192,31 +216,8 @@ const S = {
   },
   metaVal: { fontSize: 12, fontWeight: 600, color: "#1a0d06", lineHeight: 1.2, textAlign: "center" },
   metaLbl: { fontSize: 10, color: "#b0a494" },
-  stackRow: { display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" },
-  stackChip: {
-    display: "flex",
-    alignItems: "center",
-    gap: 7,
-    padding: "5px 12px 5px 6px",
-    borderRadius: 99,
-    background: "#faf7f3",
-    border: "1px solid #e8e0d5",
-    cursor: "default",
-    transition: "border-color 0.15s, transform 0.2s",
-  },
-  stackDot: {
-    width: 20,
-    height: 20,
-    borderRadius: 6,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 10,
-    fontWeight: 700,
-    flexShrink: 0,
-    color: "#fff",
-  },
-  stackName: { fontSize: 12, fontWeight: 500, color: "#1a0d06" },
+  // Stack row now wraps TechCards — smaller scale wrapper
+  stackRow: { display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start" },
   actions: { display: "flex", gap: 10 },
   btnPrimary: {
     display: "inline-flex",
@@ -232,7 +233,7 @@ const S = {
     cursor: "pointer",
     fontFamily: "inherit",
     textDecoration: "none",
-    transition: "opacity 0.15s, transform 0.15s",
+    transition: "opacity 0.3s ease, transform 0.3s ease",
   },
   btnSecondary: {
     display: "inline-flex",
@@ -248,7 +249,7 @@ const S = {
     cursor: "pointer",
     fontFamily: "inherit",
     textDecoration: "none",
-    transition: "background 0.15s, transform 0.15s",
+    transition: "background 0.3s ease, transform 0.3s ease",
   },
   quote: {
     display: "flex",
@@ -264,7 +265,6 @@ const S = {
 };
 
 /* ─── NAV META ─────────────────────────────────────────────────────── */
-// Icon + background per project id — extend as you add projects to projects.ts
 const NAV_META = {
   sunakku:    { navIcon: "🛒", iconBg: "#fef0e6" },
   velox:      { navIcon: "📡", iconBg: "#e8f0fe" },
@@ -274,22 +274,6 @@ const NAV_META = {
 function getNavMeta(id) {
   return NAV_META[id] ?? { navIcon: "💻", iconBg: "#f5f0eb" };
 }
-
-/* ─── STACK COLOUR MAP ─────────────────────────────────────────────── */
-// Extend as needed to match your projects.ts stack arrays
-const STACK_COLORS = {
-  "Next.js": "#000",    "Node.js": "#3c873a",  "Express": "#444",
-  "PostgreSQL": "#336791", "Redis": "#dc382c",  "BullMQ": "#c57a1e",
-  "Docker": "#2496ed",  "Nginx": "#009639",    "Prisma": "#0c344b",
-  "Kafka": "#231f20",   "Go": "#00acd7",       "MongoDB": "#4db33d",
-  "Kubernetes": "#326ce5", "SendGrid": "#1a82e2","Twilio": "#f22f46",
-  "FCM": "#fcca03",     "gRPC": "#244c5a",     "JWT": "#a020f0",
-  "OAuth2": "#e8711a",  "Casbin": "#1a6e3a",   "Envoy": "#ac6199",
-  "Prometheus": "#e6522c", "React": "#61dafb",  "Python": "#306998",
-  "FastAPI": "#009688", "Plaid": "#00a3ff",    "Celery": "#78a831",
-  "OpenAI": "#10a37f",  "Tailwind": "#38bdf8", "AWS S3": "#ff9900",
-  "Socket.io": "#010101",
-};
 
 /* ─── NAV ITEM ─────────────────────────────────────────────────────── */
 function NavItem({ project, active, onClick }) {
@@ -314,7 +298,7 @@ function NavItem({ project, active, onClick }) {
         background: active || hovered ? "#faf7f3" : "transparent",
         width: "100%",
         textAlign: "left",
-        transition: "all 0.15s ease",
+        transition: "all 0.3s ease",
         fontFamily: "inherit",
       }}
       aria-pressed={active}
@@ -330,7 +314,7 @@ function NavItem({ project, active, onClick }) {
           fontSize: 16,
           flexShrink: 0,
           background: iconBg,
-          transition: "transform 0.2s",
+          transition: "transform 0.35s ease",
           transform: hovered || active ? "scale(1.08)" : "scale(1)",
         }}
       >
@@ -379,22 +363,6 @@ function FeatureCard({ feature, index }) {
   );
 }
 
-/* ─── STACK CHIP ───────────────────────────────────────────────────── */
-function StackChip({ name }) {
-  const [hovered, setHovered] = useState(false);
-  const color = STACK_COLORS[name] ?? "#888";
-  return (
-    <div
-      style={{ ...S.stackChip, borderColor: hovered ? "#c8bfb0" : "#e8e0d5", transform: hovered ? "translateY(-2px)" : "translateY(0)" }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div style={{ ...S.stackDot, background: color }}>{name[0]}</div>
-      <span style={S.stackName}>{name}</span>
-    </div>
-  );
-}
-
 /* ─── DETAIL PANEL ─────────────────────────────────────────────────── */
 function DetailPanel({ project, idx, total, visible }) {
   const isLive = project.status === "Production";
@@ -407,8 +375,16 @@ function DetailPanel({ project, idx, total, visible }) {
   ];
 
   return (
-    <div style={{ opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(8px)", transition: "opacity 0.25s ease, transform 0.25s ease" }}>
-
+    /* Elegant slow cross-fade + gentle upward drift */
+    <div
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(14px)",
+        transition: visible
+          ? "opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)"
+          : "opacity 0.3s cubic-bezier(0.4, 0, 1, 1), transform 0.3s cubic-bezier(0.4, 0, 1, 1)",
+      }}
+    >
       {/* Hero */}
       <div style={S.hero}>
         <img src={project.image} alt={project.name} style={S.heroImg} />
@@ -464,12 +440,22 @@ function DetailPanel({ project, idx, total, visible }) {
           </div>
         )}
 
-        {/* Stack */}
+        {/* Stack — using TechCard + StackIcon */}
         {project.stack?.length > 0 && (
           <div>
             <div style={S.sectionLabel}>Built with</div>
             <div style={S.stackRow}>
-              {project.stack.map((name) => <StackChip key={name} name={name} />)}
+              {project.stack.map((stackName) => {
+                const tech = resolveTech(stackName);
+                return (
+                  <TechCard
+                    key={stackName}
+                    name={tech.name}
+                    iconName={tech.iconName}
+                    bubbleColor={tech.bubbleColor}
+                  />
+                );
+              })}
             </div>
           </div>
         )}
@@ -496,7 +482,7 @@ function DetailPanel({ project, idx, total, visible }) {
               target="_blank"
               rel="noopener noreferrer"
               style={S.btnPrimary}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.85"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.82"; e.currentTarget.style.transform = "translateY(-1px)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
               ▶ View project
@@ -539,10 +525,7 @@ export default function PortfolioShowcase() {
 
   const detailScrollRef  = useRef(null);
   const navListRef       = useRef(null);
-
-  // Lock prevents re-entrant / competing transitions — the root cause of the blink
   const lockedRef        = useRef(false);
-  // Keep prev scroll position outside the handler so it's never stale
   const lastScrollTopRef = useRef(0);
 
   const activeIndex   = PROJECTS.findIndex((p) => p.id === activeId);
@@ -551,9 +534,9 @@ export default function PortfolioShowcase() {
   /* ── project switcher ─────────────────────────────────────────── */
   const selectProject = useCallback((id, fromScroll = false) => {
     if (id === activeId || lockedRef.current) return;
+    lockedRef.current = true;
 
-    lockedRef.current = true;          // acquire lock immediately
-
+    // Fade out (300ms) → swap content → fade in (550ms)
     setVisible(false);
     setTimeout(() => {
       setActiveId(id);
@@ -565,12 +548,12 @@ export default function PortfolioShowcase() {
         btn?.scrollIntoView({ block: "nearest", behavior: "smooth" });
       }
 
-      // Release lock only after scroll position has fully settled
+      // Unlock after fade-in fully completes + scroll settles
       setTimeout(() => {
         lastScrollTopRef.current = detailScrollRef.current?.scrollTop ?? 0;
         lockedRef.current = false;
-      }, 400);
-    }, 180);
+      }, 600);
+    }, 300);
   }, [activeId]);
 
   /* ── keyboard navigation ──────────────────────────────────────── */
@@ -591,18 +574,15 @@ export default function PortfolioShowcase() {
     const el = detailScrollRef.current;
     if (!el) return;
 
-    // Reset baseline each time the active project changes
     lastScrollTopRef.current = 0;
 
     const onScroll = () => {
-      // Hard bail if a transition is already in-flight
       if (lockedRef.current) return;
 
       const st        = el.scrollTop;
       const maxScroll = el.scrollHeight - el.clientHeight;
       const prev      = lastScrollTopRef.current;
 
-      // Ignore tiny momentum/rubber-band ticks
       if (Math.abs(st - prev) < 2) return;
 
       const scrollingDown = st > prev;
@@ -612,7 +592,6 @@ export default function PortfolioShowcase() {
 
       if (scrollingDown && st >= maxScroll - 4 && idx < PROJECTS.length - 1) {
         selectProject(PROJECTS[idx + 1].id, true);
-        // Snap scroll back to top synchronously so the next project starts fresh
         requestAnimationFrame(() => { el.scrollTop = 0; });
       } else if (!scrollingDown && st <= 4 && idx > 0) {
         selectProject(PROJECTS[idx - 1].id, true);
