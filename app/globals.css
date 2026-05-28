@@ -88,6 +88,9 @@
   --font-body:          'Cormorant Garamond', Georgia, serif;
   --font-handwriting:   'Caveat', cursive;
 }
+.icon-suit-brown {
+  filter: brightness(0) saturate(100%) invert(22%) sepia(40%) saturate(700%) hue-rotate(5deg) brightness(80%);
+}
 
 @theme {
   --color-background: var(--background);

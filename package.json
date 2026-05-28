@@ -22,7 +22,8 @@
     "react": "19.2.3",
     "react-devices": "^0.0.2",
     "react-dom": "19.2.3",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "tech-stack-icons": "^3.7.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
