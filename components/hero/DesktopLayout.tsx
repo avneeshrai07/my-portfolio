@@ -31,7 +31,7 @@ export default function DesktopLayout({ bioLines, bioRef, photoCentreRef }: Desk
           </p>
 
           <h1
-            className="font-black leading-none mb-6 text-hero-skin"
+            className="font-hero font-black leading-none mb-6 text-hero-skin"
             style={{ fontSize: "clamp(4rem, 8vw, 8rem)", mixBlendMode: "difference" }}
           >
             {NAME}

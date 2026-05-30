@@ -91,7 +91,7 @@ export const projects: Project[] = [
       { title: "Queue-based processing", desc: "BullMQ decouples intake from fulfillment — API stays sub-120ms even when workers are backlogged" },
       { title: "Smart cache layer", desc: "Redis 80s TTL with pub/sub invalidation eliminates 94% of Postgres reads at peak" },
     ],
-    stack: ["Next.js", "Node.js", "Express", "PostgreSQL", "Redis", "BullMQ", "Prisma", "Docker", "Nginx"],
+    stack: ["Next.js", "Node.js", "Express.js", "PostgreSQL", "Redis", "BullMQ", "Prisma", "Docker", "Nginx"],
     metrics: [
       { value: "<120ms", label: "API Response", highlight: true },
       { value: "2,400+", label: "Orders / Day", highlight: false },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SectionHeader from "@/components/shared/SectionHeader";
 
 /* ─── Pull these from your constants file ─────────────────────────────────
    e.g. import { ABOUT_ME } from "@/constants";
@@ -48,71 +49,18 @@ export default function AboutMe() {
   }, []);
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&display=swap');
-
-        .font-caveat    { font-family: 'Caveat', cursive; }
-        .font-cormorant { font-family: 'Cormorant Garamond', Georgia, serif; }
-        .font-bebas     { font-family: 'Bebas Neue', sans-serif; }
-
-        /* Rich-text colours inside bio */
-        .bio-para strong { font-weight: 600; color: var(--suit-brown, #513720); }
-        .bio-para em     { font-style: italic; color: var(--proj-terra, #C4694A); }
-
-        /* bio-label trailing line */
-        .bio-label-rule::after {
-          content: '';
-          flex: 1;
-          height: 1px;
-          background: var(--proj-border, #C8A870);
-        }
-
-        /* Card rotations — can't do arbitrary rotate + translate together cleanly in Tailwind */
-        .card-photo { transform: rotate(-1.5deg) translateY(32px); transition: transform 0.7s ease, opacity 0.7s ease, box-shadow 0.3s ease; }
-        .card-photo.card-in { transform: rotate(-1.5deg) translateY(0); }
-        .card-photo:hover   { transform: rotate(-0.5deg) translateY(-3px) !important; }
-
-        .card-stats { transform: rotate(0.8deg) translateY(32px); transition: transform 0.7s ease, opacity 0.7s ease, box-shadow 0.3s ease; }
-        .card-stats.card-in { transform: rotate(0.8deg) translateY(0); }
-        .card-stats:hover   { transform: rotate(0.3deg) translateY(-3px) !important; }
-
-        /* Stat row separator — last child override */
-        .stat-row { border-bottom: 1px dashed var(--proj-border-2, #D4B896); }
-        .stat-row:last-child { border-bottom: none; }
-
-        /* Tape strip */
-        .tape {
-          position: absolute;
-          width: 48px; height: 18px;
-          background: rgba(222,192,156,0.55);
-          border: 1px solid rgba(200,168,112,0.35);
-          z-index: 10;
-        }
-      `}</style>
-
-      <section
-        ref={sectionRef}
-        className="bg-hero-gradient am-section relative overflow-hidden min-h-screen px-5 py-20 md:px-10"
-        style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}
-      >
-        <div className="relative z-10 max-w-5xl mx-auto">
+    <section
+      ref={sectionRef}
+      className="bg-hero-gradient relative overflow-hidden section-pad px-5 md:px-10"
+    >
+      <div className="relative z-10 max-w-5xl mx-auto">
 
           {/* ── Header ─────────────────────────────────────────────── */}
-          <div className={`flex items-center gap-6 mb-14 transition-all duration-700 ${
+          <div className={`mb-14 transition-all duration-700 ${
               visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}>
-              <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
-
-              <h2
-                className="font-cormorant text-super-heading font-light leading-none tracking-[-2px] shrink-0"
-                style={{ color: "var(--suit-brown, #513720)" }}
-              >
-                About <em style={{ color: "var(--proj-terra, #C4694A)" }}>Me</em>
-              </h2>
-
-              <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
-            </div>
+            <SectionHeader title="About" accent="Me" />
+          </div>
 
           {/* ── Card Grid ──────────────────────────────────────────── */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
@@ -182,8 +130,8 @@ export default function AboutMe() {
 
               {/* Label */}
               <p
-                className="bio-label-rule font-bebas text-[10px] tracking-[4px] flex items-center gap-3 mb-4"
-                style={{ color: "var(--proj-bark-3, #9A6A48)" }}
+                className="bio-label-rule font-heading text-[11px] tracking-[0.22em] flex items-center gap-3 mb-5"
+                style={{ color: "var(--proj-bark-3, #9A6A48)", textTransform: "uppercase" }}
               >
                 {ABOUT_ME.bioLabel}
               </p>
@@ -191,8 +139,8 @@ export default function AboutMe() {
               {ABOUT_ME.bioParagraphs.map((para, i) => (
                 <p
                   key={i}
-                  className="bio-para font-cormorant font-light leading-relaxed mb-5"
-                  style={{ fontSize: "18px", color: "var(--proj-ink-2, #3A2010)" }}
+                  className="bio-para mb-4"
+                  style={{ fontSize: "14.5px", lineHeight: 1.78, color: "var(--proj-ink-2, #3A2010)", fontWeight: 400 }}
                 >
                   {para}
                 </p>
@@ -241,14 +189,14 @@ export default function AboutMe() {
               {ABOUT_ME.stats.map(({ label, value }) => (
                 <div key={label} className="stat-row flex items-baseline justify-between gap-3 py-2.5">
                   <span
-                    className="font-caveat"
-                    style={{ fontSize: "14px", color: "var(--proj-bark-3, #9A6A48)", minWidth: "80px" }}
+                    className="font-heading tracking-[0.1em]"
+                    style={{ fontSize: "10px", color: "var(--proj-bark-3, #9A6A48)", minWidth: "80px", textTransform: "uppercase" }}
                   >
                     {label}
                   </span>
                   <span
-                    className="font-cormorant font-semibold text-right flex-1"
-                    style={{ fontSize: "17px", color: "var(--suit-brown, #513720)" }}
+                    className="font-cormorant font-normal text-right flex-1"
+                    style={{ fontSize: "16px", color: "var(--suit-brown, #513720)" }}
                   >
                     {value}
                   </span>
@@ -258,7 +206,6 @@ export default function AboutMe() {
 
           </div>
         </div>
-      </section>
-    </>
+    </section>
   );
 }

@@ -78,7 +78,7 @@ function MarqueeRow({
     "uppercase",
     thin ? "font-normal" : "font-bold",
     italic ? "italic" : "not-italic",
-    accentClass,          // ← always apply, regardless of italic/thin
+    accentClass,
   ].join(" ")}
 >
               {name}
@@ -92,42 +92,31 @@ function MarqueeRow({
 
 export default function Skills() {
   return (
-    <main className="bg-hero-gradient text-foreground min-h-content overflow-hidden">
-
-      <section className="mt-12">
-        {/* Row 1 — left, lime accent (using hero shirt tan) */}
-        <MarqueeRow
-          items={SKILLS.row1}
-          direction="left"
-          speed={28}
-          dotClass="bg-[var(--suit-brown)]"
-          accentClass="text-hero-suit"
-        />
-
-        {/* Row 2 — right, skin tone accent, italic */}
-        <MarqueeRow
-          items={SKILLS.row2}
-          direction="right"
-          speed={22}
-          dotClass="bg-[var(--suit-brown)]"
-          accentClass="text-hero-suit"
-          italic
-        />
-
-        {/* Row 3 — left, shirt tan accent, thin */}
-        <MarqueeRow
-          items={SKILLS.row3}
-          direction="left"
-          speed={32}
-          dotClass="bg-[var(--suit-brown)]"
-          accentClass="text-hero-suit"
-          thin
-        />
-
-        {/* closing border */}
-        <div className="border-b border-border" />
-      </section>
-
-    </main>
+    <section aria-label="Skills" className="bg-hero-gradient text-foreground overflow-hidden pt-12">
+      <MarqueeRow
+        items={SKILLS.row1}
+        direction="left"
+        speed={28}
+        dotClass="bg-[var(--suit-brown)]"
+        accentClass="text-hero-suit"
+      />
+      <MarqueeRow
+        items={SKILLS.row2}
+        direction="right"
+        speed={22}
+        dotClass="bg-[var(--suit-brown)]"
+        accentClass="text-hero-suit"
+        italic
+      />
+      <MarqueeRow
+        items={SKILLS.row3}
+        direction="left"
+        speed={32}
+        dotClass="bg-[var(--suit-brown)]"
+        accentClass="text-hero-suit"
+        thin
+      />
+      <div className="border-b border-border" />
+    </section>
   );
 }

@@ -1,28 +1,21 @@
-﻿import HeroSection from "@/components/HeroSection";
+import HeroSection from "@/components/HeroSection";
 import MusicSection from "@/components/MusicSection";
 import MovieSection from "@/components/MoviesSection";
-import Skills from '@/components/Skills'
+import Skills from "@/components/Skills";
 import MyJourney from "@/components/MyJourney";
-import ProjectsSection from '@/components/ProjectsSection';
+import ProjectsSection from "@/components/ProjectsSection";
 import AboutMe from "@/components/AboutMe";
+
 export default function Home() {
-
   return (
-    <main className="min-h-screen  ">
-
+    <main className="min-h-screen">
       <HeroSection />
-      
-      <Skills/>
-
-      <MyJourney/>
-
-      <ProjectsSection/>
-
-      <MusicSection />
-
+      <Skills />
+      <div id="journey"><MyJourney /></div>
+      <div id="projects"><ProjectsSection /></div>
+      <div id="music"><MusicSection /></div>
       <MovieSection />
-      
-      <AboutMe/>
+      <div id="about"><AboutMe /></div>
     </main>
   );
 }

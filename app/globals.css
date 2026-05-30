@@ -1,8 +1,7 @@
 /* app/globals.css */
-@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Cinzel:wght@400;600;700&family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400;1,6..96,700;1,6..96,900&family=Cinzel:wght@400;600;700&family=Caveat:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=Bebas+Neue&display=swap');
 @import "tailwindcss";
 @import "shadcn/tailwind.css";
-
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -81,11 +80,18 @@
 
 
 
+  /* ── Font hierarchy ──────────────────────────────────
+     hero         → Bodoni Moda        (one element: hero name)
+     super-heading → Cormorant Garamond (section titles, large display)
+     heading      → Cinzel             (small caps labels, tags)
+     body         → DM Sans            (all UI, paragraphs, navigation)
+     handwriting  → Caveat             (personality accents only)
+  ─────────────────────────────────────────────────── */
   --font-hero:          'Bodoni Moda', Georgia, serif;
   --font-super-heading: 'Cormorant Garamond', Georgia, serif;
-  --text-super-heading: clamp(60px, 65vw, 70px);
+  --text-super-heading: clamp(2.75rem, 7vw, 4.5rem);
   --font-heading:       'Cinzel', Georgia, serif;
-  --font-body:          'Cormorant Garamond', Georgia, serif;
+  --font-body:          'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-handwriting:   'Caveat', cursive;
 }
 .icon-suit-brown {
@@ -115,6 +121,8 @@
   --color-dark-armor: var(--armor-black);
 }
 
+
+
 @layer utilities {
   .font-hero          { font-family: var(--font-hero); }
   .font-super-heading { font-family: var(--font-super-heading); }
@@ -122,6 +130,11 @@
   .font-heading       { font-family: var(--font-heading); }
   .font-body          { font-family: var(--font-body); }
   .font-handwriting   { font-family: var(--font-handwriting); }
+
+  /* Aliases used by AboutMe and ProjectCard */
+  .font-cormorant { font-family: 'Cormorant Garamond', Georgia, serif; }
+  .font-caveat    { font-family: 'Caveat', cursive; }
+  .font-bebas     { font-family: 'Bebas Neue', sans-serif; }
  
 
   /* Solid hero gradient background */
@@ -189,7 +202,9 @@
 }
 
 body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 html {
@@ -334,10 +349,106 @@ html {
 
 
 .hide-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ── Global scrollbar hide ── */
+*::-webkit-scrollbar { display: none; }
+
+/* ── Consistent section spacing ── */
+.section-pad { padding-block: clamp(4rem, 8vw, 7rem); }
+
+/* ── About Me card animations ── */
+.card-photo {
+  transform: rotate(-1.5deg) translateY(32px);
+  transition: transform 0.7s ease, opacity 0.7s ease, box-shadow 0.3s ease;
+}
+.card-photo.card-in { transform: rotate(-1.5deg) translateY(0); }
+.card-photo:hover   { transform: rotate(-0.5deg) translateY(-3px) !important; }
+
+.card-stats {
+  transform: rotate(0.8deg) translateY(32px);
+  transition: transform 0.7s ease, opacity 0.7s ease, box-shadow 0.3s ease;
+}
+.card-stats.card-in { transform: rotate(0.8deg) translateY(0); }
+.card-stats:hover   { transform: rotate(0.3deg) translateY(-3px) !important; }
+
+.stat-row { border-bottom: 1px dashed var(--proj-border-2, #D4B896); }
+.stat-row:last-child { border-bottom: none; }
+
+.tape {
+  position: absolute;
+  width: 48px; height: 18px;
+  background: rgba(222,192,156,0.55);
+  border: 1px solid rgba(200,168,112,0.35);
+  z-index: 10;
 }
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+.bio-label-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--proj-border, #C8A870);
 }
+.bio-para strong { font-weight: 600; color: var(--suit-brown, #513720); letter-spacing: -0.01em; }
+.bio-para em     { font-style: normal; font-weight: 400; color: var(--proj-terra, #C4694A); }
+
+/* ── My Journey timeline ── */
+.tj-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding-inline: clamp(1rem, 5vw, 2rem);
+  -webkit-font-smoothing: antialiased;
+}
+@keyframes tj-ripple {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(3.2); opacity: 0;   }
+}
+.tj-pulse-ring {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: tj-ripple 1.5s ease-out infinite;
+}
+@media (max-width: 580px) {
+  .tj-desktop { display: none  !important; }
+  .tj-mobile  { display: block !important; }
+}
+@media (min-width: 581px) {
+  .tj-desktop { display: grid  !important; }
+  .tj-mobile  { display: none  !important; }
+}
+
+/* ── Project card animations ── */
+@keyframes pf-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+@keyframes pf-exit {
+  from { opacity: 1; transform: translateY(0);     }
+  to   { opacity: 0; transform: translateY(-14px); }
+}
+@keyframes pf-enter {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+@keyframes pf-hero-zoom {
+  from { transform: scale(1.04); opacity: 0.85; }
+  to   { transform: scale(1);    opacity: 1;    }
+}
+@keyframes pf-stagger-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.pf-panel-exit  { animation: pf-exit  280ms cubic-bezier(0.25,1,0.5,1) both; }
+.pf-panel-enter { animation: pf-enter 460ms cubic-bezier(0.16,1,0.3,1) both; }
+.pf-hero-enter  { animation: pf-hero-zoom 560ms cubic-bezier(0.16,1,0.3,1) both; }
+.pf-stagger > * { opacity: 0; }
+.pf-stagger.pf-stagger-go > *:nth-child(1) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1)  60ms both; }
+.pf-stagger.pf-stagger-go > *:nth-child(2) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 120ms both; }
+.pf-stagger.pf-stagger-go > *:nth-child(3) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 180ms both; }
+.pf-stagger.pf-stagger-go > *:nth-child(4) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 240ms both; }
+.pf-stagger.pf-stagger-go > *:nth-child(5) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 295ms both; }
+.pf-stagger.pf-stagger-go > *:nth-child(6) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 340ms both; }
+.pf-stagger.pf-stagger-go > *:nth-child(7) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 378ms both; }

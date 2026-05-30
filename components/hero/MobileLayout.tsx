@@ -12,7 +12,7 @@ export default function MobileLayout() {
         </p>
 
         <h1
-          className="font-black text-[#d4a882] leading-none"
+          className="font-hero font-black text-[#d4a882] leading-none"
           style={{ fontSize: "clamp(3.2rem, 16vw, 5rem)" }}
         >
           {NAME}

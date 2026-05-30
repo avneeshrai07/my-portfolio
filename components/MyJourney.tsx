@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import data from "@/data/my_journey_data.json";
+import SectionHeader from "@/components/shared/SectionHeader";
 
 interface JourneyItem {
   year: string;
@@ -82,7 +83,7 @@ function Row({ item, index, isLeft, isLast, dotRef, mobileDotRef }: RowProps) {
         transitionDelay: `${delay}ms`,
       }}
     >
-      <div className="text-[clamp(0.72rem,1.1vw,0.85rem)] font-bold text-[var(--suit-brown)] tracking-[0.04em] leading-none whitespace-nowrap">
+      <div className="text-[clamp(0.72rem,1.1vw,0.85rem)] font-medium text-[var(--suit-brown)] tracking-[0.06em] leading-none whitespace-nowrap">
         {item.year}
       </div>
       {item.period && (
@@ -106,15 +107,15 @@ function Row({ item, index, isLeft, isLast, dotRef, mobileDotRef }: RowProps) {
       }}
     >
       {item.tag && (
-        <span className="inline-block text-[clamp(0.58rem,0.85vw,0.65rem)] font-bold tracking-[0.1em] uppercase text-[var(--suit-brown)] bg-[var(--shirt-tan)] rounded-full px-[0.75em] py-[0.2em] mb-2 opacity-90">
+        <span className="inline-block text-[clamp(0.58rem,0.85vw,0.65rem)] font-medium tracking-[0.12em] uppercase text-[var(--suit-brown)] bg-[var(--shirt-tan)] rounded-full px-[0.75em] py-[0.2em] mb-2 opacity-80">
           {item.tag}
         </span>
       )}
-      <h2 className="text-[clamp(1rem,2.2vw,1.55rem)] font-bold text-[var(--suit-brown)] leading-tight mb-1">
+      <h2 className="font-super-heading text-[clamp(1.1rem,2.4vw,1.7rem)] font-light text-[var(--suit-brown)] leading-tight mb-1">
         {item.title}
       </h2>
       {item.subtitle && (
-        <p className="text-[clamp(0.75rem,1.1vw,0.875rem)] font-semibold text-[var(--skin-tone)] leading-snug mb-[0.45rem]">
+        <p className="text-[clamp(0.75rem,1.1vw,0.875rem)] font-normal text-[var(--skin-tone)] leading-snug mb-[0.45rem]">
           {item.subtitle}
         </p>
       )}
@@ -197,7 +198,7 @@ function Row({ item, index, isLeft, isLast, dotRef, mobileDotRef }: RowProps) {
 
           <div className="flex-1 min-w-0 pb-[0.65rem]">
             <div className="mb-[0.45rem]">
-              <div className="text-[0.8rem] font-bold text-[var(--suit-brown)] tracking-[0.04em] leading-none">
+              <div className="text-[0.8rem] font-medium text-[var(--suit-brown)] tracking-[0.06em] leading-none">
                 {item.year}
               </div>
               {item.period && (
@@ -208,17 +209,17 @@ function Row({ item, index, isLeft, isLast, dotRef, mobileDotRef }: RowProps) {
             </div>
 
             {item.tag && (
-              <span className="inline-block text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--suit-brown)] bg-[var(--shirt-tan)] rounded-full px-[0.75em] py-[0.2em] mb-2 opacity-90">
+              <span className="inline-block text-[0.62rem] font-medium tracking-[0.12em] uppercase text-[var(--suit-brown)] bg-[var(--shirt-tan)] rounded-full px-[0.75em] py-[0.2em] mb-2 opacity-80">
                 {item.tag}
               </span>
             )}
 
-            <h2 className="text-[clamp(1rem,4.5vw,1.25rem)] font-bold text-[var(--suit-brown)] leading-tight mb-1">
+            <h2 className="font-super-heading text-[clamp(1.1rem,4.5vw,1.35rem)] font-light text-[var(--suit-brown)] leading-tight mb-1">
               {item.title}
             </h2>
 
             {item.subtitle && (
-              <p className="text-[0.82rem] font-semibold text-[var(--skin-tone)] leading-snug mb-[0.4rem]">
+              <p className="text-[0.82rem] font-normal text-[var(--skin-tone)] leading-snug mb-[0.4rem]">
                 {item.subtitle}
               </p>
             )}
@@ -393,49 +394,12 @@ export default function MyJourney() {
   }, []);
 
   return (
-    <>
-      <style>{`
-        .tj-wrap {
-          max-width: 960px;
-          margin: 0 auto;
-          padding-inline: clamp(1rem, 5vw, 2rem);
-          font-family: Satoshi, Inter, system-ui, sans-serif;
-          -webkit-font-smoothing: antialiased;
-        }
-        @keyframes tj-ripple {
-          0%   { transform: scale(1);   opacity: 0.7; }
-          100% { transform: scale(3.2); opacity: 0;   }
-        }
-        .tj-pulse-ring {
-          transform-box: fill-box;
-          transform-origin: center;
-          animation: tj-ripple 1.5s ease-out infinite;
-        }
-        @media (max-width: 580px) {
-          .tj-desktop { display: none  !important; }
-          .tj-mobile  { display: block !important; }
-        }
-        @media (min-width: 581px) {
-          .tj-desktop { display: grid  !important; }
-          .tj-mobile  { display: none  !important; }
-        }
-      `}</style>
-
-      <div className="bg-hero-gradient pb-8">
+    <section aria-label="My Journey" className="bg-hero-gradient pb-8">
 
         {/* Header */}
-        <div className="tj-wrap pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(2vh,15vh,20vh)] relative z-[1] flex items-center gap-6">
-        <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
-
-        <h2
-          className="font-cormorant text-super-heading font-light leading-none tracking-[-2px] shrink-0"
-          style={{ color: "var(--suit-brown, #513720)" }}
-        >
-          My <em style={{ color: "var(--proj-terra, #C4694A)" }}>Story</em>
-        </h2>
-
-        <div className="flex-1" style={{ height: "1px", background: "var(--proj-border, #C8A870)" }} />
-      </div>
+        <div className="tj-wrap pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(2vh,15vh,20vh)] relative z-[1]">
+          <SectionHeader title="My" accent="Story" />
+        </div>
 
         {/* Timeline */}
         <div className="tj-wrap pb-4 relative z-[1]">
@@ -537,7 +501,6 @@ export default function MyJourney() {
           </div>
         </div>
 
-      </div>
-    </>
+    </section>
   );
 }

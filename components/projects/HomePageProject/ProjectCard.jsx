@@ -1,231 +1,324 @@
+"use client";
+
 import { useState, useRef, useEffect, useCallback } from "react";
 import { projects as PROJECTS } from "@/types/projects";
-import TechCard from "@/components/TechCard";
+import StackIcon from "tech-stack-icons";
 import { techStack } from "@/types/techStack";
 
-/* ─── TECH STACK LOOKUP ───────────────────────────────────────────────
-   Maps the plain string names used in projects.ts → techStack entries.
-   Add any name that appears in your projects.ts stack arrays.          */
+/* ─── TECH LOOKUP ─────────────────────────────────────────────────────── */
 const TECH_BY_NAME = Object.fromEntries(
   techStack.map((t) => [t.name.toLowerCase(), t])
 );
-
-// Some projects.ts names differ slightly from techStack names — alias them here
 const TECH_ALIASES = {
   "next.js":    "next.js",
   "node.js":    "node.js",
   "aws s3":     "aws",
   "socket.io":  "socket.io",
   "postgresql": "postgresql",
-  // add more as needed
+  "go":         "go",
 };
-
 function resolveTech(stackName) {
   const key = TECH_ALIASES[stackName.toLowerCase()] ?? stackName.toLowerCase();
-  return TECH_BY_NAME[key] ?? { name: stackName, iconName: stackName.toLowerCase().replace(/[^a-z0-9]/g, ""), bubbleColor: "#333" };
+  return TECH_BY_NAME[key] ?? {
+    name: stackName,
+    iconName: stackName.toLowerCase().replace(/[^a-z0-9]/g, ""),
+    bubbleColor: "#888",
+  };
 }
 
-/* ─── STYLES ─────────────────────────────────────────────────────── */
+/* ─── DESIGN TOKENS (earthy palette aligned with site) ────────────────── */
+const T = {
+  cream:      "#F8F2E8",
+  parchment:  "#FAF5EC",
+  sand:       "#EDE0CC",
+  border:     "#DDD0B8",
+  borderHard: "#C8A870",
+  terra:      "#C4694A",
+  terraLight: "#E8A080",
+  brown:      "#513720",
+  brownMid:   "#7A4A28",
+  brownLight: "#9A6A48",
+  muted:      "#B0926E",
+  ink:        "#2A1608",
+  detail:     "#5A3E28",
+  white:      "#FDFAF6",
+  liveBg:     "#E8F0DC",
+  liveTx:     "#3A6820",
+  liveDot:    "#5A9A30",
+};
+
+/* ─── STYLES ─────────────────────────────────────────────────────────── */
 const S = {
   root: {
     display: "flex",
-    height: "92vh",
-    minHeight: 600,
-    maxHeight: 900,
-    background: "#f5f0eb",
+    height: "88vh",
+    minHeight: 580,
+    maxHeight: 860,
+    background: T.cream,
     fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-    borderRadius: 16,
+    borderRadius: 18,
     overflow: "hidden",
-    border: "1px solid #e8e0d5",
-    boxShadow: "0 4px 40px rgba(0,0,0,0.08)",
+    border: `1px solid ${T.border}`,
+    boxShadow: "0 8px 48px rgba(81,55,32,0.12), 0 2px 8px rgba(81,55,32,0.06)",
   },
+
+  /* ── Sidebar ── */
   sidebar: {
-    width: 260,
+    width: 252,
     flexShrink: 0,
     display: "flex",
     flexDirection: "column",
-    borderRight: "1px solid #e8e0d5",
-    background: "#fff",
+    borderRight: `1px solid ${T.border}`,
+    background: T.parchment,
     overflow: "hidden",
   },
   sidebarHeader: {
-    padding: "22px 20px 14px",
-    borderBottom: "1px solid #f0ebe3",
+    padding: "20px 18px 14px",
+    borderBottom: `1px solid ${T.border}`,
     flexShrink: 0,
   },
-  sidebarTitle: {
-    fontSize: 11,
-    fontWeight: 600,
-    color: "#a09488",
-    letterSpacing: "0.07em",
+  sidebarLabel: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: T.muted,
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
-    marginBottom: 2,
+    marginBottom: 4,
+    fontFamily: "'Cinzel', Georgia, serif",
   },
-  sidebarCount: { fontSize: 11, color: "#bbb0a4" },
+  sidebarCount: {
+    fontSize: 11,
+    color: T.brownLight,
+    opacity: 0.7,
+  },
   navList: {
     flex: 1,
     overflowY: "auto",
-    padding: "10px",
+    padding: "10px 10px",
     display: "flex",
     flexDirection: "column",
     gap: 3,
     scrollbarWidth: "none",
   },
+
+  /* ── Detail area ── */
   detail: {
     flex: 1,
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
     minWidth: 0,
-    background: "#fff",
+    background: T.white,
+    position: "relative",
   },
   detailScroll: { flex: 1, overflowY: "auto", scrollbarWidth: "none" },
-  hero: { position: "relative", height: 260, flexShrink: 0, overflow: "hidden" },
+
+  /* ── Hero ── */
+  hero: { position: "relative", height: 280, flexShrink: 0, overflow: "hidden" },
+  heroImgWrap: { position: "absolute", inset: 0 },
   heroImg: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
   heroOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(to bottom, rgba(0,0,0,0) 20%, rgba(0,0,0,0.72) 100%)",
+    background: "linear-gradient(160deg, rgba(0,0,0,0.08) 0%, rgba(20,8,2,0.55) 55%, rgba(20,8,2,0.82) 100%)",
   },
-  heroMeta: { position: "absolute", bottom: 0, left: 0, right: 0, padding: "20px 28px" },
-  heroTitle: {
-    fontSize: 38,
-    fontWeight: 700,
-    color: "#fff",
-    letterSpacing: "-0.03em",
-    lineHeight: 1,
-    fontFamily: "'DM Serif Display', Georgia, serif",
-  },
-  heroSub: { fontSize: 13, color: "rgba(255,255,255,0.65)", marginTop: 6, lineHeight: 1.4 },
-  numBadge: {
+  heroMeta: {
     position: "absolute",
-    top: 14,
-    right: 14,
-    background: "rgba(0,0,0,0.3)",
-    backdropFilter: "blur(6px)",
-    WebkitBackdropFilter: "blur(6px)",
-    borderRadius: 99,
-    padding: "3px 10px",
-    fontSize: 11,
-    color: "rgba(255,255,255,0.8)",
-    fontWeight: 500,
-    border: "0.5px solid rgba(255,255,255,0.15)",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: "24px 28px 22px",
   },
+  heroCategory: {
+    display: "inline-block",
+    fontSize: 9,
+    fontWeight: 700,
+    letterSpacing: "0.14em",
+    textTransform: "uppercase",
+    color: "rgba(255,255,255,0.65)",
+    marginBottom: 8,
+    fontFamily: "'Cinzel', Georgia, serif",
+  },
+  heroTitle: {
+    fontSize: 36,
+    fontWeight: 400,
+    color: "#fff",
+    letterSpacing: "-0.02em",
+    lineHeight: 1.05,
+    fontFamily: "'DM Serif Display', Georgia, serif",
+    marginBottom: 6,
+  },
+  heroSub: {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.55)",
+    lineHeight: 1.5,
+    maxWidth: 400,
+  },
+
+  /* Badges */
   liveBadge: {
     display: "inline-flex",
     alignItems: "center",
     gap: 5,
     fontSize: 10,
     fontWeight: 600,
-    color: "rgba(255,255,255,0.85)",
-    background: "rgba(255,255,255,0.12)",
-    border: "0.5px solid rgba(255,255,255,0.2)",
+    color: T.liveTx,
+    background: "rgba(232,240,220,0.85)",
     borderRadius: 99,
     padding: "3px 10px",
     marginBottom: 10,
     backdropFilter: "blur(4px)",
-    WebkitBackdropFilter: "blur(4px)",
   },
   yearBadge: {
     display: "inline-flex",
     alignItems: "center",
-    gap: 5,
     fontSize: 10,
     fontWeight: 500,
-    color: "rgba(255,255,255,0.6)",
-    background: "rgba(255,255,255,0.08)",
-    border: "0.5px solid rgba(255,255,255,0.15)",
+    color: "rgba(255,255,255,0.5)",
+    marginBottom: 8,
+    letterSpacing: "0.04em",
+  },
+  numBadge: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    background: "rgba(0,0,0,0.25)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
     borderRadius: 99,
-    padding: "3px 10px",
-    marginBottom: 10,
+    padding: "4px 12px",
+    fontSize: 11,
+    color: "rgba(255,255,255,0.75)",
+    fontWeight: 500,
+    border: "0.5px solid rgba(255,255,255,0.12)",
+    letterSpacing: "0.06em",
+    fontFamily: "'Cinzel', Georgia, serif",
   },
-  body: { padding: "24px 28px", display: "flex", flexDirection: "column", gap: 24 },
+
+  /* ── Body content ── */
+  body: { padding: "22px 28px", display: "flex", flexDirection: "column", gap: 22 },
   sectionLabel: {
-    fontSize: 10,
-    fontWeight: 600,
-    color: "#b0a494",
+    fontSize: 9,
+    fontWeight: 700,
+    color: T.muted,
     textTransform: "uppercase",
-    letterSpacing: "0.08em",
+    letterSpacing: "0.14em",
     marginBottom: 12,
+    fontFamily: "'Cinzel', Georgia, serif",
   },
-  featuresGrid: { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 },
+  overviewText: {
+    fontSize: 13,
+    color: T.detail,
+    lineHeight: 1.75,
+    margin: 0,
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
+    fontSize: 15,
+  },
+
+  /* ── Features ── */
+  featuresGrid: { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 },
   featureCard: {
-    background: "#faf7f3",
-    border: "1px solid #f0ebe3",
+    background: T.cream,
+    border: `1px solid ${T.border}`,
     borderRadius: 12,
-    padding: "14px 16px",
+    padding: "13px 15px",
     display: "flex",
     alignItems: "flex-start",
-    gap: 12,
+    gap: 11,
+    transition: "border-color 0.2s, transform 0.22s cubic-bezier(0.25,1,0.5,1), box-shadow 0.2s",
     cursor: "default",
-    transition: "border-color 0.3s ease, transform 0.3s ease",
   },
-  featureIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 9,
-    background: "#fff",
-    border: "1px solid #e8e0d5",
+  featureNum: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    background: T.terra,
+    color: "#fff",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: 16,
+    fontSize: 11,
+    fontWeight: 700,
     flexShrink: 0,
+    fontFamily: "'Cinzel', Georgia, serif",
+    letterSpacing: "0.02em",
   },
-  featureName: { fontSize: 12, fontWeight: 600, color: "#1a0d06", lineHeight: 1.3 },
-  featureDesc: { fontSize: 11, color: "#9a8c7e", marginTop: 2, lineHeight: 1.4 },
-  metricsGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 },
+  featureName: { fontSize: 12, fontWeight: 600, color: T.ink, lineHeight: 1.3 },
+  featureDesc: { fontSize: 11, color: T.brownLight, marginTop: 2, lineHeight: 1.45 },
+
+  /* ── Metrics ── */
+  metricsGrid: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 7 },
   metricCard: {
-    background: "#faf7f3",
-    border: "1px solid #f0ebe3",
+    background: T.cream,
+    border: `1px solid ${T.border}`,
     borderRadius: 10,
-    padding: "12px 10px",
+    padding: "12px 8px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 2,
+    gap: 3,
+    transition: "transform 0.2s cubic-bezier(0.25,1,0.5,1)",
   },
   metricCardHighlight: {
-    background: "#1a0d06",
-    border: "1px solid #1a0d06",
+    background: T.terra,
+    border: `1px solid ${T.terra}`,
     borderRadius: 10,
-    padding: "12px 10px",
+    padding: "12px 8px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 2,
+    gap: 3,
+    transition: "transform 0.2s cubic-bezier(0.25,1,0.5,1)",
+    boxShadow: `0 4px 14px rgba(196,105,74,0.3)`,
   },
-  metricVal: { fontSize: 15, fontWeight: 700, color: "#1a0d06", lineHeight: 1.2, textAlign: "center" },
+  metricVal:      { fontSize: 15, fontWeight: 700, color: T.ink,  lineHeight: 1.2, textAlign: "center" },
   metricValLight: { fontSize: 15, fontWeight: 700, color: "#fff", lineHeight: 1.2, textAlign: "center" },
-  metricLbl: { fontSize: 10, color: "#b0a494" },
-  metricLblLight: { fontSize: 10, color: "rgba(255,255,255,0.6)" },
+  metricLbl:      { fontSize: 10, color: T.muted, textAlign: "center" },
+  metricLblLight: { fontSize: 10, color: "rgba(255,255,255,0.72)", textAlign: "center" },
+
+  /* ── Meta strip ── */
   metaStrip: {
     display: "grid",
     gridTemplateColumns: "repeat(4, 1fr)",
-    background: "#faf7f3",
-    border: "1px solid #f0ebe3",
+    background: T.cream,
+    border: `1px solid ${T.border}`,
     borderRadius: 12,
     overflow: "hidden",
   },
   metaCell: {
-    padding: "14px 10px",
+    padding: "13px 8px",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: 3,
   },
-  metaVal: { fontSize: 12, fontWeight: 600, color: "#1a0d06", lineHeight: 1.2, textAlign: "center" },
-  metaLbl: { fontSize: 10, color: "#b0a494" },
-  // Stack row now wraps TechCards — smaller scale wrapper
-  stackRow: { display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start" },
-  actions: { display: "flex", gap: 10 },
+  metaIcon: { fontSize: 13, color: T.terra, lineHeight: 1 },
+  metaVal:  { fontSize: 11, fontWeight: 600, color: T.ink, lineHeight: 1.2, textAlign: "center" },
+  metaLbl:  { fontSize: 9,  color: T.muted, letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "'Cinzel', Georgia, serif" },
+
+  /* ── Stack pills ── */
+  stackRow: { display: "flex", flexWrap: "wrap", gap: 7, alignItems: "center" },
+  stackPill: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: 6,
+    padding: "5px 11px 5px 7px",
+    borderRadius: 99,
+    background: T.cream,
+    border: `1px solid ${T.border}`,
+    transition: "border-color 0.18s, transform 0.18s cubic-bezier(0.25,1,0.5,1), background 0.18s",
+  },
+  stackPillName: { fontSize: 12, fontWeight: 500, color: T.brown },
+
+  /* ── Actions ── */
+  actions: { display: "flex", gap: 8 },
   btnPrimary: {
     display: "inline-flex",
     alignItems: "center",
     gap: 7,
     padding: "10px 22px",
     borderRadius: 10,
-    background: "#1a0d06",
+    background: T.brown,
     color: "#fff",
     border: "none",
     fontSize: 13,
@@ -233,7 +326,8 @@ const S = {
     cursor: "pointer",
     fontFamily: "inherit",
     textDecoration: "none",
-    transition: "opacity 0.3s ease, transform 0.3s ease",
+    transition: "opacity 0.2s, transform 0.2s cubic-bezier(0.25,1,0.5,1)",
+    letterSpacing: "0.01em",
   },
   btnSecondary: {
     display: "inline-flex",
@@ -241,45 +335,95 @@ const S = {
     gap: 7,
     padding: "10px 22px",
     borderRadius: 10,
-    background: "#fff",
-    color: "#1a0d06",
-    border: "1px solid #ddd5c8",
+    background: "transparent",
+    color: T.brown,
+    border: `1px solid ${T.border}`,
     fontSize: 13,
     fontWeight: 600,
     cursor: "pointer",
     fontFamily: "inherit",
     textDecoration: "none",
-    transition: "background 0.3s ease, transform 0.3s ease",
+    transition: "background 0.18s, border-color 0.18s, transform 0.2s cubic-bezier(0.25,1,0.5,1)",
   },
+
+  /* ── Quote ── */
   quote: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    padding: "14px 18px",
-    background: "#faf7f3",
+    padding: "18px 20px",
+    background: T.cream,
     borderRadius: 12,
-    borderLeft: "2px solid #ddd5c8",
+    border: `1px solid ${T.border}`,
+    borderLeft: `3px solid ${T.terra}`,
   },
-  quoteText: { fontSize: 13, color: "#9a8c7e", fontStyle: "italic", lineHeight: 1.5 },
-  overviewText: { fontSize: 13, color: "#6b5e54", lineHeight: 1.7, margin: 0 },
+  quoteText: {
+    fontSize: 14,
+    color: T.detail,
+    fontStyle: "italic",
+    lineHeight: 1.65,
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
+    fontSize: 16,
+  },
+  quoteAttr: {
+    fontSize: 10,
+    color: T.muted,
+    marginTop: 8,
+    fontWeight: 600,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    fontFamily: "'Cinzel', Georgia, serif",
+  },
 };
 
-/* ─── NAV META ─────────────────────────────────────────────────────── */
-const NAV_META = {
-  sunakku:    { navIcon: "🛒", iconBg: "#fef0e6" },
-  velox:      { navIcon: "📡", iconBg: "#e8f0fe" },
-  gatekeeper: { navIcon: "🔐", iconBg: "#f0faf4" },
-};
-
-function getNavMeta(id) {
-  return NAV_META[id] ?? { navIcon: "💻", iconBg: "#f5f0eb" };
+/* ─── SVG ICONS ──────────────────────────────────────────────────────── */
+function IconPlay({ size = 12 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 12 12" fill="currentColor">
+      <path d="M2.5 1.5L10 6L2.5 10.5V1.5Z" />
+    </svg>
+  );
+}
+function IconGitHub({ size = 14 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+    </svg>
+  );
+}
+function IconClock({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
+    </svg>
+  );
+}
+function IconRocket({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+    </svg>
+  );
+}
+function IconUser({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+function IconCalendar({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
+  );
 }
 
-/* ─── NAV ITEM ─────────────────────────────────────────────────────── */
-function NavItem({ project, active, onClick }) {
+/* ─── NAV ITEM ───────────────────────────────────────────────────────── */
+function NavItem({ project, index, active, onClick }) {
   const [hovered, setHovered] = useState(false);
   const isLive = project.status === "Production";
-  const { navIcon, iconBg } = getNavMeta(project.id);
+  const num = String(index + 1).padStart(2, "0");
 
   return (
     <button
@@ -291,70 +435,125 @@ function NavItem({ project, active, onClick }) {
         display: "flex",
         alignItems: "center",
         gap: 11,
-        padding: "9px 11px",
+        padding: "10px 12px",
         borderRadius: 11,
         cursor: "pointer",
-        border: active ? "1px solid #e0d6cb" : "1px solid transparent",
-        background: active || hovered ? "#faf7f3" : "transparent",
+        border: `1px solid ${active ? T.borderHard : "transparent"}`,
+        background: active ? T.sand : hovered ? "rgba(81,55,32,0.04)" : "transparent",
         width: "100%",
         textAlign: "left",
-        transition: "all 0.3s ease",
+        transition: "background 0.2s, border-color 0.2s",
         fontFamily: "inherit",
+        position: "relative",
       }}
       aria-pressed={active}
     >
-      <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: 10,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 16,
-          flexShrink: 0,
-          background: iconBg,
-          transition: "transform 0.35s ease",
-          transform: hovered || active ? "scale(1.08)" : "scale(1)",
-        }}
-      >
-        {navIcon}
+      {/* Left accent bar */}
+      <div style={{
+        position: "absolute",
+        left: 0,
+        top: "20%",
+        bottom: "20%",
+        width: 3,
+        borderRadius: 99,
+        background: active ? T.terra : "transparent",
+        transition: "background 0.2s",
+      }} />
+
+      {/* Number badge */}
+      <div style={{
+        width: 34,
+        height: 34,
+        borderRadius: 10,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        flexShrink: 0,
+        background: active ? T.terra : T.cream,
+        border: `1px solid ${active ? T.terra : T.border}`,
+        transition: "background 0.2s, border-color 0.2s, transform 0.25s cubic-bezier(0.16,1,0.3,1)",
+        transform: (hovered || active) ? "scale(1.06)" : "scale(1)",
+      }}>
+        <span style={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: active ? "#fff" : T.brownMid,
+          fontFamily: "'Cinzel', Georgia, serif",
+          letterSpacing: "0.04em",
+        }}>{num}</span>
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "#1a0d06", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", lineHeight: 1.3 }}>
+        <div style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: active ? T.ink : T.brown,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          lineHeight: 1.3,
+        }}>
           {project.name}
         </div>
-        <div style={{ fontSize: 11, color: "#b0a494", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 1 }}>
-          {project.sub}
+        <div style={{
+          fontSize: 11,
+          color: T.brownLight,
+          opacity: 0.8,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          marginTop: 2,
+          lineHeight: 1.3,
+        }}>
+          {project.category}
         </div>
-        {isLive ? (
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 9, fontWeight: 600, color: "#15803d", background: "#dcfce7", borderRadius: 99, padding: "2px 7px", marginTop: 3 }}>
-            <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#22c55e", display: "inline-block", animation: "pf-pulse 2s ease-in-out infinite" }} />
+        {isLive && (
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            fontSize: 9,
+            fontWeight: 700,
+            color: T.liveTx,
+            background: T.liveBg,
+            borderRadius: 99,
+            padding: "2px 7px",
+            marginTop: 4,
+            fontFamily: "'Cinzel', Georgia, serif",
+            letterSpacing: "0.06em",
+          }}>
+            <span style={{
+              width: 5, height: 5,
+              borderRadius: "50%",
+              background: T.liveDot,
+              display: "inline-block",
+              animation: "pf-pulse 2s ease-in-out infinite",
+            }} />
             Live
           </div>
-        ) : (
-          <div style={{ fontSize: 10, color: "#c0b4a8", marginTop: 3 }}>{project.year}</div>
         )}
       </div>
-
-      {active && <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#d4651a", flexShrink: 0 }} />}
     </button>
   );
 }
 
-/* ─── FEATURE CARD ─────────────────────────────────────────────────── */
-const FEAT_ICONS = ["⚡", "🔀", "🔑", "📊", "🛡️", "🔁", "💾", "📋"];
-
+/* ─── FEATURE CARD ───────────────────────────────────────────────────── */
 function FeatureCard({ feature, index }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
-      style={{ ...S.featureCard, borderColor: hovered ? "#c8bfb0" : "#f0ebe3", transform: hovered ? "translateY(-2px)" : "translateY(0)" }}
+      style={{
+        ...S.featureCard,
+        borderColor: hovered ? T.borderHard : T.border,
+        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        boxShadow: hovered ? "0 4px 16px rgba(81,55,32,0.08)" : "none",
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div style={S.featureIcon}>{FEAT_ICONS[index % FEAT_ICONS.length]}</div>
+      <div style={S.featureNum}>
+        {String(index + 1).padStart(2, "0")}
+      </div>
       <div>
         <div style={S.featureName}>{feature.title}</div>
         <div style={S.featureDesc}>{feature.desc}</div>
@@ -363,49 +562,97 @@ function FeatureCard({ feature, index }) {
   );
 }
 
-/* ─── DETAIL PANEL ─────────────────────────────────────────────────── */
-function DetailPanel({ project, idx, total, visible }) {
+/* ─── STACK PILL ─────────────────────────────────────────────────────── */
+function StackPill({ stackName }) {
+  const [hovered, setHovered] = useState(false);
+  const tech = resolveTech(stackName);
+  return (
+    <div
+      style={{
+        ...S.stackPill,
+        borderColor: hovered ? T.borderHard : T.border,
+        background: hovered ? T.sand : T.cream,
+        transform: hovered ? "translateY(-1px)" : "translateY(0)",
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <StackIcon name={tech.iconName} style={{ width: 16, height: 16, flexShrink: 0 }} />
+      <span style={S.stackPillName}>{tech.name}</span>
+    </div>
+  );
+}
+
+/* ─── STAGGERED BODY ─────────────────────────────────────────────────── */
+function StaggerBody({ children, animKey }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    const id = requestAnimationFrame(() => ref.current?.classList.add("pf-stagger-go"));
+    return () => cancelAnimationFrame(id);
+  }, [animKey]);
+
+  return (
+    <div ref={ref} className="pf-stagger" style={S.body}>
+      {children}
+    </div>
+  );
+}
+
+/* ─── DETAIL PANEL ───────────────────────────────────────────────────── */
+function DetailPanel({ project, idx, total, animState }) {
   const isLive = project.status === "Production";
+  const panelClass =
+    animState === "entering" ? "pf-panel-enter"
+    : animState === "exiting" ? "pf-panel-exit"
+    : "";
 
   const metaCells = [
-    { icon: "📅", val: project.duration, label: "Duration" },
-    { icon: "🚀", val: project.status,   label: "Status"   },
-    { icon: "👤", val: "Solo",            label: "Team"     },
-    { icon: "✨", val: project.year,      label: "Year"     },
+    { Icon: IconClock,    val: project.duration, label: "Duration" },
+    { Icon: IconRocket,   val: project.status,   label: "Status"   },
+    { Icon: IconUser,     val: "Solo",            label: "Team"     },
+    { Icon: IconCalendar, val: project.year,      label: "Year"     },
   ];
 
   return (
-    /* Elegant slow cross-fade + gentle upward drift */
     <div
+      className={panelClass}
       style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(14px)",
-        transition: visible
-          ? "opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1), transform 0.55s cubic-bezier(0.4, 0, 0.2, 1)"
-          : "opacity 0.3s cubic-bezier(0.4, 0, 1, 1), transform 0.3s cubic-bezier(0.4, 0, 1, 1)",
+        position: "absolute",
+        inset: 0,
+        width: "100%",
+        pointerEvents: animState === "exiting" ? "none" : "auto",
+        zIndex: animState === "exiting" ? 2 : 1,
       }}
     >
-      {/* Hero */}
+      {/* ── Hero ── */}
       <div style={S.hero}>
-        <img src={project.image} alt={project.name} style={S.heroImg} />
+        <div style={S.heroImgWrap} className={animState === "entering" ? "pf-hero-enter" : ""}>
+          <img src={project.image} alt={project.name} style={S.heroImg} />
+        </div>
         <div style={S.heroOverlay} />
         <div style={S.heroMeta}>
           {isLive ? (
             <div style={S.liveBadge}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#4ade80", display: "inline-block", animation: "pf-pulse 2s ease-in-out infinite" }} />
-              Live project
+              <span style={{
+                width: 6, height: 6, borderRadius: "50%",
+                background: T.liveDot, display: "inline-block",
+                animation: "pf-pulse 2s ease-in-out infinite",
+              }} />
+              Live
             </div>
           ) : (
-            <div style={S.yearBadge}>📅 {project.year}</div>
+            <div style={S.yearBadge}>{project.year}</div>
           )}
+          <div style={S.heroCategory}>{project.category}</div>
           <div style={S.heroTitle}>{project.name}</div>
           <div style={S.heroSub}>{project.sub}</div>
         </div>
-        <div style={S.numBadge}>{idx + 1} / {total}</div>
+        <div style={S.numBadge}>{String(idx + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}</div>
       </div>
 
-      {/* Body */}
-      <div style={S.body}>
+      {/* ── Body ── */}
+      <StaggerBody animKey={project.id}>
 
         {/* Overview */}
         <div>
@@ -431,7 +678,12 @@ function DetailPanel({ project, idx, total, visible }) {
             <div style={S.sectionLabel}>Performance</div>
             <div style={S.metricsGrid}>
               {project.metrics.map((m) => (
-                <div key={m.label} style={m.highlight ? S.metricCardHighlight : S.metricCard}>
+                <div
+                  key={m.label}
+                  style={m.highlight ? S.metricCardHighlight : S.metricCard}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                >
                   <div style={m.highlight ? S.metricValLight : S.metricVal}>{m.value}</div>
                   <div style={m.highlight ? S.metricLblLight : S.metricLbl}>{m.label}</div>
                 </div>
@@ -440,22 +692,14 @@ function DetailPanel({ project, idx, total, visible }) {
           </div>
         )}
 
-        {/* Stack — using TechCard + StackIcon */}
+        {/* Stack */}
         {project.stack?.length > 0 && (
           <div>
             <div style={S.sectionLabel}>Built with</div>
             <div style={S.stackRow}>
-              {project.stack.map((stackName) => {
-                const tech = resolveTech(stackName);
-                return (
-                  <TechCard
-                    key={stackName}
-                    name={tech.name}
-                    iconName={tech.iconName}
-                    bubbleColor={tech.bubbleColor}
-                  />
-                );
-              })}
+              {project.stack.map((name) => (
+                <StackPill key={name} stackName={name} />
+              ))}
             </div>
           </div>
         )}
@@ -464,11 +708,19 @@ function DetailPanel({ project, idx, total, visible }) {
         <div>
           <div style={S.sectionLabel}>Project details</div>
           <div style={S.metaStrip}>
-            {metaCells.map((m, i) => (
-              <div key={m.label} style={{ ...S.metaCell, borderRight: i < metaCells.length - 1 ? "1px solid #f0ebe3" : "none" }}>
-                <span style={{ fontSize: 16 }}>{m.icon}</span>
-                <div style={S.metaVal}>{m.val}</div>
-                <div style={S.metaLbl}>{m.label}</div>
+            {metaCells.map(({ Icon, val, label }, i) => (
+              <div
+                key={label}
+                style={{
+                  ...S.metaCell,
+                  borderRight: i < metaCells.length - 1 ? `1px solid ${T.border}` : "none",
+                }}
+              >
+                <span style={{ color: T.terra, display: "flex" }}>
+                  <Icon size={13} />
+                </span>
+                <div style={S.metaVal}>{val}</div>
+                <div style={S.metaLbl}>{label}</div>
               </div>
             ))}
           </div>
@@ -482,14 +734,14 @@ function DetailPanel({ project, idx, total, visible }) {
               target="_blank"
               rel="noopener noreferrer"
               style={S.btnPrimary}
-              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.82"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.8"; e.currentTarget.style.transform = "translateY(-1px)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "translateY(0)"; }}
             >
-              ▶ View project
+              <IconPlay size={11} /> View project
             </a>
           ) : (
-            <button style={{ ...S.btnPrimary, opacity: 0.5, cursor: "not-allowed" }} disabled>
-              ▶ View project
+            <button style={{ ...S.btnPrimary, opacity: 0.4, cursor: "not-allowed" }} disabled>
+              <IconPlay size={11} /> View project
             </button>
           )}
           {project.githubUrl && (
@@ -498,65 +750,72 @@ function DetailPanel({ project, idx, total, visible }) {
               target="_blank"
               rel="noopener noreferrer"
               style={S.btnSecondary}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#faf7f3"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#fff"; e.currentTarget.style.transform = "translateY(0)"; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = T.cream; e.currentTarget.style.borderColor = T.borderHard; e.currentTarget.style.transform = "translateY(-1px)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = T.border; e.currentTarget.style.transform = "translateY(0)"; }}
             >
-              {"</>"} View code
+              <IconGitHub size={14} /> View code
             </a>
           )}
         </div>
 
         {/* Impact quote */}
         <div style={S.quote}>
-          <span style={{ fontSize: 26, color: "#d8cfc4", lineHeight: 1, fontFamily: "Georgia, serif", userSelect: "none", flexShrink: 0 }}>"</span>
-          <span style={S.quoteText}>{project.impact}</span>
-          <span style={{ fontSize: 26, color: "#d8cfc4", lineHeight: 1, fontFamily: "Georgia, serif", userSelect: "none", flexShrink: 0 }}>"</span>
+          <p style={S.quoteText}>{project.impact}</p>
+          <div style={S.quoteAttr}>Impact</div>
         </div>
 
-      </div>
+      </StaggerBody>
     </div>
   );
 }
 
-/* ─── ROOT COMPONENT ───────────────────────────────────────────────── */
-export default function PortfolioShowcase() {
-  const [activeId, setActiveId] = useState(PROJECTS[0].id);
-  const [visible,  setVisible]  = useState(true);
+/* ─── TRANSITION DURATIONS ───────────────────────────────────────────── */
+const EXIT_DURATION = 280;
+const LOCK_DURATION = EXIT_DURATION + 420;
 
+/* ─── ROOT ───────────────────────────────────────────────────────────── */
+export default function PortfolioShowcase() {
+  const [panels, setPanels] = useState(() => [
+    { project: PROJECTS[0], animState: "idle" },
+  ]);
+
+  const activeId         = panels[panels.length - 1].project.id;
   const detailScrollRef  = useRef(null);
   const navListRef       = useRef(null);
   const lockedRef        = useRef(false);
   const lastScrollTopRef = useRef(0);
 
-  const activeIndex   = PROJECTS.findIndex((p) => p.id === activeId);
-  const activeProject = PROJECTS[activeIndex];
-
-  /* ── project switcher ─────────────────────────────────────────── */
   const selectProject = useCallback((id, fromScroll = false) => {
     if (id === activeId || lockedRef.current) return;
     lockedRef.current = true;
+    const newProject = PROJECTS.find((p) => p.id === id);
+    if (!newProject) return;
 
-    // Fade out (300ms) → swap content → fade in (550ms)
-    setVisible(false);
+    setPanels((prev) => {
+      const updated = prev.map((p, i) =>
+        i === prev.length - 1 ? { ...p, animState: "exiting" } : p
+      );
+      return [...updated, { project: newProject, animState: "entering" }];
+    });
+
     setTimeout(() => {
-      setActiveId(id);
-      setVisible(true);
+      setPanels((prev) => prev.filter((p) => p.animState !== "exiting"));
+    }, EXIT_DURATION);
 
-      if (!fromScroll) {
-        detailScrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    if (!fromScroll) {
+      requestAnimationFrame(() => {
+        detailScrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
         const btn = navListRef.current?.querySelector(`[data-id="${id}"]`);
         btn?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      }
+      });
+    }
 
-      // Unlock after fade-in fully completes + scroll settles
-      setTimeout(() => {
-        lastScrollTopRef.current = detailScrollRef.current?.scrollTop ?? 0;
-        lockedRef.current = false;
-      }, 600);
-    }, 300);
+    setTimeout(() => {
+      lastScrollTopRef.current = detailScrollRef.current?.scrollTop ?? 0;
+      lockedRef.current = false;
+    }, LOCK_DURATION);
   }, [activeId]);
 
-  /* ── keyboard navigation ──────────────────────────────────────── */
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
@@ -569,81 +828,84 @@ export default function PortfolioShowcase() {
     return () => window.removeEventListener("keydown", handleKey);
   }, [activeId, selectProject]);
 
-  /* ── scroll-driven navigation ─────────────────────────────────── */
   useEffect(() => {
     const el = detailScrollRef.current;
     if (!el) return;
-
     lastScrollTopRef.current = 0;
-
     const onScroll = () => {
       if (lockedRef.current) return;
-
       const st        = el.scrollTop;
       const maxScroll = el.scrollHeight - el.clientHeight;
       const prev      = lastScrollTopRef.current;
-
       if (Math.abs(st - prev) < 2) return;
-
-      const scrollingDown = st > prev;
+      const down = st > prev;
       lastScrollTopRef.current = st;
-
       const idx = PROJECTS.findIndex((p) => p.id === activeId);
-
-      if (scrollingDown && st >= maxScroll - 4 && idx < PROJECTS.length - 1) {
+      if (down && st >= maxScroll - 4 && idx < PROJECTS.length - 1) {
         selectProject(PROJECTS[idx + 1].id, true);
         requestAnimationFrame(() => { el.scrollTop = 0; });
-      } else if (!scrollingDown && st <= 4 && idx > 0) {
+      } else if (!down && st <= 4 && idx > 0) {
         selectProject(PROJECTS[idx - 1].id, true);
         requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
       }
     };
-
     el.addEventListener("scroll", onScroll, { passive: true });
     return () => el.removeEventListener("scroll", onScroll);
   }, [activeId, selectProject]);
 
   return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap');
-        @keyframes pf-pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
-        *::-webkit-scrollbar { display: none; }
-      `}</style>
+    <div style={S.root}>
 
-      <div style={S.root}>
+      {/* ── Sidebar ── */}
+      <aside style={S.sidebar}>
+        <div style={S.sidebarHeader}>
+          <div style={S.sidebarLabel}>Projects</div>
+          <div style={S.sidebarCount}>{PROJECTS.length} projects — ↑↓ keys</div>
+        </div>
+        <div style={S.navList} ref={navListRef}>
+          {PROJECTS.map((p, i) => (
+            <NavItem
+              key={p.id}
+              project={p}
+              index={i}
+              active={p.id === activeId}
+              onClick={() => selectProject(p.id)}
+            />
+          ))}
+        </div>
 
-        {/* ── Sidebar ── */}
-        <aside style={S.sidebar}>
-          <div style={S.sidebarHeader}>
-            <div style={S.sidebarTitle}>Projects</div>
-            <div style={S.sidebarCount}>{PROJECTS.length} projects · ↑↓ to navigate</div>
-          </div>
-          <div style={S.navList} ref={navListRef}>
-            {PROJECTS.map((p) => (
-              <NavItem
-                key={p.id}
-                project={p}
-                active={p.id === activeId}
-                onClick={() => selectProject(p.id)}
+        {/* Sidebar footer hint */}
+        <div style={{
+          padding: "12px 18px",
+          borderTop: `1px solid ${T.border}`,
+          fontSize: 10,
+          color: T.muted,
+          fontFamily: "'Cinzel', Georgia, serif",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          opacity: 0.7,
+        }}>
+          Scroll detail to navigate
+        </div>
+      </aside>
+
+      {/* ── Detail area ── */}
+      <div style={S.detail}>
+        <div style={S.detailScroll} ref={detailScrollRef}>
+          <div style={{ position: "relative", minHeight: "100%" }}>
+            {panels.map(({ project, animState }) => (
+              <DetailPanel
+                key={project.id}
+                project={project}
+                idx={PROJECTS.findIndex((p) => p.id === project.id)}
+                total={PROJECTS.length}
+                animState={animState}
               />
             ))}
           </div>
-        </aside>
-
-        {/* ── Detail panel ── */}
-        <div style={S.detail}>
-          <div style={S.detailScroll} ref={detailScrollRef}>
-            <DetailPanel
-              project={activeProject}
-              idx={activeIndex}
-              total={PROJECTS.length}
-              visible={visible}
-            />
-          </div>
         </div>
-
       </div>
-    </>
+
+    </div>
   );
 }

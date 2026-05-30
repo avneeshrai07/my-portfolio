@@ -1,10 +1,9 @@
-﻿import { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Metadata, Viewport } from "next";
 import "./globals.css";
 import PWARegister from "@/components/pwa/PWARegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
-
-const inter = Inter({ subsets: ["latin"] });
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: {
@@ -52,8 +51,10 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/icon512.png" />
       </head>
-      <body className={inter.className}>
+      <body>
+        <Header />
         {children}
+        <Footer />
         <PWARegister />
         <InstallPrompt />
       </body>

@@ -67,7 +67,7 @@ function SunakkuDiagram() {
     <svg viewBox="0 0 300 250" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
       <Node x={90}  y={8}   w={120} title="Web App"      sub="Next.js"       theme="sand" />
       <Node x={6}   y={84}  w={90}  title="Auth"         sub="JWT / Glauth"  theme="sand" />
-      <Node x={104} y={84}  w={106} title="REST API"     sub="Express"       theme="bark" />
+      <Node x={104} y={84}  w={106} title="REST API"     sub="expressjs"       theme="bark" />
       <Node x={218} y={84}  w={78}  title="Redis Cache"  sub="TTL 80s"       theme="moss" />
       <Node x={104} y={168} w={106} title="Order Queue"  sub="BullMQ"        theme="sand" />
       <Node x={218} y={168} w={78}  title="PostgreSQL"   sub="Prisma ORM"    theme="sand" />
