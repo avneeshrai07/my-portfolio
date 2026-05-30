@@ -58,26 +58,68 @@ function useSwipe(onSwipeLeft, onSwipeRight) {
 
 /* ─── BOTTOM SHEET ──────────────────────────────────────────────────── */
 function BottomSheet({ project, open, onClose }) {
-  const sheetRef = useRef(null);
-  const startY = useRef(null);
-  const currentY = useRef(0);
+  const sheetRef  = useRef(null);
+  const startY    = useRef(null);
+  const dragY     = useRef(0);
+  const dragging  = useRef(false);
 
-  const handleTouchStart = (e) => { startY.current = e.touches[0].clientY; };
-  const handleTouchMove = (e) => {
-    const dy = e.touches[0].clientY - startY.current;
-    if (dy > 0 && sheetRef.current) {
-      currentY.current = dy;
-      sheetRef.current.style.transform = `translateY(${dy}px)`;
-    }
-  };
-  const handleTouchEnd = () => {
-    if (currentY.current > 100) { onClose(); }
-    else if (sheetRef.current) { sheetRef.current.style.transform = "translateY(0)"; }
-    currentY.current = 0;
-  };
-
+  /* Attach non-passive touchmove so we can preventDefault when needed */
   useEffect(() => {
-    if (open && sheetRef.current) { sheetRef.current.style.transform = "translateY(0)"; }
+    const el = sheetRef.current;
+    if (!el) return;
+
+    const onStart = (e) => {
+      startY.current  = e.touches[0].clientY;
+      dragY.current   = 0;
+      dragging.current = false;
+    };
+
+    const onMove = (e) => {
+      if (startY.current === null) return;
+      const dy = e.touches[0].clientY - startY.current;
+      /* Only intercept a downward drag when the sheet is already scrolled to top */
+      if (dy > 0 && el.scrollTop <= 0) {
+        e.preventDefault();           // stop the browser scrolling the sheet up
+        dragging.current = true;
+        dragY.current = dy;
+        el.style.transition = "none";
+        el.style.transform  = `translateY(${dy}px)`;
+      }
+    };
+
+    const onEnd = () => {
+      if (dragging.current) {
+        el.style.transition = "transform 0.32s cubic-bezier(0.16,1,0.3,1)";
+        if (dragY.current > 110) {
+          onClose();
+        } else {
+          el.style.transform = "translateY(0)";
+        }
+      }
+      startY.current   = null;
+      dragY.current    = 0;
+      dragging.current = false;
+    };
+
+    el.addEventListener("touchstart", onStart,  { passive: true  });
+    el.addEventListener("touchmove",  onMove,   { passive: false }); // must be non-passive
+    el.addEventListener("touchend",   onEnd,    { passive: true  });
+    return () => {
+      el.removeEventListener("touchstart", onStart);
+      el.removeEventListener("touchmove",  onMove);
+      el.removeEventListener("touchend",   onEnd);
+    };
+  }, [onClose]);
+
+  /* Reset position and scroll every time the sheet opens */
+  useEffect(() => {
+    const el = sheetRef.current;
+    if (!el) return;
+    if (open) {
+      el.scrollTop = 0;
+      el.style.transition = "transform 0.32s cubic-bezier(0.16,1,0.3,1)";
+      el.style.transform  = "translateY(0)";
+    }
   }, [open]);
 
   if (!project) return null;
@@ -87,7 +129,7 @@ function BottomSheet({ project, open, onClose }) {
       <div
         onClick={onClose}
         style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)",
+          position: "fixed", inset: 0, background: "rgba(26,10,2,0.5)",
           zIndex: 40, opacity: open ? 1 : 0, pointerEvents: open ? "auto" : "none",
           transition: "opacity 0.28s ease",
         }}
@@ -95,20 +137,24 @@ function BottomSheet({ project, open, onClose }) {
       <div
         ref={sheetRef}
         style={{
-          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50,
-          background: "#fff", borderRadius: "20px 20px 0 0",
-          maxHeight: "82vh", overflowY: "auto",
+          position: "fixed", bottom: 0, left: 0, right: 0,
+          width: "100%", maxWidth: "100vw",
+          zIndex: 50,
+          background: "#FAF5EC",
+          borderRadius: "20px 20px 0 0",
+          maxHeight: "88vh",
+          overflowY: "auto",
+          overscrollBehavior: "contain",
           transform: open ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.32s cubic-bezier(0.16,1,0.3,1)",
-          willChange: "transform",
+          boxShadow: "0 -4px 32px rgba(81,55,32,0.18)",
+          border: "1px solid var(--proj-border-2, #D4B896)",
+          borderBottom: "none",
         }}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         {/* drag pill */}
-        <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 4px" }}>
-          <div style={{ width: 36, height: 4, borderRadius: 99, background: "#e0d8d0" }} />
+        <div style={{ display: "flex", justifyContent: "center", padding: "14px 0 6px" }}>
+          <div style={{ width: 40, height: 4, borderRadius: 99, background: "var(--proj-border, #C8A870)", opacity: 0.5 }} />
         </div>
 
         {/* hero thumb */}
@@ -226,9 +272,8 @@ function BottomSheet({ project, open, onClose }) {
 
           {/* Impact quote */}
           <div style={quoteBox}>
-            <span style={{ fontSize: 24, color: "#d8cfc4", lineHeight: 1, fontFamily: "Georgia, serif", flexShrink: 0 }}>"</span>
-            <span style={{ fontSize: 12, color: "#9a8c7e", fontStyle: "italic", lineHeight: 1.5 }}>{project.impact}</span>
-            <span style={{ fontSize: 24, color: "#d8cfc4", lineHeight: 1, fontFamily: "Georgia, serif", flexShrink: 0 }}>"</span>
+            <p style={{ fontSize: 13, color: "#5A3E28", fontStyle: "italic", lineHeight: 1.65, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{project.impact}</p>
+            <div style={{ fontSize: 9, color: "#9A6A48", marginTop: 6, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: "'Cinzel', Georgia, serif" }}>Impact</div>
           </div>
 
         </div>
@@ -238,16 +283,16 @@ function BottomSheet({ project, open, onClose }) {
 }
 
 /* ─── SHARED SHEET STYLES ───────────────────────────────────────────── */
-const sheetLabel = { fontSize: 10, fontWeight: 600, color: "#b0a494", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 };
-const featureRow = { display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", background: "#faf7f3", borderRadius: 12, border: "1px solid #f0ebe3" };
-const featureIconBox = { width: 32, height: 32, borderRadius: 8, background: "#fff", border: "1px solid #e8e0d5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 };
-const metricCard = { background: "#faf7f3", border: "1px solid #f0ebe3", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 };
-const metricHighlight = { background: "#1a0d06", border: "1px solid #1a0d06", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 };
-const metaCell = { background: "#faf7f3", border: "1px solid #f0ebe3", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 };
-const stackPill = { display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 9px 4px 6px", borderRadius: 99, background: "#faf7f3", border: "1px solid #e8e0d5" };
-const btnPrimary = { flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 0", borderRadius: 12, background: "#1a0d06", color: "#fff", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", textDecoration: "none" };
-const btnSecondary = { flex: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 20px", borderRadius: 12, background: "#fff", color: "#1a0d06", border: "1px solid #ddd5c8", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", textDecoration: "none", whiteSpace: "nowrap" };
-const quoteBox = { display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "#faf7f3", borderRadius: 12, borderLeft: "2px solid #ddd5c8" };
+const sheetLabel  = { fontSize: 9, fontWeight: 700, color: "#9A6A48", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 10, fontFamily: "'Cinzel', Georgia, serif" };
+const featureRow  = { display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", background: "#F5EDE0", borderRadius: 12, border: "1px solid #DDD0B8" };
+const featureIconBox = { width: 32, height: 32, borderRadius: 8, background: "#FAF5EC", border: "1px solid #DDD0B8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 };
+const metricCard  = { background: "#F5EDE0", border: "1px solid #DDD0B8", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 };
+const metricHighlight = { background: "#C4694A", border: "1px solid #C4694A", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, boxShadow: "0 4px 14px rgba(196,105,74,0.3)" };
+const metaCell    = { background: "#F5EDE0", border: "1px solid #DDD0B8", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 };
+const stackPill   = { display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 9px 4px 6px", borderRadius: 99, background: "#F5EDE0", border: "1px solid #DDD0B8" };
+const btnPrimary  = { flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 0", borderRadius: 12, background: "#513720", color: "#FAF5EC", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", textDecoration: "none" };
+const btnSecondary = { flex: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 20px", borderRadius: 12, background: "transparent", color: "#513720", border: "1px solid #C8A870", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", textDecoration: "none", whiteSpace: "nowrap" };
+const quoteBox     = { padding: "14px 16px", background: "#F5EDE0", borderRadius: 12, borderLeft: "3px solid #C4694A" };
 
 /* ─── HERO CARD ─────────────────────────────────────────────────────── */
 function HeroCard({ project, animState, enterDir, onTap }) {

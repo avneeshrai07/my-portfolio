@@ -10,7 +10,7 @@ const ProjectsSection = () => {
 
       {/* Section header — padded on both layouts */}
       <div className="px-5 md:px-12 lg:px-20 mb-12 md:mb-16">
-        <SectionHeader title="See What I've" accent="Built" />
+        <SectionHeader title="Recent" accent="Builds" />
       </div>
 
       {/* Mobile: swipeable card + bottom sheet (< lg) */}

@@ -72,7 +72,7 @@ export default function MusicSection() {
   return (
     <section className="bg-hero-gradient section-pad px-5 md:px-10">
       <div className="max-w-3xl mx-auto">
-        <SectionHeader title="What I'm" accent="Listening To" className="mb-12" />
+        <SectionHeader title="Now" accent="Playing" className="mb-12" />
 
         {/* Player card — earthy parchment to match the site palette */}
         <div
