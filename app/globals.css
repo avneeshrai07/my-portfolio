@@ -452,3 +452,14 @@ html {
 .pf-stagger.pf-stagger-go > *:nth-child(5) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 295ms both; }
 .pf-stagger.pf-stagger-go > *:nth-child(6) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 340ms both; }
 .pf-stagger.pf-stagger-go > *:nth-child(7) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1) 378ms both; }
+
+/* ── Mobile project card animations ── */
+@keyframes mpm-pulse       { 0%,100%{opacity:1} 50%{opacity:0.25} }
+@keyframes mpm-enter-left  { from{opacity:0;transform:translateX(52px) scale(0.94)} to{opacity:1;transform:translateX(0) scale(1)} }
+@keyframes mpm-enter-right { from{opacity:0;transform:translateX(-52px) scale(0.94)} to{opacity:1;transform:translateX(0) scale(1)} }
+@keyframes mpm-exit-left   { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(-52px) scale(0.94)} }
+@keyframes mpm-exit-right  { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(52px) scale(0.94)} }
+.mpm-enter        { animation: mpm-enter-left  420ms cubic-bezier(0.16,1,0.3,1) both; }
+.mpm-enter-right  { animation: mpm-enter-right 420ms cubic-bezier(0.16,1,0.3,1) both; }
+.mpm-exit-left    { animation: mpm-exit-left   260ms cubic-bezier(0.25,1,0.5,1) both; pointer-events:none; }
+.mpm-exit-right   { animation: mpm-exit-right  260ms cubic-bezier(0.25,1,0.5,1) both; pointer-events:none; }

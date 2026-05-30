@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef, useCallback, useEffect } from "react";
 import { projects as PROJECTS } from "@/types/projects";
 import StackIcon from "tech-stack-icons";
@@ -248,14 +250,14 @@ const btnSecondary = { flex: 0, display: "flex", alignItems: "center", justifyCo
 const quoteBox = { display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", background: "#faf7f3", borderRadius: 12, borderLeft: "2px solid #ddd5c8" };
 
 /* ─── HERO CARD ─────────────────────────────────────────────────────── */
-function HeroCard({ project, animState, onTap }) {
+function HeroCard({ project, animState, enterDir, onTap }) {
   const [pressed, setPressed] = useState(false);
   const isLive = project.status === "Production";
   const { navIcon } = getNavMeta(project.id);
 
   const cardClass =
-    animState === "entering" ? "mpm-enter"
-    : animState === "exiting-left" ? "mpm-exit-left"
+    animState === "entering"      ? (enterDir === "right" ? "mpm-enter-right" : "mpm-enter")
+    : animState === "exiting-left"  ? "mpm-exit-left"
     : animState === "exiting-right" ? "mpm-exit-right"
     : "";
 
@@ -381,7 +383,7 @@ function DotIndicators({ total, active }) {
 
 /* ─── ROOT ──────────────────────────────────────────────────────────── */
 export default function PortfolioShowcaseMobile() {
-  const [panels, setPanels] = useState(() => [{ project: PROJECTS[0], animState: "idle" }]);
+  const [panels, setPanels] = useState(() => [{ project: PROJECTS[0], animState: "idle", enterDir: "left" }]);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetProject, setSheetProject] = useState(null);
   const lockedRef = useRef(false);
@@ -397,7 +399,7 @@ export default function PortfolioShowcaseMobile() {
 
     setPanels((prev) => {
       const updated = prev.map((p, i) => i === prev.length - 1 ? { ...p, animState: exitState } : p);
-      return [...updated, { project: newProject, animState: "entering" }];
+      return [...updated, { project: newProject, animState: "entering", enterDir: direction }];
     });
     setTimeout(() => {
       setPanels((prev) => prev.filter((p) => p.animState !== exitState));
@@ -415,25 +417,11 @@ export default function PortfolioShowcaseMobile() {
 
   return (
     <>
-      <style>{`
-  @keyframes mpm-pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
-
-  @keyframes mpm-enter-left  { from{opacity:0;transform:translateX(52px) scale(0.94)} to{opacity:1;transform:translateX(0) scale(1)} }
-  @keyframes mpm-enter-right { from{opacity:0;transform:translateX(-52px) scale(0.94)} to{opacity:1;transform:translateX(0) scale(1)} }
-  @keyframes mpm-exit-left   { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(-52px) scale(0.94)} }
-  @keyframes mpm-exit-right  { from{opacity:1;transform:translateX(0) scale(1)} to{opacity:0;transform:translateX(52px) scale(0.94)} }
-
-  .mpm-enter       { animation: mpm-enter-left  420ms cubic-bezier(0.16,1,0.3,1) both; }
-  .mpm-exit-left   { animation: mpm-exit-left   260ms cubic-bezier(0.25,1,0.5,1) both; pointer-events:none; }
-  .mpm-exit-right  { animation: mpm-exit-right  260ms cubic-bezier(0.25,1,0.5,1) both; pointer-events:none; }
-  *::-webkit-scrollbar { display:none; }
-`}</style>
-
       <div style={{
         display: "flex", flexDirection: "column",
-        background: "#f5f0eb",
+        background: "transparent",
         fontFamily: "'DM Sans', -apple-system, sans-serif",
-        minHeight: "100vh", maxWidth: 430, margin: "0 auto",
+        maxWidth: 480, margin: "0 auto",
         userSelect: "none",
         WebkitUserSelect: "none",
       }}>
@@ -451,15 +439,16 @@ export default function PortfolioShowcaseMobile() {
 
         {/* ── Card stage ── */}
         <div
-          style={{ flex: "0 0 auto", position: "relative", margin: "0 16px", height: 460, borderRadius: 24 }}
+          style={{ flex: "0 0 auto", position: "relative", margin: "0 16px", height: 340, borderRadius: 24 }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
-          {panels.map(({ project, animState }) => (
+          {panels.map(({ project, animState, enterDir }) => (
             <HeroCard
               key={project.id}
               project={project}
               animState={animState}
+              enterDir={enterDir}
               onTap={() => openSheet(project)}
             />
           ))}
@@ -471,16 +460,16 @@ export default function PortfolioShowcaseMobile() {
         </div>
 
         {/* ── Nav arrows ── */}
-        <div style={{ display: "flex", gap: 12, padding: "16px 16px 0" }}>
+        <div style={{ display: "flex", gap: 10, padding: "16px 16px 24px" }}>
           <button
             onClick={goPrev}
             disabled={activeIdx === 0}
             style={{
               flex: 1, padding: "13px 0", borderRadius: 14,
-              background: activeIdx === 0 ? "#e8e0d8" : "#fff",
-              border: "1px solid " + (activeIdx === 0 ? "#e8e0d8" : "#ddd5c8"),
+              background: activeIdx === 0 ? "rgba(81,55,32,0.06)" : "rgba(81,55,32,0.1)",
+              border: "1px solid " + (activeIdx === 0 ? "rgba(81,55,32,0.1)" : "rgba(81,55,32,0.22)"),
               fontSize: 18, cursor: activeIdx === 0 ? "default" : "pointer",
-              color: activeIdx === 0 ? "#c0b4a8" : "#1a0d06",
+              color: activeIdx === 0 ? "rgba(81,55,32,0.3)" : "var(--suit-brown)",
               fontFamily: "inherit",
               transition: "all 0.2s ease",
             }}
@@ -492,70 +481,16 @@ export default function PortfolioShowcaseMobile() {
             disabled={activeIdx === PROJECTS.length - 1}
             style={{
               flex: 1, padding: "13px 0", borderRadius: 14,
-              background: activeIdx === PROJECTS.length - 1 ? "#e8e0d8" : "#1a0d06",
-              border: "none",
+              background: activeIdx === PROJECTS.length - 1 ? "rgba(81,55,32,0.06)" : "var(--suit-brown)",
+              border: "1px solid " + (activeIdx === PROJECTS.length - 1 ? "rgba(81,55,32,0.1)" : "var(--suit-brown)"),
               fontSize: 18, cursor: activeIdx === PROJECTS.length - 1 ? "default" : "pointer",
-              color: activeIdx === PROJECTS.length - 1 ? "#c0b4a8" : "#fff",
+              color: activeIdx === PROJECTS.length - 1 ? "rgba(81,55,32,0.3)" : "#fff",
               fontFamily: "inherit",
               transition: "all 0.2s ease",
             }}
           >
             →
           </button>
-        </div>
-
-        {/* ── Project nav list ── */}
-        <div style={{ padding: "20px 16px 32px", display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ fontSize: 10, fontWeight: 600, color: "#a09488", letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 4, paddingLeft: 4 }}>
-            All projects
-          </div>
-          {PROJECTS.map((p, i) => {
-            const { navIcon, iconBg } = getNavMeta(p.id);
-            const isActive = p.id === activeId;
-            const isLive   = p.status === "Production";
-            return (
-              <button
-                key={p.id}
-                onClick={() => goTo(i, i > activeIdx ? "left" : "right")}
-                style={{
-                  display: "flex", alignItems: "center", gap: 12,
-                  padding: "11px 14px", borderRadius: 14,
-                  background: isActive ? "#fff" : "transparent",
-                  border: isActive ? "1px solid #e0d6cb" : "1px solid transparent",
-                  textAlign: "left", cursor: "pointer", fontFamily: "inherit",
-                  transition: "background 0.2s, border-color 0.2s",
-                  WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                <div style={{
-                  width: 38, height: 38, borderRadius: 11,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 18, flexShrink: 0, background: iconBg,
-                }}>
-                  {navIcon}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: "#1a0d06", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {p.name}
-                  </div>
-                  <div style={{ fontSize: 11, color: "#b0a494", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 1 }}>
-                    {p.sub}
-                  </div>
-                </div>
-                <div style={{ flexShrink: 0 }}>
-                  {isLive ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 9, fontWeight: 600, color: "#15803d", background: "#dcfce7", borderRadius: 99, padding: "3px 8px" }}>
-                      <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#22c55e", animation: "mpm-pulse 2s ease-in-out infinite" }} />
-                      Live
-                    </div>
-                  ) : (
-                    <span style={{ fontSize: 11, color: "#c0b4a8" }}>{p.year}</span>
-                  )}
-                </div>
-                {isActive && <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#d4651a", flexShrink: 0 }} />}
-              </button>
-            );
-          })}
         </div>
 
       </div>
