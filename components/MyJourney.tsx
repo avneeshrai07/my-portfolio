@@ -111,7 +111,7 @@ function Row({ item, index, isLeft, isLast, dotRef, mobileDotRef }: RowProps) {
           {item.tag}
         </span>
       )}
-      <h2 className="font-super-heading text-[clamp(1.1rem,2.4vw,1.7rem)] font-light text-[var(--suit-brown)] leading-tight mb-1">
+      <h2 className="text-[clamp(1rem,2.2vw,1.4rem)] font-semibold text-[var(--suit-brown)] leading-tight mb-1" style={{ letterSpacing: "-0.01em" }}>
         {item.title}
       </h2>
       {item.subtitle && (
@@ -214,7 +214,7 @@ function Row({ item, index, isLeft, isLast, dotRef, mobileDotRef }: RowProps) {
               </span>
             )}
 
-            <h2 className="font-super-heading text-[clamp(1.1rem,4.5vw,1.35rem)] font-light text-[var(--suit-brown)] leading-tight mb-1">
+            <h2 className="text-[clamp(1rem,4.5vw,1.25rem)] font-semibold text-[var(--suit-brown)] leading-tight mb-1" style={{ letterSpacing: "-0.01em" }}>
               {item.title}
             </h2>
 

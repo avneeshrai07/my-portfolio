@@ -195,8 +195,8 @@ export default function AboutMe() {
                     {label}
                   </span>
                   <span
-                    className="font-cormorant font-normal text-right flex-1"
-                    style={{ fontSize: "16px", color: "var(--suit-brown, #513720)" }}
+                    className="font-medium text-right flex-1"
+                    style={{ fontSize: "13px", color: "var(--suit-brown, #513720)", letterSpacing: "-0.01em" }}
                   >
                     {value}
                   </span>

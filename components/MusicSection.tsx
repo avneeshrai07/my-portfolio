@@ -114,15 +114,15 @@ export default function MusicSection() {
                 </div>
                 <div>
                   <p
-                    className="font-super-heading font-semibold"
-                    style={{ fontSize: 20, color: "var(--suit-brown)" }}
+                    className="font-heading"
+                    style={{ fontSize: 12, color: "var(--suit-brown)", letterSpacing: "0.2em", textTransform: "uppercase" }}
                   >
                     My Playlist
                   </p>
-                  <p style={{ fontSize: 12, color: "var(--skin-tone)" }}>Curated with love</p>
+                  <p style={{ fontSize: 12, color: "var(--skin-tone)", fontWeight: 400, marginTop: 2 }}>Curated with love</p>
                 </div>
               </div>
-              <span style={{ fontSize: 13, color: "var(--skin-tone)" }}>{songs.length} songs</span>
+              <span style={{ fontSize: 12, color: "var(--skin-tone)", fontWeight: 400 }}>{songs.length} tracks</span>
             </div>
 
             {/* Song list */}
@@ -169,7 +169,7 @@ export default function MusicSection() {
                           <path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288V1.713z" />
                         </svg>
                       ) : (
-                        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--skin-tone)", opacity: 0.7 }}>
+                        <span style={{ fontSize: 13, fontWeight: 400, color: "var(--skin-tone)", opacity: 0.6 }}>
                           {index + 1}
                         </span>
                       )}
@@ -193,9 +193,11 @@ export default function MusicSection() {
 
                     <div className="flex-1 min-w-0">
                       <p
-                        className="font-normal truncate transition-colors"
+                        className="truncate transition-colors"
                         style={{
                           fontSize: 14,
+                          fontWeight: 600,
+                          letterSpacing: "-0.01em",
                           color: currentPlaying === song.id
                             ? "var(--proj-terra)"
                             : "var(--suit-brown)",
@@ -203,7 +205,7 @@ export default function MusicSection() {
                       >
                         {song.name}
                       </p>
-                      <p style={{ fontSize: 12, color: "var(--skin-tone)", opacity: 0.8 }} className="truncate">
+                      <p style={{ fontSize: 12, fontWeight: 400, color: "var(--skin-tone)", opacity: 0.75 }} className="truncate">
                         {song.artist}
                       </p>
                     </div>
@@ -211,7 +213,7 @@ export default function MusicSection() {
 
                   {/* Right */}
                   <div className="flex items-center gap-3">
-                    <span style={{ fontSize: 12, color: "var(--skin-tone)", opacity: 0.6, minWidth: "2.5rem", textAlign: "right" }}>
+                    <span style={{ fontSize: 12, fontWeight: 400, color: "var(--skin-tone)", opacity: 0.6, minWidth: "2.5rem", textAlign: "right" }}>
                       {song.duration}
                     </span>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -240,11 +242,13 @@ export default function MusicSection() {
             >
               <button
                 onClick={() => openSpotify("https://open.spotify.com/playlist/6YKE2j7FtzZCbIYSsS6FmN?si=797ad72447d046bb")}
-                className="w-full py-3 rounded-full font-normal tracking-wide flex items-center justify-center gap-2 transition-all duration-200"
+                className="w-full py-3 rounded-full flex items-center justify-center gap-2 transition-all duration-200"
                 style={{
                   background: "var(--suit-brown)",
                   color: "var(--proj-cream)",
                   fontSize: 13,
+                  fontWeight: 600,
+                  letterSpacing: "0.04em",
                   border: "none",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.88")}
