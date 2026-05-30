@@ -499,43 +499,49 @@ export default function PortfolioShowcaseMobile() {
           ))}
         </div>
 
-        {/* ── Dots ── */}
-        <div style={{ padding: "14px 20px 0" }}>
-          <DotIndicators total={PROJECTS.length} active={activeIdx} />
-        </div>
+        {/* ── Dots + arrows in one row ── */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 20, padding: "18px 20px 28px" }}>
 
-        {/* ── Nav arrows ── */}
-        <div style={{ display: "flex", gap: 10, padding: "16px 16px 24px" }}>
           <button
             onClick={goPrev}
             disabled={activeIdx === 0}
             style={{
-              flex: 1, padding: "13px 0", borderRadius: 14,
-              background: activeIdx === 0 ? "rgba(81,55,32,0.06)" : "rgba(81,55,32,0.1)",
-              border: "1px solid " + (activeIdx === 0 ? "rgba(81,55,32,0.1)" : "rgba(81,55,32,0.22)"),
-              fontSize: 18, cursor: activeIdx === 0 ? "default" : "pointer",
-              color: activeIdx === 0 ? "rgba(81,55,32,0.3)" : "var(--suit-brown)",
-              fontFamily: "inherit",
-              transition: "all 0.2s ease",
+              width: 36, height: 36, borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: "transparent",
+              border: "1px solid rgba(81,55,32,0.2)",
+              cursor: activeIdx === 0 ? "default" : "pointer",
+              opacity: activeIdx === 0 ? 0.25 : 1,
+              flexShrink: 0,
+              transition: "opacity 0.2s, border-color 0.2s",
             }}
           >
-            ←
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M8.5 2L4 6.5L8.5 11" stroke="var(--suit-brown)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
+
+          <DotIndicators total={PROJECTS.length} active={activeIdx} />
+
           <button
             onClick={goNext}
             disabled={activeIdx === PROJECTS.length - 1}
             style={{
-              flex: 1, padding: "13px 0", borderRadius: 14,
-              background: activeIdx === PROJECTS.length - 1 ? "rgba(81,55,32,0.06)" : "var(--suit-brown)",
-              border: "1px solid " + (activeIdx === PROJECTS.length - 1 ? "rgba(81,55,32,0.1)" : "var(--suit-brown)"),
-              fontSize: 18, cursor: activeIdx === PROJECTS.length - 1 ? "default" : "pointer",
-              color: activeIdx === PROJECTS.length - 1 ? "rgba(81,55,32,0.3)" : "#fff",
-              fontFamily: "inherit",
-              transition: "all 0.2s ease",
+              width: 36, height: 36, borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              background: activeIdx === PROJECTS.length - 1 ? "transparent" : "var(--suit-brown)",
+              border: "1px solid " + (activeIdx === PROJECTS.length - 1 ? "rgba(81,55,32,0.2)" : "var(--suit-brown)"),
+              cursor: activeIdx === PROJECTS.length - 1 ? "default" : "pointer",
+              opacity: activeIdx === PROJECTS.length - 1 ? 0.25 : 1,
+              flexShrink: 0,
+              transition: "opacity 0.2s, background 0.2s, border-color 0.2s",
             }}
           >
-            →
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M4.5 2L9 6.5L4.5 11" stroke={activeIdx === PROJECTS.length - 1 ? "var(--suit-brown)" : "#fff"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </button>
+
         </div>
 
       </div>
