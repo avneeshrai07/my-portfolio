@@ -7,28 +7,28 @@ import SectionHeader from "@/components/shared/SectionHeader";
    e.g. import { ABOUT_ME } from "@/constants";
 ──────────────────────────────────────────────────────────────────────────── */
 export const ABOUT_ME = {
-  polaroidCaption: "Avneesh — '25",
+  polaroidCaption: "Avneesh Rai",
   bioLabel: "Subject Profile",
   bioParagraphs: [
-    <>
-      I'm a <strong>Backend Engineer & AI/ML Developer</strong> who builds systems
-      that don't flinch under pressure. My work lives at the intersection of{" "}
-      <em>elegant architecture</em> and hard engineering constraints —
-      where milliseconds matter and scale is the only constant.
-    </>,
-    <>
-      Currently deep in distributed systems, database internals, and the craft of
-      making <strong>complex things feel simple</strong>. When I'm not profiling
-      queries or designing microservice boundaries, I'm exploring how AI can make
-      backend systems smarter, not just faster.
-    </>,
-  ],
-  annotation: "→ Always building. Never done.",
+<>
+I'm a <strong>Python Backend Developer & AI/ML Enthusiast</strong>.
+Curiosity is the thread that runs through everything I do. I enjoy
+building things, understanding how they work, and exploring unfamiliar
+territory—whether that's a new technology, a new idea, or a new experience.
+</>,
+<>
+I'm always looking for opportunities to grow, create, and challenge
+myself. My goal is simple: build meaningful things, keep learning
+relentlessly, and make each year more interesting than the last.
+</>,
+],
+annotation: "→ Curious by default. Building by choice.",
+
   stats: [
-    { label: "Based in",  value: "New Delhi, IN" },
-    { label: "Role",      value: "Backend Eng."  },
+    { label: "Based in",  value: "Ghazipur, IN" },
+    { label: "Role",      value: "Backend Developer"  },
     { label: "Focus",     value: "AI & ML Dev"   },
-    { label: "Exp.",      value: "3+ Years"       },
+    { label: "Exp.",      value: "1+ Years"       },
     { label: "Available", value: "Open to offers" },
   ],
 };
@@ -83,22 +83,12 @@ export default function AboutMe() {
             >
               <div className="tape" style={{ top: "-9px", left: "20px", transform: "rotate(-1deg)" }} />
 
-              {/*
-                Replace this placeholder with your actual image:
-                <img src="..." alt="Avneesh" className="w-full object-cover block"
-                  style={{ aspectRatio:"3/4", filter:"sepia(0.18) contrast(1.05)" }} />
-              */}
-              <div
-                className="font-caveat w-full flex items-center justify-center font-semibold"
-                style={{
-                  aspectRatio: "3/4",
-                  background: "linear-gradient(145deg, var(--proj-sand, #EDE0CC), var(--shirt-tan, #dec09c))",
-                  color: "var(--proj-bark, #7A4A28)",
-                  fontSize: "18px",
-                }}
-              >
-                [ your photo ]
-              </div>
+              <img
+                src={`${process.env.NEXT_PUBLIC_CDN_URL}/avneesh.jpg`}
+                alt="Avneesh"
+                className="w-full object-cover block"
+                style={{ aspectRatio: "3/4", filter: "sepia(0.18) contrast(1.05)" }}
+              />
 
               <p
                 className="font-caveat font-semibold text-center mt-2.5"
