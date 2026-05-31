@@ -310,7 +310,7 @@ function HeroCard({ project, animState, enterDir, onTap, idx, total }) {
       }}
     >
       {/* ── Image zone: clean, no text overlay ── */}
-      <div style={{ position: "relative", height: 185, flexShrink: 0, overflow: "hidden" }}>
+      <div style={{ position: "relative", height: 240, flexShrink: 0, overflow: "hidden" }}>
         <img
           src={project.image}
           alt={project.name}
@@ -361,11 +361,11 @@ function HeroCard({ project, animState, enterDir, onTap, idx, total }) {
       {/* ── Content zone: clean parchment background ── */}
       <div style={{
         flex: 1,
-        padding: "13px 17px 15px",
+        padding: "15px 20px 18px",
         borderTop: "1px solid #DDD0B8",
         display: "flex",
         flexDirection: "column",
-        gap: 7,
+        gap: 9,
         minHeight: 0,
       }}>
 
@@ -381,7 +381,7 @@ function HeroCard({ project, animState, enterDir, onTap, idx, total }) {
 
         {/* Title */}
         <div style={{
-          fontSize: 21, fontWeight: 400,
+          fontSize: 26, fontWeight: 400,
           color: "#2A1608",
           fontFamily: "'DM Serif Display', Georgia, serif",
           letterSpacing: "-0.01em",
@@ -390,14 +390,14 @@ function HeroCard({ project, animState, enterDir, onTap, idx, total }) {
           {project.name}
         </div>
 
-        {/* Description — 2-line clamp */}
+        {/* Description — 3-line clamp */}
         <div style={{
-          fontSize: 13,
+          fontSize: 14,
           fontFamily: "'Cormorant Garamond', Georgia, serif",
           color: "#9A6A48",
-          lineHeight: 1.5,
+          lineHeight: 1.55,
           display: "-webkit-box",
-          WebkitLineClamp: 2,
+          WebkitLineClamp: 3,
           WebkitBoxOrient: "vertical",
           overflow: "hidden",
         }}>
@@ -411,13 +411,13 @@ function HeroCard({ project, animState, enterDir, onTap, idx, total }) {
               const tech = resolveTech(name);
               return (
                 <div key={name} style={{
-                  display: "inline-flex", alignItems: "center", gap: 4,
-                  padding: "3px 9px 3px 6px", borderRadius: 99,
+                  display: "inline-flex", alignItems: "center", gap: 5,
+                  padding: "4px 10px 4px 7px", borderRadius: 99,
                   background: "#EDE0CC", border: "1px solid #DDD0B8",
                   flexShrink: 0,
                 }}>
-                  <StackIcon name={tech.iconName} style={{ width: 13, height: 13, flexShrink: 0 }} />
-                  <span style={{ fontSize: 11, fontWeight: 500, color: "#513720" }}>{tech.name}</span>
+                  <StackIcon name={tech.iconName} style={{ width: 14, height: 14, flexShrink: 0 }} />
+                  <span style={{ fontSize: 12, fontWeight: 500, color: "#513720" }}>{tech.name}</span>
                 </div>
               );
             })}
@@ -442,9 +442,9 @@ function HeroCard({ project, animState, enterDir, onTap, idx, total }) {
         <div style={{ marginTop: "auto" }}>
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",
-            padding: "9px 14px",
+            padding: "11px 16px",
             background: "#513720",
-            borderRadius: 11,
+            borderRadius: 12,
             color: "#FDFAF6",
             fontSize: 13, fontWeight: 600,
             letterSpacing: "0.01em",
@@ -537,7 +537,7 @@ export default function PortfolioShowcaseMobile() {
 
         {/* ── Card stage — taller to accommodate split layout ── */}
         <div
-          style={{ position: "relative", margin: "0 16px", height: 400, borderRadius: 22 }}
+          style={{ position: "relative", margin: "0 16px", height: 490, borderRadius: 22 }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
