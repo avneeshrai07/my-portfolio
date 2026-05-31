@@ -245,7 +245,7 @@ export const projects: Project[] = [
     impact:
       "Replaces manual business-development research across 16 Indian news outlets with a fully automated pipeline — extracting structured lead intelligence from hundreds of articles per run without human intervention.",
     duration: "6 months",
-    sub: "An async Python pipeline that ingests business news from 20 RSS feeds and Google Vertex AI Search, routes each article through a Tor-routed scraper, classifies leads with AWS Bedrock LLMs, extracts structured company/contact/project data, enriches companies via Unipile, generates embeddings for semantic deduplication, and persists results across a normalised PostgreSQL schema.",
+    sub: "Built an async Python pipeline that aggregates business news from RSS feeds and Vertex AI Search, scrapes articles via Tor, classifies leads with Bedrock LLMs, enriches company data, performs semantic deduplication using embeddings, and stores structured results in PostgreSQL.",
     tags: [
       { label: "Live", type: "live" },
       { label: "AI / LLM", type: "type" },
