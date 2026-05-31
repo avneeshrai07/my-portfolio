@@ -117,11 +117,15 @@ const S = {
   hero: { position: "relative", height: 280, flexShrink: 0, overflow: "hidden" },
   heroImgWrap: { position: "absolute", inset: 0 },
   heroImg: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
+
+  /* ── FIX 1: gradient now goes top→bottom so the bottom text area is
+       consistently dark regardless of where the bright parts of the image are ── */
   heroOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(160deg, rgba(0,0,0,0.08) 0%, rgba(20,8,2,0.55) 55%, rgba(20,8,2,0.82) 100%)",
+    background: "linear-gradient(to bottom, rgba(0,0,0,0.0) 0%, rgba(10,4,1,0.45) 45%, rgba(10,4,1,0.92) 100%)",
   },
+
   heroMeta: {
     position: "absolute",
     bottom: 0,
@@ -135,10 +139,13 @@ const S = {
     fontWeight: 700,
     letterSpacing: "0.14em",
     textTransform: "uppercase",
-    color: "rgba(255,255,255,0.65)",
+    color: "rgba(255,255,255,0.72)",
     marginBottom: 8,
     fontFamily: "'Cinzel', Georgia, serif",
+    textShadow: "0 1px 4px rgba(0,0,0,0.6)",
   },
+
+  /* ── FIX 2: text-shadow on title for crispness over any image ── */
   heroTitle: {
     fontSize: 36,
     fontWeight: 400,
@@ -147,12 +154,16 @@ const S = {
     lineHeight: 1.05,
     fontFamily: "'DM Serif Display', Georgia, serif",
     marginBottom: 6,
+    textShadow: "0 2px 12px rgba(0,0,0,0.7), 0 1px 3px rgba(0,0,0,0.8)",
   },
+
+  /* ── FIX 3: text-shadow on subtitle ── */
   heroSub: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.55)",
+    color: "rgba(255,255,255,0.75)",
     lineHeight: 1.5,
     maxWidth: 400,
+    textShadow: "0 1px 6px rgba(0,0,0,0.85)",
   },
 
   /* Badges */
@@ -207,12 +218,11 @@ const S = {
     fontFamily: "'Cinzel', Georgia, serif",
   },
   overviewText: {
-    fontSize: 13,
+    fontSize: 15,
     color: T.detail,
     lineHeight: 1.75,
     margin: 0,
     fontFamily: "'Cormorant Garamond', Georgia, serif",
-    fontSize: 15,
   },
 
   /* ── Features ── */
@@ -355,12 +365,11 @@ const S = {
     borderLeft: `3px solid ${T.terra}`,
   },
   quoteText: {
-    fontSize: 14,
+    fontSize: 16,
     color: T.detail,
     fontStyle: "italic",
     lineHeight: 1.65,
     fontFamily: "'Cormorant Garamond', Georgia, serif",
-    fontSize: 16,
   },
   quoteAttr: {
     fontSize: 10,
@@ -836,7 +845,7 @@ export default function PortfolioShowcase() {
     overscrollAccRef.current = 0;
     let decayTimer = null;
 
-    const THRESHOLD = 160; // normalized px of deliberate overscroll required
+    const THRESHOLD = 160;
 
     function setProgress(ratio) {
       const pct = Math.min(ratio, 1) * 100;
@@ -853,7 +862,6 @@ export default function PortfolioShowcase() {
       if (lockedRef.current) { resetAcc(); return; }
       clearTimeout(decayTimer);
 
-      // Normalize delta across pixel / line / page deltaMode
       const delta = e.deltaMode === 1 ? e.deltaY * 20
                   : e.deltaMode === 2 ? e.deltaY * 400
                   : e.deltaY;
@@ -869,7 +877,6 @@ export default function PortfolioShowcase() {
           resetAcc();
           selectProject(PROJECTS[idx + 1].id, true);
         } else {
-          // Decay accumulator if user pauses scrolling — prevents drift triggers
           decayTimer = setTimeout(resetAcc, 700);
         }
       } else if (delta < 0 && st <= 2 && idx > 0) {
@@ -894,9 +901,6 @@ export default function PortfolioShowcase() {
     };
   }, [activeId, selectProject]);
 
-  // Pin page scroll while the cursor is over the card.
-  // Released only at the absolute edges (first project top / last project bottom)
-  // so the user can still scroll past the section when done.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -905,7 +909,6 @@ export default function PortfolioShowcase() {
       const el = detailScrollRef.current;
       if (!el) return;
 
-      // During a transition keep the page locked
       if (lockedRef.current) { e.preventDefault(); return; }
 
       const st        = el.scrollTop;
@@ -915,17 +918,12 @@ export default function PortfolioShowcase() {
       const goingDown = e.deltaY > 0;
       const goingUp   = e.deltaY < 0;
 
-      // If the detail panel can still scroll in this direction,
-      // let the browser handle it (detail scrolls, page stays put naturally).
       if (goingDown && st < maxScroll - 2) return;
       if (goingUp   && st > 2)            return;
 
-      // At the very top of the first project → release upward page scroll
       if (goingUp   && idx === 0) return;
-      // At the very bottom of the last project → release downward page scroll
       if (goingDown && idx === PROJECTS.length - 1) return;
 
-      // Every other case: we are between projects — pin the page.
       e.preventDefault();
     };
 
@@ -972,7 +970,7 @@ export default function PortfolioShowcase() {
       {/* ── Detail area ── */}
       <div style={S.detail}>
 
-        {/* Overscroll progress bar — fills as user pushes past the boundary */}
+        {/* Overscroll progress bar */}
         <div
           ref={progressWrapRef}
           style={{
