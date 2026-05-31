@@ -622,7 +622,7 @@ function DetailPanel({ project, idx, total, animState }) {
         inset: 0,
         width: "100%",
         pointerEvents: animState === "exiting" ? "none" : "auto",
-        zIndex: animState === "exiting" ? 2 : 1,
+        zIndex: animState === "entering" ? 2 : 1,
       }}
     >
       {/* ── Hero ── */}
@@ -770,8 +770,8 @@ function DetailPanel({ project, idx, total, animState }) {
 }
 
 /* ─── TRANSITION DURATIONS ───────────────────────────────────────────── */
-const EXIT_DURATION = 280;
-const LOCK_DURATION = EXIT_DURATION + 420;
+const EXIT_DURATION = 300;
+const LOCK_DURATION = 860;
 
 /* ─── ROOT ───────────────────────────────────────────────────────────── */
 export default function PortfolioShowcase() {
@@ -779,17 +779,23 @@ export default function PortfolioShowcase() {
     { project: PROJECTS[0], animState: "idle" },
   ]);
 
-  const activeId         = panels[panels.length - 1].project.id;
-  const detailScrollRef  = useRef(null);
-  const navListRef       = useRef(null);
-  const lockedRef        = useRef(false);
-  const lastScrollTopRef = useRef(0);
+  const activeId        = panels[panels.length - 1].project.id;
+  const detailScrollRef = useRef(null);
+  const navListRef      = useRef(null);
+  const rootRef         = useRef(null);
+  const lockedRef       = useRef(false);
+  const overscrollAccRef = useRef(0);
+  const progressWrapRef  = useRef(null);
+  const progressBarRef   = useRef(null);
 
   const selectProject = useCallback((id, fromScroll = false) => {
     if (id === activeId || lockedRef.current) return;
     lockedRef.current = true;
     const newProject = PROJECTS.find((p) => p.id === id);
     if (!newProject) return;
+
+    // Always reset to top before state update — new panel must never render mid-scroll.
+    if (detailScrollRef.current) detailScrollRef.current.scrollTop = 0;
 
     setPanels((prev) => {
       const updated = prev.map((p, i) =>
@@ -804,16 +810,12 @@ export default function PortfolioShowcase() {
 
     if (!fromScroll) {
       requestAnimationFrame(() => {
-        detailScrollRef.current?.scrollTo({ top: 0, behavior: "instant" });
         const btn = navListRef.current?.querySelector(`[data-id="${id}"]`);
         btn?.scrollIntoView({ block: "nearest", behavior: "smooth" });
       });
     }
 
-    setTimeout(() => {
-      lastScrollTopRef.current = detailScrollRef.current?.scrollTop ?? 0;
-      lockedRef.current = false;
-    }, LOCK_DURATION);
+    setTimeout(() => { lockedRef.current = false; }, LOCK_DURATION);
   }, [activeId]);
 
   useEffect(() => {
@@ -831,30 +833,108 @@ export default function PortfolioShowcase() {
   useEffect(() => {
     const el = detailScrollRef.current;
     if (!el) return;
-    lastScrollTopRef.current = 0;
-    const onScroll = () => {
-      if (lockedRef.current) return;
-      const st        = el.scrollTop;
+    overscrollAccRef.current = 0;
+    let decayTimer = null;
+
+    const THRESHOLD = 160; // normalized px of deliberate overscroll required
+
+    function setProgress(ratio) {
+      const pct = Math.min(ratio, 1) * 100;
+      if (progressBarRef.current)  progressBarRef.current.style.width    = `${pct}%`;
+      if (progressWrapRef.current) progressWrapRef.current.style.opacity  = pct > 1 ? "1" : "0";
+    }
+
+    function resetAcc() {
+      overscrollAccRef.current = 0;
+      setProgress(0);
+    }
+
+    const onWheel = (e) => {
+      if (lockedRef.current) { resetAcc(); return; }
+      clearTimeout(decayTimer);
+
+      // Normalize delta across pixel / line / page deltaMode
+      const delta = e.deltaMode === 1 ? e.deltaY * 20
+                  : e.deltaMode === 2 ? e.deltaY * 400
+                  : e.deltaY;
+
+      const st       = el.scrollTop;
       const maxScroll = el.scrollHeight - el.clientHeight;
-      const prev      = lastScrollTopRef.current;
-      if (Math.abs(st - prev) < 2) return;
-      const down = st > prev;
-      lastScrollTopRef.current = st;
-      const idx = PROJECTS.findIndex((p) => p.id === activeId);
-      if (down && st >= maxScroll - 4 && idx < PROJECTS.length - 1) {
-        selectProject(PROJECTS[idx + 1].id, true);
-        requestAnimationFrame(() => { el.scrollTop = 0; });
-      } else if (!down && st <= 4 && idx > 0) {
-        selectProject(PROJECTS[idx - 1].id, true);
-        requestAnimationFrame(() => { el.scrollTop = el.scrollHeight; });
+      const idx       = PROJECTS.findIndex((p) => p.id === activeId);
+
+      if (delta > 0 && st >= maxScroll - 2 && idx < PROJECTS.length - 1) {
+        overscrollAccRef.current = Math.min(overscrollAccRef.current + delta, THRESHOLD * 2);
+        setProgress(overscrollAccRef.current / THRESHOLD);
+        if (overscrollAccRef.current >= THRESHOLD) {
+          resetAcc();
+          selectProject(PROJECTS[idx + 1].id, true);
+        } else {
+          // Decay accumulator if user pauses scrolling — prevents drift triggers
+          decayTimer = setTimeout(resetAcc, 700);
+        }
+      } else if (delta < 0 && st <= 2 && idx > 0) {
+        overscrollAccRef.current = Math.min(overscrollAccRef.current + Math.abs(delta), THRESHOLD * 2);
+        setProgress(overscrollAccRef.current / THRESHOLD);
+        if (overscrollAccRef.current >= THRESHOLD) {
+          resetAcc();
+          selectProject(PROJECTS[idx - 1].id, true);
+        } else {
+          decayTimer = setTimeout(resetAcc, 700);
+        }
+      } else {
+        resetAcc();
       }
     };
-    el.addEventListener("scroll", onScroll, { passive: true });
-    return () => el.removeEventListener("scroll", onScroll);
+
+    el.addEventListener("wheel", onWheel, { passive: true });
+    return () => {
+      el.removeEventListener("wheel", onWheel);
+      clearTimeout(decayTimer);
+      resetAcc();
+    };
   }, [activeId, selectProject]);
 
+  // Pin page scroll while the cursor is over the card.
+  // Released only at the absolute edges (first project top / last project bottom)
+  // so the user can still scroll past the section when done.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const onWheel = (e) => {
+      const el = detailScrollRef.current;
+      if (!el) return;
+
+      // During a transition keep the page locked
+      if (lockedRef.current) { e.preventDefault(); return; }
+
+      const st        = el.scrollTop;
+      const maxScroll = el.scrollHeight - el.clientHeight;
+      const idx       = PROJECTS.findIndex((p) => p.id === activeId);
+
+      const goingDown = e.deltaY > 0;
+      const goingUp   = e.deltaY < 0;
+
+      // If the detail panel can still scroll in this direction,
+      // let the browser handle it (detail scrolls, page stays put naturally).
+      if (goingDown && st < maxScroll - 2) return;
+      if (goingUp   && st > 2)            return;
+
+      // At the very top of the first project → release upward page scroll
+      if (goingUp   && idx === 0) return;
+      // At the very bottom of the last project → release downward page scroll
+      if (goingDown && idx === PROJECTS.length - 1) return;
+
+      // Every other case: we are between projects — pin the page.
+      e.preventDefault();
+    };
+
+    root.addEventListener("wheel", onWheel, { passive: false });
+    return () => root.removeEventListener("wheel", onWheel);
+  }, [activeId]);
+
   return (
-    <div style={S.root}>
+    <div style={S.root} ref={rootRef}>
 
       {/* ── Sidebar ── */}
       <aside style={S.sidebar}>
@@ -891,6 +971,32 @@ export default function PortfolioShowcase() {
 
       {/* ── Detail area ── */}
       <div style={S.detail}>
+
+        {/* Overscroll progress bar — fills as user pushes past the boundary */}
+        <div
+          ref={progressWrapRef}
+          style={{
+            position: "absolute",
+            bottom: 0, left: 0, right: 0,
+            height: 2,
+            opacity: 0,
+            zIndex: 30,
+            pointerEvents: "none",
+            transition: "opacity 0.25s",
+          }}
+        >
+          <div
+            ref={progressBarRef}
+            style={{
+              height: "100%",
+              width: "0%",
+              background: `linear-gradient(90deg, ${T.terra}, ${T.terraLight})`,
+              transition: "width 0.08s ease-out",
+              borderRadius: 1,
+            }}
+          />
+        </div>
+
         <div style={S.detailScroll} ref={detailScrollRef}>
           <div style={{ position: "relative", minHeight: "100%" }}>
             {panels.map(({ project, animState }) => (

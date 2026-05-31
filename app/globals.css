@@ -426,23 +426,23 @@ html {
   50%       { opacity: 0.25; }
 }
 @keyframes pf-exit {
-  from { opacity: 1; transform: translateY(0);     }
-  to   { opacity: 0; transform: translateY(-14px); }
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 @keyframes pf-enter {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
 @keyframes pf-hero-zoom {
-  from { transform: scale(1.04); opacity: 0.85; }
-  to   { transform: scale(1);    opacity: 1;    }
+  from { transform: scale(1.03); opacity: 0.9; }
+  to   { transform: scale(1);    opacity: 1;   }
 }
 @keyframes pf-stagger-up {
-  from { opacity: 0; transform: translateY(16px); }
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0);    }
 }
-.pf-panel-exit  { animation: pf-exit  280ms cubic-bezier(0.25,1,0.5,1) both; }
-.pf-panel-enter { animation: pf-enter 460ms cubic-bezier(0.16,1,0.3,1) both; }
+.pf-panel-exit  { animation: pf-exit  300ms ease-out both; }
+.pf-panel-enter { animation: pf-enter 500ms cubic-bezier(0.16,1,0.3,1) both; }
 .pf-hero-enter  { animation: pf-hero-zoom 560ms cubic-bezier(0.16,1,0.3,1) both; }
 .pf-stagger > * { opacity: 0; }
 .pf-stagger.pf-stagger-go > *:nth-child(1) { animation: pf-stagger-up 420ms cubic-bezier(0.16,1,0.3,1)  60ms both; }
