@@ -11,11 +11,11 @@ export default function Home() {
     <main className="min-h-screen">
       <HeroSection />
       <Skills />
-      <div id="journey"><MyJourney /></div>
-      <div id="projects"><ProjectsSection /></div>
-      <div id="music"><MusicSection /></div>
+      <section id="journey"><MyJourney /></section>
+      <section id="projects"><ProjectsSection /></section>
+      <section id="music"><MusicSection /></section>
       <MovieSection />
-      <div id="about"><AboutMe /></div>
+      <section id="about"><AboutMe /></section>
     </main>
   );
 }

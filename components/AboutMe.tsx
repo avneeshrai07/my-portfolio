@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import SectionHeader from "@/components/shared/SectionHeader";
 
 /* ─── Pull these from your constants file ─────────────────────────────────
@@ -83,12 +84,16 @@ export default function AboutMe() {
             >
               <div className="tape" style={{ top: "-9px", left: "20px", transform: "rotate(-1deg)" }} />
 
-              <img
-                src={`${process.env.NEXT_PUBLIC_CDN_URL}/avneesh.jpg`}
-                alt="Avneesh"
-                className="w-full object-cover block"
-                style={{ aspectRatio: "3/4", filter: "sepia(0.18) contrast(1.05)" }}
-              />
+              <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avneesh.jpg`}
+                  alt="Avneesh Rai, Backend Engineer and AI/ML Developer based in New Delhi"
+                  fill
+                  className="object-cover"
+                  style={{ filter: "sepia(0.18) contrast(1.05)" }}
+                  sizes="(max-width: 768px) 0px, 33vw"
+                />
+              </div>
 
               <p
                 className="font-caveat font-semibold text-center mt-2.5"

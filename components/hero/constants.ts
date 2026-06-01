@@ -9,6 +9,6 @@ export const SERVICES = [
 export const TAGLINE =
   "BACKEND ENGINEER | AI & ML DEVELOPER";
 
-export const NAME = "Avneesh";
+export const NAME = "Avneesh Rai";
 
 export const BIO = "I Design Backend Systems That Don’t Break At Scale.";
