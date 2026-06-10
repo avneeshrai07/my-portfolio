@@ -1,13 +1,12 @@
 export const SERVICES = [
-  "High-Performance API Engineering",
-  "Distributed System Design",
-  "Scalable Backend Architecture",
-  "Database Optimizations",
-  "Microservices Architecture Design",
-  "Caching & Performance Tuning",
+  "High-Performance Backend Architecture",
+  "AI Agents & Automation",
+  "Lead Generation Infrastructure",
+  "Database Systems Design",
+  "AWS Cloud & DevOps Automation",
 ];
-export const TAGLINE =
-  "BACKEND ENGINEER | AI & ML DEVELOPER";
+
+export const TAGLINE = "BACKEND ENGINEER | AI & ML DEVELOPER";
 
 export const NAME = "Avneesh Rai";
 
