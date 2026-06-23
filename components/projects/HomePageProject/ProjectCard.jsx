@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { projects as PROJECTS } from "@/types/projects";
 import StackIcon from "tech-stack-icons";
 import { techStack } from "@/types/techStack";
@@ -51,9 +52,9 @@ const T = {
 const S = {
   root: {
     display: "flex",
-    height: "88vh",
-    minHeight: 580,
-    maxHeight: 860,
+    height: "80vh",
+    minHeight: 540,
+    maxHeight: 780,
     background: T.cream,
     fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif",
     borderRadius: 18,
@@ -114,9 +115,8 @@ const S = {
   detailScroll: { flex: 1, overflowY: "auto", scrollbarWidth: "none" },
 
   /* ── Hero ── */
-  hero: { position: "relative", height: 280, flexShrink: 0, overflow: "hidden" },
+  hero: { position: "relative", height: 210, flexShrink: 0, overflow: "hidden" },
   heroImgWrap: { position: "absolute", inset: 0 },
-  heroImg: { width: "100%", height: "100%", objectFit: "cover", display: "block" },
 
   /* ── FIX 1: gradient now goes top→bottom so the bottom text area is
        consistently dark regardless of where the bright parts of the image are ── */
@@ -397,36 +397,6 @@ function IconGitHub({ size = 14 }) {
     </svg>
   );
 }
-function IconClock({ size = 13 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" />
-    </svg>
-  );
-}
-function IconRocket({ size = 13 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
-      <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
-      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
-    </svg>
-  );
-}
-function IconUser({ size = 13 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
-    </svg>
-  );
-}
-function IconCalendar({ size = 13 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" />
-    </svg>
-  );
-}
 
 /* ─── NAV ITEM ───────────────────────────────────────────────────────── */
 function NavItem({ project, index, active, onClick }) {
@@ -546,31 +516,6 @@ function NavItem({ project, index, active, onClick }) {
   );
 }
 
-/* ─── FEATURE CARD ───────────────────────────────────────────────────── */
-function FeatureCard({ feature, index }) {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <div
-      style={{
-        ...S.featureCard,
-        borderColor: hovered ? T.borderHard : T.border,
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        boxShadow: hovered ? "0 4px 16px rgba(81,55,32,0.08)" : "none",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      <div style={S.featureNum}>
-        {String(index + 1).padStart(2, "0")}
-      </div>
-      <div>
-        <div style={S.featureName}>{feature.title}</div>
-        <div style={S.featureDesc}>{feature.desc}</div>
-      </div>
-    </div>
-  );
-}
-
 /* ─── STACK PILL ─────────────────────────────────────────────────────── */
 function StackPill({ stackName }) {
   const [hovered, setHovered] = useState(false);
@@ -592,52 +537,38 @@ function StackPill({ stackName }) {
   );
 }
 
-/* ─── STAGGERED BODY ─────────────────────────────────────────────────── */
-function StaggerBody({ children, animKey }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    if (!ref.current) return;
-    const id = requestAnimationFrame(() => ref.current?.classList.add("pf-stagger-go"));
-    return () => cancelAnimationFrame(id);
-  }, [animKey]);
-
-  return (
-    <div ref={ref} className="pf-stagger" style={S.body}>
-      {children}
-    </div>
-  );
-}
-
 /* ─── DETAIL PANEL ───────────────────────────────────────────────────── */
-function DetailPanel({ project, idx, total, animState }) {
+/* All panels stay mounted; we only crossfade opacity + transform (compositor-
+   only, no reflow/repaint) so switching projects is smooth and the hero image
+   is never torn down and re-decoded. */
+function DetailPanel({ project, idx, total, active }) {
   const isLive = project.status === "Production";
-  const panelClass =
-    animState === "entering" ? "pf-panel-enter"
-    : animState === "exiting" ? "pf-panel-exit"
-    : "";
-
-  const metaCells = [
-    { Icon: IconClock,    val: project.duration, label: "Duration" },
-    { Icon: IconRocket,   val: project.status,   label: "Status"   },
-    { Icon: IconUser,     val: "Solo",            label: "Team"     },
-    { Icon: IconCalendar, val: project.year,      label: "Year"     },
-  ];
 
   return (
     <div
-      className={panelClass}
       style={{
         position: "absolute",
         inset: 0,
         width: "100%",
-        pointerEvents: animState === "exiting" ? "none" : "auto",
-        zIndex: animState === "entering" ? 2 : 1,
+        opacity: active ? 1 : 0,
+        transform: active ? "translateY(0)" : "translateY(12px)",
+        pointerEvents: active ? "auto" : "none",
+        zIndex: active ? 2 : 1,
+        transition: "opacity 0.42s cubic-bezier(0.16,1,0.3,1), transform 0.42s cubic-bezier(0.16,1,0.3,1)",
+        willChange: "opacity, transform",
       }}
+      aria-hidden={!active}
     >
       {/* ── Hero ── */}
       <div style={S.hero}>
-        <div style={S.heroImgWrap} className={animState === "entering" ? "pf-hero-enter" : ""}>
-          <img src={project.image} alt={project.name} style={S.heroImg} />
+        <div style={S.heroImgWrap}>
+          <Image
+            src={project.image}
+            alt={project.name}
+            fill
+            sizes="(min-width: 1024px) 60vw, 100vw"
+            style={{ objectFit: "cover" }}
+          />
         </div>
         <div style={S.heroOverlay} />
         <div style={S.heroMeta}>
@@ -661,45 +592,13 @@ function DetailPanel({ project, idx, total, animState }) {
       </div>
 
       {/* ── Body ── */}
-      <StaggerBody animKey={project.id}>
+      <div style={S.body}>
 
         {/* Overview */}
         <div>
           <div style={S.sectionLabel}>Overview</div>
           <p style={S.overviewText}>{project.overview}</p>
         </div>
-
-        {/* Features */}
-        {project.features?.length > 0 && (
-          <div>
-            <div style={S.sectionLabel}>Key features</div>
-            <div style={S.featuresGrid}>
-              {project.features.map((f, i) => (
-                <FeatureCard key={f.title} feature={f} index={i} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Metrics */}
-        {project.metrics?.length > 0 && (
-          <div>
-            <div style={S.sectionLabel}>Performance</div>
-            <div style={S.metricsGrid}>
-              {project.metrics.map((m) => (
-                <div
-                  key={m.label}
-                  style={m.highlight ? S.metricCardHighlight : S.metricCard}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
-                >
-                  <div style={m.highlight ? S.metricValLight : S.metricVal}>{m.value}</div>
-                  <div style={m.highlight ? S.metricLblLight : S.metricLbl}>{m.label}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Stack */}
         {project.stack?.length > 0 && (
@@ -712,28 +611,6 @@ function DetailPanel({ project, idx, total, animState }) {
             </div>
           </div>
         )}
-
-        {/* Project details */}
-        <div>
-          <div style={S.sectionLabel}>Project details</div>
-          <div style={S.metaStrip}>
-            {metaCells.map(({ Icon, val, label }, i) => (
-              <div
-                key={label}
-                style={{
-                  ...S.metaCell,
-                  borderRight: i < metaCells.length - 1 ? `1px solid ${T.border}` : "none",
-                }}
-              >
-                <span style={{ color: T.terra, display: "flex" }}>
-                  <Icon size={13} />
-                </span>
-                <div style={S.metaVal}>{val}</div>
-                <div style={S.metaLbl}>{label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Actions */}
         <div style={S.actions}>
@@ -767,28 +644,18 @@ function DetailPanel({ project, idx, total, animState }) {
           )}
         </div>
 
-        {/* Impact quote */}
-        <div style={S.quote}>
-          <p style={S.quoteText}>{project.impact}</p>
-          <div style={S.quoteAttr}>Impact</div>
-        </div>
-
-      </StaggerBody>
+      </div>
     </div>
   );
 }
 
 /* ─── TRANSITION DURATIONS ───────────────────────────────────────────── */
-const EXIT_DURATION = 300;
-const LOCK_DURATION = 860;
+const LOCK_DURATION = 520;
 
 /* ─── ROOT ───────────────────────────────────────────────────────────── */
 export default function PortfolioShowcase() {
-  const [panels, setPanels] = useState(() => [
-    { project: PROJECTS[0], animState: "idle" },
-  ]);
+  const [activeId, setActiveId] = useState(PROJECTS[0].id);
 
-  const activeId        = panels[panels.length - 1].project.id;
   const detailScrollRef = useRef(null);
   const navListRef      = useRef(null);
   const rootRef         = useRef(null);
@@ -799,23 +666,14 @@ export default function PortfolioShowcase() {
 
   const selectProject = useCallback((id, fromScroll = false) => {
     if (id === activeId || lockedRef.current) return;
-    lockedRef.current = true;
     const newProject = PROJECTS.find((p) => p.id === id);
     if (!newProject) return;
+    lockedRef.current = true;
 
-    // Always reset to top before state update — new panel must never render mid-scroll.
+    // Reset scroll to top before the crossfade.
     if (detailScrollRef.current) detailScrollRef.current.scrollTop = 0;
 
-    setPanels((prev) => {
-      const updated = prev.map((p, i) =>
-        i === prev.length - 1 ? { ...p, animState: "exiting" } : p
-      );
-      return [...updated, { project: newProject, animState: "entering" }];
-    });
-
-    setTimeout(() => {
-      setPanels((prev) => prev.filter((p) => p.animState !== "exiting"));
-    }, EXIT_DURATION);
+    setActiveId(id);
 
     if (!fromScroll) {
       requestAnimationFrame(() => {
@@ -997,13 +855,13 @@ export default function PortfolioShowcase() {
 
         <div style={S.detailScroll} ref={detailScrollRef}>
           <div style={{ position: "relative", minHeight: "100%" }}>
-            {panels.map(({ project, animState }) => (
+            {PROJECTS.map((project, i) => (
               <DetailPanel
                 key={project.id}
                 project={project}
-                idx={PROJECTS.findIndex((p) => p.id === project.id)}
+                idx={i}
                 total={PROJECTS.length}
-                animState={animState}
+                active={project.id === activeId}
               />
             ))}
           </div>

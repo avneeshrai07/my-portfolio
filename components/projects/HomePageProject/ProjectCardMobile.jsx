@@ -17,7 +17,6 @@ function resolveTech(stackName) {
   return TECH_BY_NAME[key] ?? { name: stackName, iconName: stackName.toLowerCase().replace(/[^a-z0-9]/g, ""), bubbleColor: "#888" };
 }
 
-const FEAT_ICONS = ["⚡", "🔀", "🔑", "📊", "🛡️", "🔁", "💾", "📋"];
 const EXIT_MS = 260;
 const LOCK_MS = EXIT_MS + 380;
 
@@ -179,37 +178,6 @@ function BottomSheet({ project, open, onClose }) {
 
           <p style={{ fontSize: 13, color: "#6b5e54", lineHeight: 1.7, margin: "0 0 22px" }}>{project.overview}</p>
 
-          {project.features?.length > 0 && (
-            <div style={{ marginBottom: 22 }}>
-              <div style={sheetLabel}>Key features</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {project.features.map((f, i) => (
-                  <div key={f.title} style={featureRow}>
-                    <div style={featureIconBox}>{FEAT_ICONS[i % FEAT_ICONS.length]}</div>
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: "#1a0d06" }}>{f.title}</div>
-                      <div style={{ fontSize: 11, color: "#9a8c7e", marginTop: 1, lineHeight: 1.4 }}>{f.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {project.metrics?.length > 0 && (
-            <div style={{ marginBottom: 22 }}>
-              <div style={sheetLabel}>Performance</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                {project.metrics.map((m) => (
-                  <div key={m.label} style={m.highlight ? metricHighlight : metricCard}>
-                    <div style={{ fontSize: 16, fontWeight: 700, color: m.highlight ? "#fff" : "#1a0d06", textAlign: "center" }}>{m.value}</div>
-                    <div style={{ fontSize: 10, color: m.highlight ? "rgba(255,255,255,0.6)" : "#b0a494", textAlign: "center" }}>{m.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {project.stack?.length > 0 && (
             <div style={{ marginBottom: 24 }}>
               <div style={sheetLabel}>Built with</div>
@@ -227,22 +195,7 @@ function BottomSheet({ project, open, onClose }) {
             </div>
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 24 }}>
-            {[
-              { icon: "📅", val: project.duration, label: "Duration" },
-              { icon: "✨", val: project.year,     label: "Year"     },
-              { icon: "🚀", val: project.status,   label: "Status"   },
-              { icon: "👤", val: "Solo",            label: "Team"     },
-            ].map((m) => (
-              <div key={m.label} style={metaCell}>
-                <span style={{ fontSize: 18 }}>{m.icon}</span>
-                <div style={{ fontSize: 12, fontWeight: 600, color: "#1a0d06", textAlign: "center" }}>{m.val}</div>
-                <div style={{ fontSize: 10, color: "#b0a494" }}>{m.label}</div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display: "flex", gap: 10, marginBottom: 20 }}>
+          <div style={{ display: "flex", gap: 10 }}>
             {project.demoUrl ? (
               <a href={project.demoUrl} target="_blank" rel="noopener noreferrer" style={btnPrimary}>▶ View project</a>
             ) : (
@@ -251,11 +204,6 @@ function BottomSheet({ project, open, onClose }) {
             {project.githubUrl && (
               <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" style={btnSecondary}>{"</>"} Code</a>
             )}
-          </div>
-
-          <div style={quoteBox}>
-            <p style={{ fontSize: 13, color: "#5A3E28", fontStyle: "italic", lineHeight: 1.65, margin: 0, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{project.impact}</p>
-            <div style={{ fontSize: 9, color: "#9A6A48", marginTop: 6, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: "'Cinzel', Georgia, serif" }}>Impact</div>
           </div>
 
         </div>
@@ -267,15 +215,9 @@ function BottomSheet({ project, open, onClose }) {
 
 /* ─── SHARED SHEET STYLES ───────────────────────────────────────────── */
 const sheetLabel     = { fontSize: 9, fontWeight: 700, color: "#9A6A48", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 10, fontFamily: "'Cinzel', Georgia, serif" };
-const featureRow     = { display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 12px", background: "#F5EDE0", borderRadius: 12, border: "1px solid #DDD0B8" };
-const featureIconBox = { width: 32, height: 32, borderRadius: 8, background: "#FAF5EC", border: "1px solid #DDD0B8", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, flexShrink: 0 };
-const metricCard     = { background: "#F5EDE0", border: "1px solid #DDD0B8", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3 };
-const metricHighlight = { background: "#C4694A", border: "1px solid #C4694A", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, boxShadow: "0 4px 14px rgba(196,105,74,0.3)" };
-const metaCell       = { background: "#F5EDE0", border: "1px solid #DDD0B8", borderRadius: 10, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 };
 const stackPill      = { display: "inline-flex", alignItems: "center", gap: 5, padding: "4px 9px 4px 6px", borderRadius: 99, background: "#F5EDE0", border: "1px solid #DDD0B8" };
 const btnPrimary     = { flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 0", borderRadius: 12, background: "#513720", color: "#FAF5EC", border: "none", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", textDecoration: "none" };
 const btnSecondary   = { flex: 0, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "12px 20px", borderRadius: 12, background: "transparent", color: "#513720", border: "1px solid #C8A870", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", textDecoration: "none", whiteSpace: "nowrap" };
-const quoteBox       = { padding: "14px 16px", background: "#F5EDE0", borderRadius: 12, borderLeft: "3px solid #C4694A" };
 
 /* ─── HERO CARD — split design ──────────────────────────────────────── */
 function HeroCard({ project, animState, enterDir, onTap, idx, total }) {
