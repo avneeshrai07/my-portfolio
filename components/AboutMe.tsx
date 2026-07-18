@@ -66,6 +66,44 @@ export default function AboutMe() {
           {/* ── Card Grid ──────────────────────────────────────────── */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
 
+            {/* ── CARD 1a: Polaroid — mobile only (compact, centered) ── */}
+            <div
+              className={`
+                md:hidden mx-auto relative border
+                transition-all duration-700
+                ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}
+              `}
+              style={{
+                width: "min(62%, 220px)",
+                background: "#FAF5EC",
+                borderColor: "var(--proj-border-2, #D4B896)",
+                boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
+                padding: "12px 12px 30px",
+                transform: visible ? "rotate(-1.5deg)" : "rotate(-1.5deg) translateY(24px)",
+                transitionDelay: "0.05s",
+              }}
+            >
+              <div className="tape" style={{ top: "-9px", left: "50%", marginLeft: -24, transform: "rotate(-2deg)" }} />
+
+              <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avneesh.jpg`}
+                  alt="Avneesh Rai, Backend Engineer and AI/ML Developer based in New Delhi"
+                  fill
+                  className="object-cover"
+                  style={{ filter: "sepia(0.18) contrast(1.05)" }}
+                  sizes="(max-width: 768px) 62vw, 0px"
+                />
+              </div>
+
+              <p
+                className="font-caveat font-semibold text-center mt-2.5"
+                style={{ fontSize: "16px", color: "var(--proj-ink-3, #5A3E28)" }}
+              >
+                {ABOUT_ME.polaroidCaption}
+              </p>
+            </div>
+
             {/* ── CARD 1: Polaroid — desktop only ── */}
             <div
               className={`

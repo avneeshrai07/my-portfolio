@@ -1,4 +1,4 @@
-import { Metadata, Viewport } from "next";
+﻿import { Metadata, Viewport } from "next";
 import "./globals.css";
 import PWARegister from "@/components/pwa/PWARegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
@@ -88,7 +88,7 @@ const jsonLd = {
       email: "ofc.avneesh@gmail.com",
       sameAs: [
         "https://github.com/avneeshrai07",
-        "https://linkedin.com/in/avneeshrai07",
+        "https://www.linkedin.com/in/avneesh-rai/",
       ],
     },
     {

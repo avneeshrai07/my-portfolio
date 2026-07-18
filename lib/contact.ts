@@ -1,4 +1,13 @@
-import { Mail, Github, Linkedin, MapPin, CalendarCheck, FileText, type LucideIcon } from "lucide-react";
+import {
+  Mail,
+  Github,
+  Linkedin,
+  Instagram,
+  MapPin,
+  CalendarCheck,
+  FileText,
+  type LucideIcon,
+} from "lucide-react";
 
 /* ─── Single source of truth for everything on the /contact page ──────────────
    Edit links, copy, and availability here — the page reads from this file.
@@ -53,8 +62,8 @@ export const CHANNELS: ContactChannel[] = [
   {
     icon: Linkedin,
     label: "LinkedIn",
-    value: "in/avneeshrai07",
-    href: "https://linkedin.com/in/avneeshrai07",
+    value: "in/avneesh-rai",
+    href: "https://www.linkedin.com/in/avneesh-rai/",
     external: true,
   },
   {
@@ -62,6 +71,13 @@ export const CHANNELS: ContactChannel[] = [
     label: "GitHub",
     value: "@avneeshrai07",
     href: "https://github.com/avneeshrai07",
+    external: true,
+  },
+  {
+    icon: Instagram,
+    label: "Instagram",
+    value: "@justavneesh",
+    href: "https://www.instagram.com/justavneesh/",
     external: true,
   },
   {
