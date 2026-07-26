@@ -53,7 +53,7 @@ export default function Header() {
             </a>
           ))}
           <a
-            href={`${process.env.NEXT_PUBLIC_CDN_URL}/resume.pdf`}
+            href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume.pdf`}
             download
             className="px-4 py-2 rounded-full font-normal tracking-wide transition-all duration-200 hover:opacity-80"
             style={{
@@ -105,7 +105,7 @@ export default function Header() {
             </a>
           ))}
           <a
-            href={`${process.env.NEXT_PUBLIC_CDN_URL}/resume.pdf`}
+            href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume.pdf`}
             download
             className="inline-flex items-center justify-center px-5 py-2.5 rounded-full font-normal tracking-wide w-fit"
             style={{ fontSize: 13, background: "var(--suit-brown)", color: "var(--proj-cream)" }}

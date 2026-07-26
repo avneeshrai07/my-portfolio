@@ -36,7 +36,7 @@ export default function MobileLayout() {
         </div> */}
 
         <div className="flex items-center gap-6">
-          <a href={`${process.env.NEXT_PUBLIC_CDN_URL}/resume.pdf`} download>
+          <a href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume.pdf`} download>
             <button className="cursor-pointer pointer-events-auto px-8 py-4 bg-shirt-tan/80 text-hero-suit rounded-full hover:bg-shirt-tan/110 transition-all duration-300 border-2 border-white/300 font-semibold active:scale-95 text-sm">
               View Resume
             </button>

@@ -84,7 +84,7 @@ export const CHANNELS: ContactChannel[] = [
     icon: FileText,
     label: "Résumé",
     value: "Download PDF",
-    href: `${CDN}/resume.pdf`,
+    href: `${CDN}/Avneesh_Resume.pdf`,
     external: true,
     download: true,
   },
