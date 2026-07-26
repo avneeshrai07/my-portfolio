@@ -166,9 +166,11 @@ const S = {
     textShadow: "0 1px 6px rgba(0,0,0,0.85)",
   },
 
-  /* Badges */
+  /* Badges — display:flex + fit-content keeps each badge on its own line
+     so the category label below is never crowded onto the same row. */
   liveBadge: {
-    display: "inline-flex",
+    display: "flex",
+    width: "fit-content",
     alignItems: "center",
     gap: 5,
     fontSize: 10,
@@ -181,7 +183,8 @@ const S = {
     backdropFilter: "blur(4px)",
   },
   yearBadge: {
-    display: "inline-flex",
+    display: "flex",
+    width: "fit-content",
     alignItems: "center",
     fontSize: 10,
     fontWeight: 500,

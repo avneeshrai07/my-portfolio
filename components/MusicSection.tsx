@@ -14,6 +14,13 @@ interface Song {
   spotifyUrl: string;
 }
 
+/* Deterministic bar heights (px) for the decorative row waveform. */
+const WAVE = [
+  9, 15, 22, 30, 24, 16, 10, 19, 27, 33, 25, 14, 9, 16, 24, 31,
+  21, 12, 8, 17, 25, 32, 26, 18, 11, 18, 26, 31, 23, 15, 10, 15,
+  22, 29, 20, 13, 9, 16, 23, 30, 25, 17, 11, 18, 27, 32, 22, 13,
+];
+
 export default function MusicSection() {
   const [currentPlaying, setCurrentPlaying] = useState<number | null>(null);
   const [hoveredSong, setHoveredSong] = useState<number | null>(null);
@@ -71,7 +78,7 @@ export default function MusicSection() {
 
   return (
     <section className="bg-hero-gradient section-pad px-5 md:px-10">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <SectionHeader title="Now" accent="Playing" className="mb-12" />
 
         {/* Player card — earthy parchment to match the site palette */}
@@ -143,7 +150,7 @@ export default function MusicSection() {
                   onMouseLeave={() => setHoveredSong(null)}
                 >
                   {/* Left */}
-                  <div className="flex items-center flex-1 gap-3">
+                  <div className="flex items-center gap-3 shrink-0">
                     <div className="w-6 text-center flex-shrink-0">
                       {currentPlaying === song.id ? (
                         <div className="flex items-center gap-0.5 justify-center">
@@ -191,7 +198,7 @@ export default function MusicSection() {
                       )}
                     </div>
 
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 w-40 md:w-56">
                       <p
                         className="truncate transition-colors"
                         style={{
@@ -211,8 +218,28 @@ export default function MusicSection() {
                     </div>
                   </div>
 
+                  {/* Middle — decorative waveform fills the row width */}
+                  <div className="hidden sm:flex flex-1 min-w-0 items-center justify-center gap-[3px] h-9 overflow-hidden px-2">
+                    {WAVE.map((h, i) => {
+                      const playing = currentPlaying === song.id;
+                      return (
+                        <span
+                          key={i}
+                          className={`shrink-0 rounded-full ${playing ? "animate-sound-wave" : ""}`}
+                          style={{
+                            width: 2.5,
+                            height: playing ? undefined : h,
+                            background: playing ? "var(--proj-terra)" : "var(--suit-brown)",
+                            opacity: playing ? 0.55 : 0.16,
+                            animationDelay: playing ? `${(i % 8) * 0.09}s` : undefined,
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+
                   {/* Right */}
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 shrink-0">
                     <span style={{ fontSize: 12, fontWeight: 400, color: "var(--skin-tone)", opacity: 0.6, minWidth: "2.5rem", textAlign: "right" }}>
                       {song.duration}
                     </span>
