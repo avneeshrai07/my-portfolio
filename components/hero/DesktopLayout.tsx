@@ -7,7 +7,11 @@ interface DesktopLayoutProps {
   photoCentreRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export default function DesktopLayout({ bioLines, bioRef, photoCentreRef }: DesktopLayoutProps) {
+export default function DesktopLayout({
+  bioLines,
+  bioRef,
+  photoCentreRef,
+}: DesktopLayoutProps) {
   return (
     <div
       className="hidden lg:grid absolute inset-0 z-10"
@@ -32,7 +36,10 @@ export default function DesktopLayout({ bioLines, bioRef, photoCentreRef }: Desk
 
           <h1
             className="font-hero font-black leading-none mb-6 text-hero-skin"
-            style={{ fontSize: "clamp(4rem, 8vw, 8rem)", mixBlendMode: "difference" }}
+            style={{
+              fontSize: "clamp(4rem, 8vw, 8rem)",
+              mixBlendMode: "difference",
+            }}
           >
             {NAME}
           </h1>
@@ -52,7 +59,10 @@ export default function DesktopLayout({ bioLines, bioRef, photoCentreRef }: Desk
 
         {/* CTA */}
         <div className="flex items-center gap-6">
-          <a href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume.pdf`} download>
+          <a
+            href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume_SDE.pdf`}
+            download
+          >
             <button className="cursor-pointer pointer-events-auto px-8 py-4 bg-hero-suit/20 text-hero-suit rounded-full hover:bg-hero-suit/30 transition-all duration-300 border-2 border-hero-suit/30 font-semibold active:scale-95 text-sm">
               View Resume
             </button>
@@ -62,7 +72,10 @@ export default function DesktopLayout({ bioLines, bioRef, photoCentreRef }: Desk
       </div>
 
       {/* ── Centre: pill portrait ── */}
-      <div ref={photoCentreRef} className="relative flex items-end justify-center" />
+      <div
+        ref={photoCentreRef}
+        className="relative flex items-end justify-center"
+      />
 
       {/* ── Right column: services ticker ── */}
       <div className="flex flex-col justify-center py-12 pr-12 pl-6">
