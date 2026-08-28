@@ -214,7 +214,7 @@ Layout       : flex row, items-center, gap 24px (gap-6)
 
 ```
 Text         : "View Resume"
-Link         : CDN /Avneesh_Resume.pdf (download attribute — triggers save dialog)
+Link         : CDN /Avneesh_Resume_dev.pdf (download attribute — triggers save dialog)
 Padding      : top/bottom 16px (py-4), left/right 32px (px-8)
 Border-radius: full (rounded-full) — pill shape
 Background   : #513720 at 20% opacity (bg-hero-suit/20)
@@ -385,7 +385,7 @@ Content  : "I Design Backend Systems That Don't Break At Scale."
 
 ```
 Text      : "View Resume"
-Link      : CDN /Avneesh_Resume.pdf (download attribute)
+Link      : CDN /Avneesh_Resume_dev.pdf (download attribute)
 Padding   : top/bottom 16px (py-4), left/right 32px (px-8)
 Radius    : full (pill)
 Background: #dec09c at 80% opacity (bg-shirt-tan/80) — warm tan

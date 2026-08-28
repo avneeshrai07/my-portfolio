@@ -60,7 +60,7 @@ export default function DesktopLayout({
         {/* CTA */}
         <div className="flex items-center gap-6">
           <a
-            href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume.pdf`}
+            href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume_dev.pdf`}
             download
           >
             <button className="cursor-pointer pointer-events-auto px-8 py-4 bg-hero-suit/20 text-hero-suit rounded-full hover:bg-hero-suit/30 transition-all duration-300 border-2 border-hero-suit/30 font-semibold active:scale-95 text-sm">
