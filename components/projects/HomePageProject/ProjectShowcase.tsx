@@ -13,10 +13,18 @@ function CornerTicks() {
   const corner = "absolute h-3 w-3 border-[color:rgba(250,245,236,0.55)]";
   return (
     <>
-      <span className={`${corner} left-2.5 top-2.5 border-l-[1.5px] border-t-[1.5px]`} />
-      <span className={`${corner} right-2.5 top-2.5 border-r-[1.5px] border-t-[1.5px]`} />
-      <span className={`${corner} bottom-2.5 left-2.5 border-b-[1.5px] border-l-[1.5px]`} />
-      <span className={`${corner} bottom-2.5 right-2.5 border-b-[1.5px] border-r-[1.5px]`} />
+      <span
+        className={`${corner} left-2.5 top-2.5 border-l-[1.5px] border-t-[1.5px]`}
+      />
+      <span
+        className={`${corner} right-2.5 top-2.5 border-r-[1.5px] border-t-[1.5px]`}
+      />
+      <span
+        className={`${corner} bottom-2.5 left-2.5 border-b-[1.5px] border-l-[1.5px]`}
+      />
+      <span
+        className={`${corner} bottom-2.5 right-2.5 border-b-[1.5px] border-r-[1.5px]`}
+      />
     </>
   );
 }
@@ -34,14 +42,18 @@ function Flagship({ project }: { project: (typeof PROJECTS)[number] }) {
       style={{
         background: "#FAF5EC",
         border: "1px solid var(--proj-border-2, #D4B896)",
-        boxShadow: "0 1px 2px rgba(81,55,32,0.06), 0 20px 40px -20px rgba(81,55,32,0.28)",
+        boxShadow:
+          "0 1px 2px rgba(81,55,32,0.06), 0 20px 40px -20px rgba(81,55,32,0.28)",
       }}
     >
       <Link
         href={href}
         aria-label={`View ${project.name}`}
         className="relative aspect-[16/9] w-full overflow-hidden md:aspect-auto"
-        style={{ background: "linear-gradient(145deg, var(--proj-sand, #EDE0CC), var(--proj-sand-2, #E0CEB0))" }}
+        style={{
+          background:
+            "linear-gradient(145deg, var(--proj-sand, #EDE0CC), var(--proj-sand-2, #E0CEB0))",
+        }}
       >
         <Image
           src={project.image}
@@ -64,10 +76,16 @@ function Flagship({ project }: { project: (typeof PROJECTS)[number] }) {
               style={{ background: "#5A9A30" }}
             />
           )}
-          <span style={{ color: "var(--proj-terra, #C4694A)" }}>{project.category}</span>
+          <span style={{ color: "var(--proj-terra, #C4694A)" }}>
+            {project.category}
+          </span>
           <span className="inline-flex items-center gap-2 whitespace-nowrap">
-            <span aria-hidden style={{ color: "var(--proj-border, #C8A870)" }}>/</span>
-            <span style={{ color: "var(--proj-bark-3, #9A6A48)" }}>{project.year}</span>
+            <span aria-hidden style={{ color: "var(--proj-border, #C8A870)" }}>
+              /
+            </span>
+            <span style={{ color: "var(--proj-bark-3, #9A6A48)" }}>
+              {project.year}
+            </span>
           </span>
         </div>
 
@@ -80,7 +98,10 @@ function Flagship({ project }: { project: (typeof PROJECTS)[number] }) {
           </h3>
         </Link>
 
-        <p className="line-clamp-2 max-w-[54ch] text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] leading-[1.55]" style={{ color: "var(--proj-ink-2, #3A2010)" }}>
+        <p
+          className="line-clamp-2 max-w-[54ch] text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] leading-[1.55]"
+          style={{ color: "var(--proj-ink-2, #3A2010)" }}
+        >
           {project.sub}
         </p>
 
@@ -90,12 +111,31 @@ function Flagship({ project }: { project: (typeof PROJECTS)[number] }) {
               <div
                 key={m.label}
                 className="flex flex-wrap items-baseline gap-x-2"
-                style={{ borderLeft: i === 0 ? "none" : "1px solid var(--proj-border-2, #D4B896)", paddingLeft: i === 0 ? 0 : fluidPx(20) }}
+                style={{
+                  borderLeft:
+                    i === 0
+                      ? "none"
+                      : "1px solid var(--proj-border-2, #D4B896)",
+                  paddingLeft: i === 0 ? 0 : fluidPx(20),
+                }}
               >
-                <span className="whitespace-nowrap font-semibold" style={{ fontSize: fluidPx(14), color: "var(--proj-ink, #1E0E04)" }}>
+                <span
+                  className="whitespace-nowrap font-semibold"
+                  style={{
+                    fontSize: fluidPx(14),
+                    color: "var(--proj-ink, #1E0E04)",
+                  }}
+                >
                   {m.value}
                 </span>
-                <span style={{ fontSize: fluidPx(11), color: "var(--proj-bark-3, #9A6A48)" }}>{m.label}</span>
+                <span
+                  style={{
+                    fontSize: fluidPx(11),
+                    color: "var(--proj-bark-3, #9A6A48)",
+                  }}
+                >
+                  {m.label}
+                </span>
               </div>
             ))}
           </div>
@@ -106,7 +146,10 @@ function Flagship({ project }: { project: (typeof PROJECTS)[number] }) {
             <span
               key={name}
               className="rounded-full px-2.5 py-0.5 text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)]"
-              style={{ background: "var(--proj-sand, #EDE0CC)", color: "var(--proj-ink-3, #5A3E28)" }}
+              style={{
+                background: "var(--proj-sand, #EDE0CC)",
+                color: "var(--proj-ink-3, #5A3E28)",
+              }}
             >
               {name}
             </span>
@@ -119,10 +162,17 @@ function Flagship({ project }: { project: (typeof PROJECTS)[number] }) {
             className="group/cta inline-flex items-center gap-1.5 text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] font-medium"
             style={{ color: "var(--suit-brown, #513720)" }}
           >
-            <span className="border-b pb-px" style={{ borderColor: "var(--proj-border, #C8A870)" }}>
+            <span
+              className="border-b pb-px"
+              style={{ borderColor: "var(--proj-border, #C8A870)" }}
+            >
               Read the case study
             </span>
-            <ArrowUpRight size={14} strokeWidth={2.2} className="transition-transform group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5" />
+            <ArrowUpRight
+              size={14}
+              strokeWidth={2.2}
+              className="transition-transform group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
+            />
           </Link>
           {project.githubUrl && (
             <a
@@ -143,7 +193,12 @@ function Flagship({ project }: { project: (typeof PROJECTS)[number] }) {
   );
 }
 
-function Tile({ project, isActive, onEnter, onLeave }: {
+function Tile({
+  project,
+  isActive,
+  onEnter,
+  onLeave,
+}: {
   project: (typeof PROJECTS)[number];
   isActive: boolean;
   onEnter: () => void;
@@ -180,11 +235,18 @@ function Tile({ project, isActive, onEnter, onLeave }: {
           className="absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100"
           style={{ background: "rgba(250,245,236,0.94)" }}
         >
-          <ArrowUpRight size={13} strokeWidth={2.4} style={{ color: "var(--suit-brown, #513720)" }} />
+          <ArrowUpRight
+            size={13}
+            strokeWidth={2.4}
+            style={{ color: "var(--suit-brown, #513720)" }}
+          />
         </span>
       </div>
       <div className="flex shrink-0 flex-col gap-1.5 p-4">
-        <span className="truncate text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)]" style={{ color: "var(--proj-bark-3, #9A6A48)" }}>
+        <span
+          className="truncate text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)]"
+          style={{ color: "var(--proj-bark-3, #9A6A48)" }}
+        >
           {project.category}
         </span>
         <span
@@ -212,7 +274,9 @@ export default function ProjectShowcase() {
       {/* Flagship + row, centered within a full screen on desktop when
           collapsed — the cards keep their own proportions; the extra
           height (if any) becomes even padding above/below, not distortion. */}
-      <div className={`flex flex-col justify-center gap-6 ${!showAll ? "lg:min-h-screen" : ""}`}>
+      <div
+        className={`flex flex-col justify-center gap-6 ${!showAll ? "lg:min-h-screen" : ""}`}
+      >
         <Flagship project={active} />
 
         <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
@@ -235,7 +299,8 @@ export default function ProjectShowcase() {
           className="mx-auto flex items-center gap-1.5 text-[clamp(0.7812rem,0.3966rem_+_0.4808vw,0.9375rem)]"
           style={{ color: "var(--proj-bark-3, #9A6A48)" }}
         >
-          + {hiddenCount} more systems — <span style={{ color: "var(--proj-terra, #C4694A)" }}>show all</span>
+          + {hiddenCount} more systems —{" "}
+          <span style={{ color: "var(--proj-terra, #C4694A)" }}>show all</span>
         </button>
       ) : (
         <button

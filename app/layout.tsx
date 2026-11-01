@@ -3,7 +3,6 @@ import "./globals.css";
 import PWARegister from "@/components/pwa/PWARegister";
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 const SITE_URL = "https://avneeshrai.com";
 const CDN_URL = process.env.NEXT_PUBLIC_CDN_URL ?? "";
@@ -120,7 +119,6 @@ export default function RootLayout({
       <body>
         <Header />
         {children}
-        <Footer />
         <PWARegister />
         <InstallPrompt />
       </body>

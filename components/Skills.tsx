@@ -3,9 +3,9 @@
 import { useEffect, useRef } from "react";
 
 const SKILLS = {
-  row1: ["TypeScript", "React", "Node.js", "Python", "Docker"],
-  row2: ["System Design", "SQL & NoSQL", "REST & GraphQL", "Git & CI/CD", "Cloud (AWS/GCP)"],
-  row3: ["Testing & TDD", "Data Structures", "Algorithms", "Security", "AI / ML APIs"],
+  row1: ["Python", "FastAPI", "TypeScript", "Next.js", "Docker"],
+  row2: ["REST APIs", "MCP Servers", "PostgreSQL", "System Design", "Cloud (AWS/GCP)"],
+  row3: ["Data Structures", "Algorithms", "RAG & Agents", "Microservices", "Redis"],
 };
 
 function repeat<T>(arr: T[], times = 4): T[] {

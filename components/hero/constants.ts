@@ -2,7 +2,7 @@ export const SERVICES = [
   "High-Performance Backend Architecture",
   "AI Agents & Automation",
   "Lead Generation Infrastructure",
-  "Database Systems Design",
+  "Structural Engineering Automation",
   "AWS Cloud & DevOps Automation",
 ];
 

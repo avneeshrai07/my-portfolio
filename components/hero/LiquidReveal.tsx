@@ -12,6 +12,16 @@ const SPLAT_FORCE = 6000;
 const STRENGTH_SCALE = 60;
 const MAX_SPLAT_STRENGTH = 1.2;
 const MOVE_DEAD_ZONE = 0.00015;
+// Wider area of effect per splat (solver default is 0.4) so the cursor's
+// immediate surroundings are visibly disturbed, not just a pinprick.
+const SPLAT_RADIUS = 0.65;
+// When the cursor moves fast, a single splat at just the new point leaves
+// the ground it crossed untouched until the velocity diffuses there on its
+// own — which reads as "starts at a point, then spreads". Sub-stepping
+// splats along the travelled path (spaced well inside the splat radius so
+// they overlap) paints the whole swath immediately instead.
+const SPLAT_STEP = 0.012;
+const MAX_SPLATS_PER_FRAME = 12;
 
 export default function LiquidReveal({ sectionRef }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -77,9 +87,14 @@ export default function LiquidReveal({ sectionRef }: Props) {
       if (pointer.x >= 0 && prevX >= 0) {
         const dx = pointer.x - prevX;
         const dy = pointer.y - prevY;
-        const speed = Math.hypot(dx, dy);
-        if (speed > MOVE_DEAD_ZONE) {
-          solver.splat(pointer.x, pointer.y, dx * SPLAT_FORCE, dy * SPLAT_FORCE, Math.min(MAX_SPLAT_STRENGTH, speed * STRENGTH_SCALE));
+        const dist = Math.hypot(dx, dy);
+        if (dist > MOVE_DEAD_ZONE) {
+          const strength = Math.min(MAX_SPLAT_STRENGTH, dist * STRENGTH_SCALE);
+          const steps = Math.min(MAX_SPLATS_PER_FRAME, Math.max(1, Math.ceil(dist / SPLAT_STEP)));
+          for (let i = 1; i <= steps; i++) {
+            const t = i / steps;
+            solver.splat(prevX + dx * t, prevY + dy * t, dx * SPLAT_FORCE, dy * SPLAT_FORCE, strength);
+          }
         }
       }
       if (pointer.x >= 0) {
@@ -100,6 +115,7 @@ export default function LiquidReveal({ sectionRef }: Props) {
           // Same-origin proxy (see app/api/hero-reveal-image) so the WebGL
           // texture upload isn't blocked by the CDN's missing CORS headers.
           imageUrl: "/api/hero-reveal-image",
+          splatRadius: SPLAT_RADIUS,
         });
       } catch (err) {
         console.error("[hero] fluid reveal unavailable:", err);
