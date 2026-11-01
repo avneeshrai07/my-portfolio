@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import SectionHeader from "@/components/shared/SectionHeader";
+import { cdn } from "@/lib/cdn";
+import { fluidPx } from "@/lib/fluid";
 
 interface Song {
   id: number;
@@ -31,27 +33,27 @@ export default function MusicSection() {
       id: 1,
       name: "Sunflower",
       artist: "Post Malone",
-      albumCover: `${process.env.NEXT_PUBLIC_CDN_URL}/sunflower.jpeg`,
+      albumCover: cdn("/sunflower.jpeg"),
       duration: "2:38",
-      audioUrl: `${process.env.NEXT_PUBLIC_CDN_URL}/Sunflower.mp3`,
+      audioUrl: cdn("/Sunflower.mp3"),
       spotifyUrl: "https://open.spotify.com/track/3KkXRkHbMCARz0aVfEt68P?si=fdf6ac5c9e064419",
     },
     {
       id: 2,
       name: "Shinunoga E-Wa",
       artist: "Fujii Kaze",
-      albumCover: `${process.env.NEXT_PUBLIC_CDN_URL}/shinunoga_E-wa.jpeg`,
+      albumCover: cdn("/shinunoga_E-wa.jpeg"),
       duration: "3:17",
-      audioUrl: `${process.env.NEXT_PUBLIC_CDN_URL}/Shinunoga E-wa.mp3`,
+      audioUrl: cdn("/Shinunoga E-wa.mp3"),
       spotifyUrl: "https://open.spotify.com/track/0o9zmvc5f3EFApU52PPIyW?si=fe27137ee5cc45d3",
     },
     {
       id: 3,
       name: "You Haunt Me",
       artist: "Citizen",
-      albumCover: `${process.env.NEXT_PUBLIC_CDN_URL}/you_haunt_me.jpeg`,
+      albumCover: cdn("/you_haunt_me.jpeg"),
       duration: "3:42",
-      audioUrl: `${process.env.NEXT_PUBLIC_CDN_URL}/You_haunt_me.mp3`,
+      audioUrl: cdn("/You_haunt_me.mp3"),
       spotifyUrl: "https://open.spotify.com/track/1zjPk4TbcTtyJD1WdQauZn?si=9e4326bf836741cb",
     },
   ];
@@ -77,8 +79,8 @@ export default function MusicSection() {
   };
 
   return (
-    <section className="bg-hero-gradient section-pad px-5 md:px-10">
-      <div className="max-w-5xl mx-auto">
+    <section className="bg-hero-gradient section-pad">
+      <div className="section-container">
         <SectionHeader title="Now" accent="Playing" className="mb-12" />
 
         {/* Player card — earthy parchment to match the site palette */}
@@ -122,14 +124,14 @@ export default function MusicSection() {
                 <div>
                   <p
                     className="font-heading"
-                    style={{ fontSize: 12, color: "var(--suit-brown)", letterSpacing: "0.2em", textTransform: "uppercase" }}
+                    style={{ fontSize: fluidPx(12), color: "var(--suit-brown)", letterSpacing: "0.2em", textTransform: "uppercase" }}
                   >
                     My Playlist
                   </p>
-                  <p style={{ fontSize: 12, color: "var(--skin-tone)", fontWeight: 400, marginTop: 2 }}>Curated with love</p>
+                  <p style={{ fontSize: fluidPx(12), color: "var(--skin-tone)", fontWeight: 400, marginTop: 2 }}>Curated with love</p>
                 </div>
               </div>
-              <span style={{ fontSize: 12, color: "var(--skin-tone)", fontWeight: 400 }}>{songs.length} tracks</span>
+              <span style={{ fontSize: fluidPx(12), color: "var(--skin-tone)", fontWeight: 400 }}>{songs.length} tracks</span>
             </div>
 
             {/* Song list */}
@@ -160,7 +162,7 @@ export default function MusicSection() {
                               className="w-0.5 rounded-full animate-sound-wave"
                               style={{
                                 animationDelay: `${delay}s`,
-                                height: "16px",
+                                height: fluidPx(16),
                                 background: "var(--proj-terra)",
                               }}
                             />
@@ -176,7 +178,7 @@ export default function MusicSection() {
                           <path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288V1.713z" />
                         </svg>
                       ) : (
-                        <span style={{ fontSize: 13, fontWeight: 400, color: "var(--skin-tone)", opacity: 0.6 }}>
+                        <span style={{ fontSize: fluidPx(13), fontWeight: 400, color: "var(--skin-tone)", opacity: 0.6 }}>
                           {index + 1}
                         </span>
                       )}
@@ -184,7 +186,7 @@ export default function MusicSection() {
 
                     <div
                       className="relative flex-shrink-0 rounded-lg overflow-hidden shadow-sm"
-                      style={{ width: 44, height: 44, background: "var(--proj-sand)" }}
+                      style={{ width: fluidPx(44), height: fluidPx(44), background: "var(--proj-sand)" }}
                     >
                       <Image
                         src={song.albumCover}
@@ -202,7 +204,7 @@ export default function MusicSection() {
                       <p
                         className="truncate transition-colors"
                         style={{
-                          fontSize: 14,
+                          fontSize: fluidPx(14),
                           fontWeight: 600,
                           letterSpacing: "-0.01em",
                           color: currentPlaying === song.id
@@ -212,7 +214,7 @@ export default function MusicSection() {
                       >
                         {song.name}
                       </p>
-                      <p style={{ fontSize: 12, fontWeight: 400, color: "var(--skin-tone)", opacity: 0.75 }} className="truncate">
+                      <p style={{ fontSize: fluidPx(12), fontWeight: 400, color: "var(--skin-tone)", opacity: 0.75 }} className="truncate">
                         {song.artist}
                       </p>
                     </div>
@@ -240,7 +242,7 @@ export default function MusicSection() {
 
                   {/* Right */}
                   <div className="flex items-center gap-3 shrink-0">
-                    <span style={{ fontSize: 12, fontWeight: 400, color: "var(--skin-tone)", opacity: 0.6, minWidth: "2.5rem", textAlign: "right" }}>
+                    <span style={{ fontSize: fluidPx(12), fontWeight: 400, color: "var(--skin-tone)", opacity: 0.6, minWidth: fluidPx(40), textAlign: "right" }}>
                       {song.duration}
                     </span>
                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -273,7 +275,7 @@ export default function MusicSection() {
                 style={{
                   background: "var(--suit-brown)",
                   color: "var(--proj-cream)",
-                  fontSize: 13,
+                  fontSize: fluidPx(13),
                   fontWeight: 600,
                   letterSpacing: "0.04em",
                   border: "none",

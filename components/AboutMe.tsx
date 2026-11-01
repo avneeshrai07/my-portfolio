@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import SectionHeader from "@/components/shared/SectionHeader";
+import { cdn } from "@/lib/cdn";
+import { fluidPx } from "@/lib/fluid";
 
 /* ─── Pull these from your constants file ─────────────────────────────────
    e.g. import { ABOUT_ME } from "@/constants";
@@ -52,9 +54,9 @@ export default function AboutMe() {
   return (
     <section
       ref={sectionRef}
-      className="bg-hero-gradient relative overflow-hidden section-pad px-5 md:px-10"
+      className="bg-hero-gradient relative overflow-hidden section-pad"
     >
-      <div className="relative z-10 max-w-5xl mx-auto">
+      <div className="relative z-10 section-container">
 
           {/* ── Header ─────────────────────────────────────────────── */}
           <div className={`mb-14 transition-all duration-700 ${
@@ -87,7 +89,7 @@ export default function AboutMe() {
 
               <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avneesh.jpg`}
+                  src={cdn("/avneesh.jpg")}
                   alt="Avneesh Rai, Backend Engineer and AI/ML Developer based in New Delhi"
                   fill
                   className="object-cover"
@@ -116,7 +118,7 @@ export default function AboutMe() {
                 background: "#FAF5EC",
                 borderColor: "var(--proj-border-2, #D4B896)",
                 boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
-                padding: "14px 14px 36px",
+                padding: `${fluidPx(14)} ${fluidPx(14)} ${fluidPx(36)}`,
                 transitionDelay: "0.1s",
               }}
             >
@@ -124,7 +126,7 @@ export default function AboutMe() {
 
               <div className="relative w-full" style={{ aspectRatio: "3/4" }}>
                 <Image
-                  src={`${process.env.NEXT_PUBLIC_CDN_URL}/avneesh.jpg`}
+                  src={cdn("/avneesh.jpg")}
                   alt="Avneesh Rai, Backend Engineer and AI/ML Developer based in New Delhi"
                   fill
                   className="object-cover"
@@ -135,7 +137,7 @@ export default function AboutMe() {
 
               <p
                 className="font-caveat font-semibold text-center mt-2.5"
-                style={{ fontSize: "17px", color: "var(--proj-ink-3, #5A3E28)" }}
+                style={{ fontSize: fluidPx(17), color: "var(--proj-ink-3, #5A3E28)" }}
               >
                 {ABOUT_ME.polaroidCaption}
               </p>
@@ -154,7 +156,7 @@ export default function AboutMe() {
                 background: "#FAF5EC",
                 borderColor: "var(--proj-border-2, #D4B896)",
                 boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
-                padding: "32px 36px",
+                padding: `${fluidPx(32)} ${fluidPx(36)}`,
                 transitionDelay: "0.2s",
               }}
             >
@@ -163,7 +165,7 @@ export default function AboutMe() {
 
               {/* Label */}
               <p
-                className="bio-label-rule font-heading text-[11px] tracking-[0.22em] flex items-center gap-3 mb-5"
+                className="bio-label-rule font-heading text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)] tracking-[0.22em] flex items-center gap-3 mb-5"
                 style={{ color: "var(--proj-bark-3, #9A6A48)", textTransform: "uppercase" }}
               >
                 {ABOUT_ME.bioLabel}
@@ -173,7 +175,7 @@ export default function AboutMe() {
                 <p
                   key={i}
                   className="bio-para mb-4"
-                  style={{ fontSize: "14.5px", lineHeight: 1.78, color: "var(--proj-ink-2, #3A2010)", fontWeight: 400 }}
+                  style={{ fontSize: fluidPx(14.5), lineHeight: 1.78, color: "var(--proj-ink-2, #3A2010)", fontWeight: 400 }}
                 >
                   {para}
                 </p>
@@ -182,7 +184,7 @@ export default function AboutMe() {
               <span
                 className="font-caveat inline-block pb-0.5 mt-1"
                 style={{
-                  fontSize: "15px",
+                  fontSize: fluidPx(15),
                   color: "var(--proj-bark-3, #9A6A48)",
                   transform: "rotate(-0.5deg)",
                   borderBottom: "1.5px solid var(--proj-border, #C8A870)",
@@ -203,7 +205,7 @@ export default function AboutMe() {
                 background: "#FAF5EC",
                 borderColor: "var(--proj-border-2, #D4B896)",
                 boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
-                padding: "24px 28px",
+                padding: `${fluidPx(24)} ${fluidPx(28)}`,
                 transitionDelay: "0.35s",
               }}
             >
@@ -223,13 +225,13 @@ export default function AboutMe() {
                 <div key={label} className="stat-row flex items-baseline justify-between gap-3 py-2.5">
                   <span
                     className="font-heading tracking-[0.1em]"
-                    style={{ fontSize: "10px", color: "var(--proj-bark-3, #9A6A48)", minWidth: "80px", textTransform: "uppercase" }}
+                    style={{ fontSize: fluidPx(10), color: "var(--proj-bark-3, #9A6A48)", minWidth: fluidPx(80), textTransform: "uppercase" }}
                   >
                     {label}
                   </span>
                   <span
                     className="font-medium text-right flex-1"
-                    style={{ fontSize: "13px", color: "var(--suit-brown, #513720)", letterSpacing: "-0.01em" }}
+                    style={{ fontSize: fluidPx(13), color: "var(--suit-brown, #513720)", letterSpacing: "-0.01em" }}
                   >
                     {value}
                   </span>

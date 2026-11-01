@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { SERVICES } from "./constants";
+import { fluidPx } from "@/lib/fluid";
 
 const ITEM_HEIGHT = 54;
 const INTERVAL    = 2000;
@@ -44,7 +45,7 @@ export default function ServiceTicker() {
       itemsRef.current.forEach((el, i) => {
         const copyIndex = i % n;
         const active = copyIndex === logicalIndex;
-        el.style.fontSize    = active ? "1.25rem"   : "0.875rem"; // text-2xl : text-sm
+        el.style.fontSize    = active ? fluidPx(20) : fluidPx(14); // text-2xl : text-sm
         el.style.fontWeight  = active ? "900"       : "700";
         el.style.opacity     = active ? "1"         : "0.3";
       });
@@ -94,7 +95,7 @@ export default function ServiceTicker() {
 
   return (
     <div ref={wrapperRef} data-ticker>
-      <p className={`text-[11px] font-black tracking-[0.35em] uppercase mb-6 text-center transition-colors duration-300 ${labelClass}`}>
+      <p className={`text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)] font-black tracking-[0.35em] uppercase mb-6 text-center transition-colors duration-300 ${labelClass}`}>
         What I Dominate
       </p>
 
@@ -114,7 +115,7 @@ export default function ServiceTicker() {
                 textAlign:      "center",
                 width:          "100%",
                 flexShrink:     0,
-                fontSize:       "0.875rem",
+                fontSize:       fluidPx(14),
                 fontWeight:     "700",
                 opacity:        "0.3",
                 lineHeight:     "1.2",

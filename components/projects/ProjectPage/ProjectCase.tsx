@@ -23,7 +23,7 @@ const card = { background: "#fff", border: "1px solid var(--proj-border-2)" } as
 function Label({ children }: { children: React.ReactNode }) {
   return (
     <h2 className="mb-2 flex items-center gap-2">
-      <span className="font-heading text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>{children}</span>
+      <span className="font-heading text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>{children}</span>
       <span className="h-px flex-1" style={{ background: "var(--proj-border-2)" }} />
     </h2>
   );
@@ -63,7 +63,7 @@ function MetricValue({ value, highlight }: { value: string; highlight?: boolean 
   }, [value]);
 
   return (
-    <div ref={ref} className="text-[19px] font-bold leading-none" style={{ color: highlight ? "#F5DCC0" : "var(--proj-ink)", letterSpacing: "-0.02em" }}>{disp}</div>
+    <div ref={ref} className="text-[clamp(1.1875rem,0.6029rem_+_0.7308vw,1.425rem)] font-bold leading-none" style={{ color: highlight ? "#F5DCC0" : "var(--proj-ink)", letterSpacing: "-0.02em" }}>{disp}</div>
   );
 }
 
@@ -114,19 +114,19 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
         return (
           <section key={key}>
             <Label>Overview</Label>
-            <p className="text-[13px] leading-[1.7]" style={{ color: "var(--proj-ink-2)" }}>{p.overview}</p>
+            <p className="text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] leading-[1.7]" style={{ color: "var(--proj-ink-2)" }}>{p.overview}</p>
           </section>
         );
       case "problem":
         return (
           <section key={key} className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-xl p-4" style={{ ...card, borderLeft: "3px solid var(--proj-terra)" }}>
-              <div className="mb-2 inline-flex items-center gap-1.5"><Target size={13} style={{ color: "var(--proj-terra)" }} /><span className="font-heading text-[10px] uppercase tracking-[0.12em]" style={{ color: "var(--proj-terra)" }}>Problem</span></div>
-              <p className="text-[12px] leading-[1.55]" style={{ color: "var(--proj-ink-3)" }}>{p.problem}</p>
+              <div className="mb-2 inline-flex items-center gap-1.5"><Target size={13} style={{ color: "var(--proj-terra)" }} /><span className="font-heading text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)] uppercase tracking-[0.12em]" style={{ color: "var(--proj-terra)" }}>Problem</span></div>
+              <p className="text-[clamp(0.75rem,0.3808rem_+_0.4615vw,0.9rem)] leading-[1.55]" style={{ color: "var(--proj-ink-3)" }}>{p.problem}</p>
             </div>
             <div className="rounded-xl p-4" style={{ ...card, borderLeft: "3px solid var(--proj-moss-bd)" }}>
-              <div className="mb-2 inline-flex items-center gap-1.5"><Lightbulb size={13} style={{ color: "#5A8040" }} /><span className="font-heading text-[10px] uppercase tracking-[0.12em]" style={{ color: "#5A8040" }}>Approach</span></div>
-              <p className="text-[12px] leading-[1.55]" style={{ color: "var(--proj-ink-3)" }}>{p.impact || p.sub}</p>
+              <div className="mb-2 inline-flex items-center gap-1.5"><Lightbulb size={13} style={{ color: "#5A8040" }} /><span className="font-heading text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)] uppercase tracking-[0.12em]" style={{ color: "#5A8040" }}>Approach</span></div>
+              <p className="text-[clamp(0.75rem,0.3808rem_+_0.4615vw,0.9rem)] leading-[1.55]" style={{ color: "var(--proj-ink-3)" }}>{p.impact || p.sub}</p>
             </div>
           </section>
         );
@@ -137,8 +137,8 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
             <div className="flex flex-col gap-2">
               {p.challenges.map((ch, i) => (
                 <div key={i} className="flex gap-3 rounded-lg p-3" style={card}>
-                  <span className="shrink-0 font-heading text-[13px] font-bold" style={{ color: "var(--proj-border)" }}>{String(i + 1).padStart(2, "0")}</span>
-                  <p className="text-[12px] leading-[1.55]" style={{ color: "var(--proj-ink-3)" }}>{ch}</p>
+                  <span className="shrink-0 font-heading text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] font-bold" style={{ color: "var(--proj-border)" }}>{String(i + 1).padStart(2, "0")}</span>
+                  <p className="text-[clamp(0.75rem,0.3808rem_+_0.4615vw,0.9rem)] leading-[1.55]" style={{ color: "var(--proj-ink-3)" }}>{ch}</p>
                 </div>
               ))}
             </div>
@@ -151,8 +151,8 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
             <div className="flex flex-col gap-1.5">
               {p.features.map((f) => (
                 <div key={f.title} className="rounded-lg p-3" style={card}>
-                  <h3 className="text-[12.5px] font-semibold" style={{ color: "var(--proj-ink-2)" }}>{f.title}</h3>
-                  <p className="mt-0.5 text-[11.5px] leading-[1.5]" style={{ color: "var(--proj-ink-3)" }}>{f.desc}</p>
+                  <h3 className="text-[clamp(0.7812rem,0.3966rem_+_0.4808vw,0.9375rem)] font-semibold" style={{ color: "var(--proj-ink-2)" }}>{f.title}</h3>
+                  <p className="mt-0.5 text-[clamp(0.7188rem,0.3649rem_+_0.4423vw,0.8625rem)] leading-[1.5]" style={{ color: "var(--proj-ink-3)" }}>{f.desc}</p>
                 </div>
               ))}
             </div>
@@ -165,8 +165,8 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
             <div className="flex flex-col gap-1.5">
               {p.decisions.map((d, i) => (
                 <div key={i} className="flex gap-2 rounded-lg p-3" style={card}>
-                  <span className="mt-0.5 shrink-0 text-[10px]" style={{ color: "var(--proj-terra)" }}>◆</span>
-                  <p className="text-[11.5px] leading-[1.5]" style={{ color: "var(--proj-ink-3)" }}>{d}</p>
+                  <span className="mt-0.5 shrink-0 text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)]" style={{ color: "var(--proj-terra)" }}>◆</span>
+                  <p className="text-[clamp(0.7188rem,0.3649rem_+_0.4423vw,0.8625rem)] leading-[1.5]" style={{ color: "var(--proj-ink-3)" }}>{d}</p>
                 </div>
               ))}
             </div>
@@ -182,7 +182,7 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
                 return (
                   <span key={name} className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1" style={card}>
                     <StackIcon name={tech.iconName} style={{ width: 13, height: 13, flexShrink: 0 }} />
-                    <span className="text-[11px] font-medium" style={{ color: "var(--proj-ink-2)" }}>{tech.name}</span>
+                    <span className="text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)] font-medium" style={{ color: "var(--proj-ink-2)" }}>{tech.name}</span>
                   </span>
                 );
               })}
@@ -198,8 +198,8 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
 
         {/* Breadcrumb */}
         <div className="mb-4 flex items-center justify-between">
-          <span className="font-heading text-[11px] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>{p.num} — {p.category}</span>
-          <Link href="/#projects" className="font-heading text-[11px] uppercase tracking-[0.16em] transition-opacity hover:opacity-60" style={{ color: "var(--proj-bark-3)" }}>← All projects</Link>
+          <span className="font-heading text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>{p.num} — {p.category}</span>
+          <Link href="/#projects" className="font-heading text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)] uppercase tracking-[0.16em] transition-opacity hover:opacity-60" style={{ color: "var(--proj-bark-3)" }}>← All projects</Link>
         </div>
 
         {/* Hero */}
@@ -207,32 +207,32 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
           <div className="flex flex-col justify-center">
             <div className="mb-2 flex items-center gap-2">
               {isLive && (
-                <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[9px] font-semibold" style={{ background: "var(--proj-tag-live-bg)", color: "var(--proj-tag-live-tx)", border: "1px solid var(--proj-tag-live-bd)" }}>
+                <span className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[clamp(0.5625rem,0.2856rem_+_0.3462vw,0.675rem)] font-semibold" style={{ background: "var(--proj-tag-live-bg)", color: "var(--proj-tag-live-tx)", border: "1px solid var(--proj-tag-live-bd)" }}>
                   <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: "#5A9A30", animation: "pf-pulse 2s ease-in-out infinite" }} />Live
                 </span>
               )}
-              <span className="font-heading text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--proj-bark-3)" }}>{p.category}</span>
+              <span className="font-heading text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)] uppercase tracking-[0.14em]" style={{ color: "var(--proj-bark-3)" }}>{p.category}</span>
             </div>
             <h1 className="text-[clamp(1.5rem,3.2vw,2.2rem)] font-bold leading-[1.08]" style={{ color: "var(--proj-ink)", letterSpacing: "-0.02em" }}>{p.name}</h1>
-            <p className="mt-2 text-[13px] leading-[1.6]" style={{ color: "var(--proj-ink-3)" }}>{p.sub}</p>
+            <p className="mt-2 text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] leading-[1.6]" style={{ color: "var(--proj-ink-3)" }}>{p.sub}</p>
             <div className="mt-4 flex flex-wrap gap-2.5">
               {p.demoUrl && (
-                <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[12.5px] font-semibold transition-transform hover:-translate-y-0.5" style={{ background: "var(--proj-terra)", color: "#fff" }}>View live <ArrowUpRight size={14} strokeWidth={2.3} /></a>
+                <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[clamp(0.7812rem,0.3966rem_+_0.4808vw,0.9375rem)] font-semibold transition-transform hover:-translate-y-0.5" style={{ background: "var(--proj-terra)", color: "#fff" }}>View live <ArrowUpRight size={14} strokeWidth={2.3} /></a>
               )}
               {p.githubUrl && (
-                <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[12.5px] font-semibold transition-transform hover:-translate-y-0.5" style={{ ...card, color: "var(--proj-ink-2)" }}><Github size={14} strokeWidth={1.9} /> Source</a>
+                <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-[clamp(0.7812rem,0.3966rem_+_0.4808vw,0.9375rem)] font-semibold transition-transform hover:-translate-y-0.5" style={{ ...card, color: "var(--proj-ink-2)" }}><Github size={14} strokeWidth={1.9} /> Source</a>
               )}
             </div>
             <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
               {([["Role", p.role], ["Type", p.type], ["Year", p.year], ["Timeline", p.duration]] as const).map(([k, v]) => v && (
                 <div key={k}>
-                  <div className="font-heading text-[8.5px] uppercase tracking-[0.12em]" style={{ color: "var(--proj-bark-3)" }}>{k}</div>
-                  <div className="text-[12px] font-medium" style={{ color: "var(--proj-ink-2)" }}>{v}</div>
+                  <div className="font-heading text-[clamp(0.5312rem,0.2697rem_+_0.3269vw,0.6375rem)] uppercase tracking-[0.12em]" style={{ color: "var(--proj-bark-3)" }}>{k}</div>
+                  <div className="text-[clamp(0.75rem,0.3808rem_+_0.4615vw,0.9rem)] font-medium" style={{ color: "var(--proj-ink-2)" }}>{v}</div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="relative min-h-[200px] overflow-hidden rounded-2xl" style={{ border: "1px solid var(--proj-border-2)", background: "var(--proj-sand)" }}>
+          <div className="relative min-h-[clamp(12.5rem,6.3462rem_+_7.6923vw,15rem)] overflow-hidden rounded-2xl" style={{ border: "1px solid var(--proj-border-2)", background: "var(--proj-sand)" }}>
             <Image src={p.image} alt={p.name} fill priority sizes="360px" onLoad={() => setHeroLoaded(true)} className={`object-cover transition-opacity duration-700 ${heroLoaded ? "opacity-100" : "opacity-0"}`} />
           </div>
         </header>
@@ -243,7 +243,7 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
             {p.metrics.map((m) => (
               <div key={m.label} className="rounded-xl px-3 py-3 text-center" style={m.highlight ? { background: "var(--proj-bark)", border: "1px solid var(--proj-bark)" } : card}>
                 <MetricValue value={m.value} highlight={m.highlight} />
-                <div className="mt-1.5 text-[9px] font-medium leading-tight" style={{ color: m.highlight ? "#C8956A" : "var(--proj-bark-3)" }}>{m.label}</div>
+                <div className="mt-1.5 text-[clamp(0.5625rem,0.2856rem_+_0.3462vw,0.675rem)] font-medium leading-tight" style={{ color: m.highlight ? "#C8956A" : "var(--proj-bark-3)" }}>{m.label}</div>
               </div>
             ))}
           </div>
@@ -260,14 +260,14 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
           <Link href={prev.href} className="group flex items-center gap-3 rounded-xl p-3 transition-colors hover:bg-white">
             <NavThumb src={prev.image} name={prev.name} />
             <span className="min-w-0">
-              <span className="block font-heading text-[9px] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>← Prev</span>
-              <span className="block truncate text-[13px] font-semibold transition-colors group-hover:text-[color:var(--proj-terra)]" style={{ color: "var(--proj-ink)" }}>{prev.name}</span>
+              <span className="block font-heading text-[clamp(0.5625rem,0.2856rem_+_0.3462vw,0.675rem)] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>← Prev</span>
+              <span className="block truncate text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] font-semibold transition-colors group-hover:text-[color:var(--proj-terra)]" style={{ color: "var(--proj-ink)" }}>{prev.name}</span>
             </span>
           </Link>
           <Link href={next.href} className="group flex items-center justify-end gap-3 rounded-xl p-3 text-right transition-colors hover:bg-white">
             <span className="min-w-0">
-              <span className="block font-heading text-[9px] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>Next →</span>
-              <span className="block truncate text-[13px] font-semibold transition-colors group-hover:text-[color:var(--proj-terra)]" style={{ color: "var(--proj-ink)" }}>{next.name}</span>
+              <span className="block font-heading text-[clamp(0.5625rem,0.2856rem_+_0.3462vw,0.675rem)] uppercase tracking-[0.16em]" style={{ color: "var(--proj-bark-3)" }}>Next →</span>
+              <span className="block truncate text-[clamp(0.8125rem,0.4125rem_+_0.5vw,0.975rem)] font-semibold transition-colors group-hover:text-[color:var(--proj-terra)]" style={{ color: "var(--proj-ink)" }}>{next.name}</span>
             </span>
             <NavThumb src={next.image} name={next.name} />
           </Link>
@@ -277,9 +277,9 @@ export default function ProjectCase({ project: p, prev, next }: { project: Proje
       {/* Sticky action bar (appears after hero scrolls out) */}
       <div className={`fixed bottom-5 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-full py-2 pl-4 pr-2 transition-all duration-300 ${showBar ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"}`}
         style={{ background: "rgba(255,255,255,0.92)", border: "1px solid var(--proj-border-2)", boxShadow: "0 8px 28px rgba(81,55,32,0.16)", backdropFilter: "blur(8px)" }}>
-        <span className="max-w-[38vw] truncate text-[12.5px] font-semibold sm:max-w-xs" style={{ color: "var(--proj-ink)" }}>{p.name}</span>
+        <span className="max-w-[38vw] truncate text-[clamp(0.7812rem,0.3966rem_+_0.4808vw,0.9375rem)] font-semibold sm:max-w-xs" style={{ color: "var(--proj-ink)" }}>{p.name}</span>
         {p.demoUrl && (
-          <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[12px] font-semibold" style={{ background: "var(--proj-terra)", color: "#fff" }}>View live <ArrowUpRight size={12} strokeWidth={2.4} /></a>
+          <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-full px-3.5 py-1.5 text-[clamp(0.75rem,0.3808rem_+_0.4615vw,0.9rem)] font-semibold" style={{ background: "var(--proj-terra)", color: "#fff" }}>View live <ArrowUpRight size={12} strokeWidth={2.4} /></a>
         )}
         {p.githubUrl && (
           <a href={p.githubUrl} target="_blank" rel="noopener noreferrer" aria-label="Source" className="inline-flex items-center justify-center rounded-full p-2" style={{ color: "var(--proj-ink-2)" }}><Github size={15} strokeWidth={1.9} /></a>

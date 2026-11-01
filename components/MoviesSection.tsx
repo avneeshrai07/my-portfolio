@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-// const CDN = process.env.NEXT_PUBLIC_CDN_URL;
+import { cdn } from "@/lib/cdn";
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -66,12 +66,12 @@ function fitTextToContainer(el: HTMLElement | null) {
 
 export default function MovieSection() {
   const [movies] = useState<Movie[]>([
-    { title: "When Life Gives You Tangerines", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/when Life gives you tangerines.jpeg`, link: "https://www.netflix.com/title/81681535" },
-    { title: "DARK", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/dark.jpeg`, link: "https://www.netflix.com/title/80236911" },
-    { title: "Wednesday", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/wednesday.jpeg `, link: "https://www.netflix.com/title/81231974" },
-    { title: "YOU", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/You.jpeg`, link: "https://www.netflix.com/title/80211991"},
-    { title: "BERSERK", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/Berserk.jpeg`, link: "https://www.netflix.com/title/80146743" },
-    { title: "500 Days of Summer", localPoster: `${process.env.NEXT_PUBLIC_CDN_URL}/Movie_ 500 Days of Summer.jpeg `, link: "https://www.hotstar.com/in/movies/500-days-of-summer/1770000925" },
+    { title: "When Life Gives You Tangerines", localPoster: cdn("/when Life gives you tangerines.jpeg"), link: "https://www.netflix.com/title/81681535" },
+    { title: "DARK", localPoster: cdn("/dark.jpeg"), link: "https://www.netflix.com/title/80236911" },
+    { title: "Wednesday", localPoster: cdn("/wednesday.jpeg "), link: "https://www.netflix.com/title/81231974" },
+    { title: "YOU", localPoster: cdn("/You.jpeg"), link: "https://www.netflix.com/title/80211991"},
+    { title: "BERSERK", localPoster: cdn("/Berserk.jpeg"), link: "https://www.netflix.com/title/80146743" },
+    { title: "500 Days of Summer", localPoster: cdn("/Movie_ 500 Days of Summer.jpeg "), link: "https://www.hotstar.com/in/movies/500-days-of-summer/1770000925" },
   ]);
 
   const [movieData, setMovieData] = useState<Record<string, MovieData>>({});
@@ -389,13 +389,13 @@ export default function MovieSection() {
         }}
         className="bg-hero-gradient py-4 lg:py-0 overflow-hidden flex items-center lg:min-h-screen"
       >
-        <div className="container mx-auto px-4 md:px-6 w-full">
+        <div className="section-container w-full">
 
           {/* ── ADDED: desktop label row — hidden on mobile, sits above the
               original grid as a sibling. Same gap-4 + col-span-3 +
               max-w-[50vh] mx-auto mirrors the poster column exactly.
               The original desktop grid below is 100% UNCHANGED. ── */}
-          <div className="hidden lg:grid grid-cols-12 gap-4 max-w-6xl mx-auto mb-3">
+          <div className="hidden lg:grid grid-cols-12 gap-4 mb-3">
             <div className="col-span-3">
               <div className="w-full max-w-[50vh] mx-auto">
                 <h1
@@ -410,7 +410,7 @@ export default function MovieSection() {
           </div>
 
           {/* ⭐ DESKTOP LAYOUT - UNCHANGED */}
-          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-4 max-w-6xl mx-auto">
+          <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-4">
             {/* Left - Movie Poster */}
             <div className="lg:col-span-3 flex items-start">
               <div 
@@ -552,7 +552,7 @@ export default function MovieSection() {
                             {data?.Title || movie.title}
                           </p>
                           {data?.Year && (
-                            <p className="text-hero-suit/60 text-[10px] mt-0.5">{data.Year}</p>
+                            <p className="text-hero-suit/60 text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)] mt-0.5">{data.Year}</p>
                           )}
                         </div>
                       </button>

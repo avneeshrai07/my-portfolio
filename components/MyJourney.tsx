@@ -397,12 +397,12 @@ export default function MyJourney() {
     <section aria-label="My Journey" className="bg-hero-gradient pb-8">
 
         {/* Header */}
-        <div className="tj-wrap pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(2vh,15vh,20vh)] relative z-[1]">
+        <div className="section-container pt-[clamp(3rem,8vw,5.5rem)] pb-[clamp(2vh,15vh,20vh)] relative z-[1]">
           <SectionHeader title="My" accent="Story" />
         </div>
 
         {/* Timeline */}
-        <div className="tj-wrap pb-4 relative z-[1]">
+        <div className="section-container pb-4 relative z-[1]">
           <div ref={wrapRef} className="relative">
 
             {/* ── DESKTOP SVG ─────────────────────────────────── */}

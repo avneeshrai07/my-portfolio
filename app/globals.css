@@ -121,6 +121,34 @@
   --color-dark-armor: var(--armor-black);
 }
 
+/* ── Fluid desktop scale ──────────────────────────────────────────────
+   Overrides Tailwind's own root tokens so every standard utility that
+   derives from them (p-, m-, gap-, w- and h- scale, text-xs through text-5xl) grows
+   smoothly between a laptop (1280px) and a large external monitor
+   (1800px) instead of staying pixel-fixed while the viewport balloons.
+   Below 1280px every value clamps to its original fixed size, so phone
+   and tablet layouts are untouched. Each step grows by the same 20%
+   over that range, so proportions between elements stay consistent —
+   this is the "everything in vw" ask, implemented as clamp(min, vw, max)
+   rather than raw vw so text never becomes unreadably small on a
+   narrow desktop window, absurdly large on an ultrawide monitor, or
+   deaf to the browser's own zoom/text-size settings (raw vw is).
+   Arbitrary values (text-[15px], inline fontSize, gap-[10px], …) aren't
+   covered by this and are converted per call-site separately. ────── */
+@theme {
+  --spacing: clamp(0.25rem, 0.127rem + 0.154vw, 0.3rem);
+
+  --text-xs:   clamp(0.75rem,  0.381rem + 0.462vw, 0.9rem);
+  --text-sm:   clamp(0.875rem, 0.444rem + 0.538vw, 1.05rem);
+  --text-base: clamp(1rem,     0.508rem + 0.615vw, 1.2rem);
+  --text-lg:   clamp(1.125rem, 0.571rem + 0.692vw, 1.35rem);
+  --text-xl:   clamp(1.25rem,  0.635rem + 0.769vw, 1.5rem);
+  --text-2xl:  clamp(1.5rem,   0.762rem + 0.923vw, 1.8rem);
+  --text-3xl:  clamp(1.875rem, 0.952rem + 1.154vw, 2.25rem);
+  --text-4xl:  clamp(2.25rem,  1.142rem + 1.385vw, 2.7rem);
+  --text-5xl:  clamp(3rem,     1.523rem + 1.846vw, 3.6rem);
+}
+
 
 
 @layer utilities {
@@ -360,6 +388,30 @@ html {
 /* ── Consistent section spacing ── */
 .section-pad { padding-block: clamp(4rem, 8vw, 7rem); }
 
+/* ── Fluid content container ──
+   Side gutters scale with viewport width instead of a fixed max-width,
+   so the content:margin ratio stays similar from a laptop up to a large
+   external monitor rather than ballooning into huge empty gutters. */
+.section-container {
+  width: 100%;
+  max-width: 1800px;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 4.5rem);
+}
+
+/* ── Thumbnail grain — same noise technique as .bg-hero-gradient, scoped
+   to an image wrapper so flat fills and photos both read as textured
+   paper rather than a flat digital swatch. Parent needs position:relative. ── */
+.thumb-grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' /%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.15;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
 /* ── About Me card animations ── */
 .card-photo {
   transform: rotate(-1.5deg) translateY(32px);
@@ -396,12 +448,6 @@ html {
 .bio-para em     { font-style: normal; font-weight: 400; color: var(--proj-terra, #C4694A); }
 
 /* ── My Journey timeline ── */
-.tj-wrap {
-  max-width: 960px;
-  margin: 0 auto;
-  padding-inline: clamp(1rem, 5vw, 2rem);
-  -webkit-font-smoothing: antialiased;
-}
 @keyframes tj-ripple {
   0%   { transform: scale(1);   opacity: 0.7; }
   100% { transform: scale(3.2); opacity: 0;   }

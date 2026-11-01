@@ -1,3 +1,5 @@
+import { fluidPx } from "@/lib/fluid";
+
 export default function Footer() {
   const year = new Date().getFullYear();
 
@@ -9,7 +11,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p
           style={{
-            fontSize: 13,
+            fontSize: fluidPx(13),
             color: "var(--skin-tone)",
             opacity: 0.65,
             letterSpacing: "0.01em",
@@ -25,7 +27,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="transition-opacity hover:opacity-60"
             style={{
-              fontSize: 13,
+              fontSize: fluidPx(13),
               fontWeight: 400,
               color: "var(--suit-brown)",
             }}
@@ -38,7 +40,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="transition-opacity hover:opacity-60"
             style={{
-              fontSize: 13,
+              fontSize: fluidPx(13),
               fontWeight: 400,
               color: "var(--suit-brown)",
             }}
@@ -51,7 +53,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="transition-opacity hover:opacity-60"
             style={{
-              fontSize: 13,
+              fontSize: fluidPx(13),
               fontWeight: 400,
               color: "var(--suit-brown)",
             }}
@@ -62,7 +64,7 @@ export default function Footer() {
             href="mailto:ofc.avneesh@gmail.com"
             className="transition-opacity hover:opacity-60"
             style={{
-              fontSize: 13,
+              fontSize: fluidPx(13),
               fontWeight: 400,
               color: "var(--suit-brown)",
             }}

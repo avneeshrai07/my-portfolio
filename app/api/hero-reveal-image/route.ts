@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
+import { CDN_URL } from "@/lib/cdn";
 
 // The hero's fluid-reveal effect (components/hero/LiquidReveal.tsx) uploads
 // this image into a WebGL texture, which requires it to be same-origin or
 // served with CORS headers. The CDN doesn't send those, so this route fetches
 // it server-side (no CORS applies between servers) and re-serves it from our
 // own origin, cached at the edge.
-const SOURCE_URL = `${process.env.NEXT_PUBLIC_CDN_URL}/my_batman.png`;
+const SOURCE_URL = `${CDN_URL}/my_batman.png`;
 
 export async function GET() {
+  if (!CDN_URL) {
+    return NextResponse.json({ error: "NEXT_PUBLIC_CDN_URL not configured" }, { status: 502 });
+  }
+
   const upstream = await fetch(SOURCE_URL, {
     next: { revalidate: 60 * 60 * 24 * 30 },
   });

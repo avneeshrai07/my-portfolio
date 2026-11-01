@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { cdn } from "@/lib/cdn";
+import { fluidPx } from "@/lib/fluid";
 
 const NAV_LINKS = [
   { label: "Story", href: "/#journey" },
   { label: "Projects", href: "/#projects" },
   { label: "Music", href: "/#music" },
   { label: "About", href: "/#about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Header() {
@@ -36,7 +38,7 @@ export default function Header() {
         <a
           href="#"
           className="font-super-heading font-light tracking-tight transition-opacity hover:opacity-70"
-          style={{ fontSize: 18, color: "var(--suit-brown)" }}
+          style={{ fontSize: fluidPx(18), color: "var(--suit-brown)" }}
         >
           Avneesh
           <em style={{ color: "var(--proj-terra)", fontStyle: "italic" }}>.</em>
@@ -50,7 +52,7 @@ export default function Header() {
               href={href}
               className="transition-opacity hover:opacity-60"
               style={{
-                fontSize: 13,
+                fontSize: fluidPx(13),
                 fontWeight: 400,
                 color: "var(--suit-brown)",
                 letterSpacing: "0.04em",
@@ -60,11 +62,11 @@ export default function Header() {
             </a>
           ))}
           <a
-            href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume_dev.pdf`}
+            href={cdn("/Avneesh_Resume_dev.pdf")}
             download
             className="px-4 py-2 rounded-full font-normal tracking-wide transition-all duration-200 hover:opacity-80"
             style={{
-              fontSize: 12,
+              fontSize: fluidPx(12),
               background: "var(--suit-brown)",
               color: "var(--proj-cream)",
               border: "none",
@@ -117,7 +119,7 @@ export default function Header() {
             </a>
           ))}
           <a
-            href={`${process.env.NEXT_PUBLIC_CDN_URL}/Avneesh_Resume_dev.pdf`}
+            href={cdn("/Avneesh_Resume_dev.pdf")}
             download
             className="inline-flex items-center justify-center px-5 py-2.5 rounded-full font-normal tracking-wide w-fit"
             style={{

@@ -5,6 +5,7 @@ import Skills from "@/components/Skills";
 import MyJourney from "@/components/MyJourney";
 import ProjectsSection from "@/components/ProjectsSection";
 import AboutMe from "@/components/AboutMe";
+import ContactView from "@/components/contact/ContactView";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <section id="music"><MusicSection /></section>
       <MovieSection />
       <section id="about"><AboutMe /></section>
+      <section id="contact"><ContactView /></section>
     </main>
   );
 }

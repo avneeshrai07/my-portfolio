@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import SectionHeader from "@/components/shared/SectionHeader";
 import { CONTACT, CHANNELS } from "@/lib/contact";
+import { fluidPx } from "@/lib/fluid";
 
 export default function ContactView() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -34,9 +35,9 @@ export default function ContactView() {
   return (
     <section
       ref={sectionRef}
-      className="bg-hero-gradient relative overflow-hidden section-pad px-5 md:px-10"
+      className="bg-hero-gradient relative overflow-hidden section-pad"
     >
-      <div className="relative z-10 max-w-2xl mx-auto">
+      <div className="relative z-10 section-container">
         {/* ── Header ─────────────────────────────────────────────── */}
         <div
           className={`mb-8 transition-all duration-700 ${
@@ -51,7 +52,7 @@ export default function ContactView() {
             visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
           }`}
           style={{
-            fontSize: "15px",
+            fontSize: fluidPx(15),
             lineHeight: 1.78,
             color: "var(--proj-ink-2)",
             fontWeight: 400,
@@ -69,14 +70,14 @@ export default function ContactView() {
             background: "#FAF5EC",
             borderColor: "var(--proj-border-2)",
             boxShadow: "3px 4px 16px rgba(81,55,32,0.10)",
-            padding: "26px 24px",
+            padding: `${fluidPx(26)} ${fluidPx(24)}`,
           }}
         >
           <div className="tape" style={{ top: "-9px", left: "20px", transform: "rotate(-1deg)" }} />
           <div className="tape" style={{ top: "-9px", right: "20px", transform: "rotate(2deg)" }} />
 
           <p
-            className="font-heading text-[11px] tracking-[0.22em] mb-3"
+            className="font-heading text-[clamp(0.6875rem,0.349rem_+_0.4231vw,0.825rem)] tracking-[0.22em] mb-3"
             style={{ color: "var(--proj-bark-3)", textTransform: "uppercase" }}
           >
             Drop me a line
@@ -103,8 +104,8 @@ export default function ContactView() {
               style={{
                 background: "var(--suit-brown)",
                 color: "#FAF5EC",
-                padding: "13px 20px",
-                fontSize: "14px",
+                padding: `${fluidPx(13)} ${fluidPx(20)}`,
+                fontSize: fluidPx(14),
                 fontWeight: 600,
                 letterSpacing: "0.01em",
               }}
@@ -119,8 +120,8 @@ export default function ContactView() {
               style={{
                 borderColor: "var(--suit-brown)",
                 color: "var(--suit-brown)",
-                padding: "13px 20px",
-                fontSize: "14px",
+                padding: `${fluidPx(13)} ${fluidPx(20)}`,
+                fontSize: fluidPx(14),
                 fontWeight: 600,
                 background: "transparent",
               }}
@@ -155,15 +156,15 @@ export default function ContactView() {
                   background: "#FAF5EC",
                   borderColor: "var(--proj-border-2)",
                   boxShadow: "3px 4px 16px rgba(81,55,32,0.08)",
-                  padding: "16px 18px",
+                  padding: `${fluidPx(16)} ${fluidPx(18)}`,
                   transitionDelay: `${0.2 + i * 0.07}s`,
                 }}
               >
                 <span
                   className="shrink-0 inline-flex items-center justify-center"
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: fluidPx(40),
+                    height: fluidPx(40),
                     background: "var(--proj-sand)",
                     color: "var(--suit-brown)",
                   }}
@@ -173,14 +174,14 @@ export default function ContactView() {
 
                 <span className="flex flex-col min-w-0 flex-1">
                   <span
-                    className="font-heading text-[10px] tracking-[0.18em]"
+                    className="font-heading text-[clamp(0.625rem,0.3173rem_+_0.3846vw,0.75rem)] tracking-[0.18em]"
                     style={{ color: "var(--proj-bark-3)", textTransform: "uppercase" }}
                   >
                     {c.label}
                   </span>
                   <span
                     className="truncate"
-                    style={{ fontSize: "14px", color: "var(--proj-ink-2)", fontWeight: 500 }}
+                    style={{ fontSize: fluidPx(14), color: "var(--proj-ink-2)", fontWeight: 500 }}
                   >
                     {c.value}
                   </span>
@@ -188,7 +189,7 @@ export default function ContactView() {
 
                 <span
                   className="shrink-0 transition-transform group-hover:translate-x-0.5"
-                  style={{ color: "var(--proj-bark-3)", fontSize: "18px" }}
+                  style={{ color: "var(--proj-bark-3)", fontSize: fluidPx(18) }}
                   aria-hidden
                 >
                   →
@@ -208,8 +209,8 @@ export default function ContactView() {
                 className="inline-flex items-center gap-2"
                 style={{
                   border: "1px solid var(--proj-border)",
-                  padding: "8px 14px",
-                  fontSize: "12.5px",
+                  padding: `${fluidPx(8)} ${fluidPx(14)}`,
+                  fontSize: fluidPx(12.5),
                   color: "var(--suit-brown)",
                 }}
               >
@@ -223,7 +224,7 @@ export default function ContactView() {
 
         <p
           className="font-caveat mt-6"
-          style={{ fontSize: "16px", color: "var(--proj-bark-3)", transform: "rotate(-0.5deg)" }}
+          style={{ fontSize: fluidPx(16), color: "var(--proj-bark-3)", transform: "rotate(-0.5deg)" }}
         >
           {CONTACT.note}
         </p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, RefObject } from "react";
 import type { FluidSolver } from "./fluid/FluidSolver";
+import { cdn } from "@/lib/cdn";
 
 interface Props {
   sectionRef: RefObject<HTMLDivElement | null>;
@@ -137,7 +138,7 @@ export default function LiquidReveal({ sectionRef }: Props) {
       <div
         className="absolute inset-0"
         style={{
-          backgroundImage: `url(${process.env.NEXT_PUBLIC_CDN_URL}/my_professional.png)`,
+          backgroundImage: `url(${cdn("/my_professional.png")})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
           zIndex: 0,
