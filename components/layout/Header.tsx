@@ -33,7 +33,7 @@ export default function Header() {
           : "1px solid transparent",
       }}
     >
-      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+      <div className="section-container h-14 flex items-center justify-between">
         {/* Logo / name */}
         <a
           href="#"

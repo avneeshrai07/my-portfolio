@@ -31,7 +31,7 @@ annotation: "→ Curious by default. Building by choice.",
     { label: "Based in",  value: "Ghazipur, IN" },
     { label: "Role",      value: "Backend Developer"  },
     { label: "Focus",     value: "AI & ML Dev"   },
-    { label: "Exp.",      value: "1+ Years"       },
+    { label: "EXPERIENCE",      value: "1.5+ Years"       },
     { label: "Available", value: "Open to offers" },
   ],
 };

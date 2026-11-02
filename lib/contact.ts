@@ -3,7 +3,6 @@ import {
   Github,
   Linkedin,
   Instagram,
-  MapPin,
   CalendarCheck,
   FileText,
   type LucideIcon,
@@ -27,7 +26,6 @@ export const CONTACT = {
 
   /* Quick facts shown as chips */
   facts: [
-    { icon: MapPin, label: "Based in", value: "Ghazipur, India" },
     { icon: CalendarCheck, label: "Status", value: "Open to offers" },
   ] as ContactFact[],
 
